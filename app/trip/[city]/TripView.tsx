@@ -1,8 +1,63 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { QRCodeSVG } from "qrcode.react";
 import type { CityData, DayPlan } from "../../lib/cityData";
+
+const TIMEZONE_MAP: Record<string, string> = {
+  首爾: "Asia/Seoul", 東京: "Asia/Tokyo", 大阪: "Asia/Tokyo",
+  沖繩: "Asia/Tokyo", 釜山: "Asia/Seoul", 曼谷: "Asia/Bangkok",
+  新加坡: "Asia/Singapore", 香港: "Asia/Hong_Kong", 胡志明市: "Asia/Ho_Chi_Minh",
+};
+
+const WEATHER_COORDS: Record<string, { lat: number; lng: number }> = {
+  首爾: { lat: 37.5665, lng: 126.978 }, 東京: { lat: 35.6762, lng: 139.6503 },
+  大阪: { lat: 34.6937, lng: 135.5023 }, 沖繩: { lat: 26.2124, lng: 127.6792 },
+  釜山: { lat: 35.1796, lng: 129.0756 }, 曼谷: { lat: 13.7563, lng: 100.5018 },
+  新加坡: { lat: 1.3521, lng: 103.8198 }, 香港: { lat: 22.3193, lng: 114.1694 },
+  胡志明市: { lat: 10.8231, lng: 106.6297 },
+};
+
+function wcode(c: number) {
+  return c === 0 ? "☀️" : c <= 3 ? "⛅" : c <= 48 ? "🌫️" : c <= 67 ? "🌧️" : c <= 77 ? "❄️" : c <= 82 ? "🌦️" : "⛈️";
+}
+
+function LocalTime({ city }: { city: string }) {
+  const [time, setTime] = useState("");
+  const tz = TIMEZONE_MAP[city];
+  useEffect(() => {
+    if (!tz) return;
+    const tick = () => setTime(new Intl.DateTimeFormat("zh-TW", { timeZone: tz, hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false }).format(new Date()));
+    tick();
+    const id = setInterval(tick, 1000);
+    return () => clearInterval(id);
+  }, [tz]);
+  if (!time) return null;
+  return (
+    <span className="rounded-full border border-white/30 bg-white/15 px-4 py-1.5 text-white backdrop-blur-sm">
+      🕐 當地時間 {time}
+    </span>
+  );
+}
+
+function WeatherWidget({ city }: { city: string }) {
+  const [weather, setWeather] = useState<{ max: number; min: number; code: number } | null>(null);
+  const coords = WEATHER_COORDS[city];
+  useEffect(() => {
+    if (!coords) return;
+    fetch(`https://api.open-meteo.com/v1/forecast?latitude=${coords.lat}&longitude=${coords.lng}&daily=weathercode,temperature_2m_max,temperature_2m_min&timezone=auto&forecast_days=1`)
+      .then(r => r.json())
+      .then(d => setWeather({ max: Math.round(d.daily.temperature_2m_max[0]), min: Math.round(d.daily.temperature_2m_min[0]), code: d.daily.weathercode[0] }))
+      .catch(() => null);
+  }, [city, coords]);
+  if (!weather) return null;
+  return (
+    <span className="rounded-full border border-white/30 bg-white/15 px-4 py-1.5 text-white backdrop-blur-sm">
+      {wcode(weather.code)} 今日 {weather.min}–{weather.max}°C
+    </span>
+  );
+}
 
 // ── helpers ──────────────────────────────────────────────────────────────────
 
@@ -16,13 +71,17 @@ function nightCount(days: number): string {
   return `${days}天${days - 1}夜`;
 }
 
-// ── Share Button ──────────────────────────────────────────────────────────────
+// ── Action Buttons ─────────────────────────────────────────────────────────────
 
-function ShareButton() {
+function ActionButtons({ city }: { city: string }) {
   const [copied, setCopied] = useState(false);
+  const [showQR, setShowQR] = useState(false);
+  const [exporting, setExporting] = useState(false);
+  const [url, setUrl] = useState("");
+
+  useEffect(() => { setUrl(window.location.href); }, []);
 
   const handleShare = async () => {
-    const url = window.location.href;
     if (navigator.share) {
       await navigator.share({ title: document.title, url });
     } else {
@@ -32,13 +91,48 @@ function ShareButton() {
     }
   };
 
+  const handlePDF = async () => {
+    setExporting(true);
+    try {
+      const el = document.getElementById("trip-content");
+      if (!el) return;
+      const html2canvas = (await import("html2canvas")).default;
+      const { jsPDF } = await import("jspdf");
+      const canvas = await html2canvas(el, { scale: 1.5, useCORS: true });
+      const pdf = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
+      const imgW = 210;
+      const imgH = (canvas.height * imgW) / canvas.width;
+      pdf.addImage(canvas.toDataURL("image/jpeg", 0.85), "JPEG", 0, 0, imgW, imgH);
+      pdf.save(`${city}行程.pdf`);
+    } finally {
+      setExporting(false);
+    }
+  };
+
+  const btnClass = "flex items-center gap-2 rounded-full border border-white/40 bg-white/20 px-4 py-2 text-sm font-light text-white backdrop-blur-sm transition hover:bg-white/30";
+
   return (
-    <button
-      onClick={handleShare}
-      className="flex items-center gap-2 rounded-full border border-white/40 bg-white/20 px-4 py-2 text-sm font-light text-white backdrop-blur-sm transition hover:bg-white/30"
-    >
-      {copied ? "✓ 已複製" : "🔗 分享行程"}
-    </button>
+    <>
+      <div className="flex flex-wrap gap-3">
+        <button onClick={handleShare} className={btnClass}>
+          {copied ? "✓ 已複製" : "🔗 分享行程"}
+        </button>
+        <button onClick={() => setShowQR(true)} className={btnClass}>📱 QR Code</button>
+        <button onClick={handlePDF} disabled={exporting} className={btnClass}>
+          {exporting ? "匯出中…" : "📄 匯出 PDF"}
+        </button>
+      </div>
+
+      {showQR && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={() => setShowQR(false)}>
+          <div className="rounded-3xl bg-white p-8 text-center shadow-xl" onClick={e => e.stopPropagation()}>
+            <p className="mb-4 text-sm font-light tracking-widest text-[#6F675F]">掃碼分享這份行程</p>
+            {url && <QRCodeSVG value={url} size={200} fgColor="#4B4037" />}
+            <p className="mt-4 text-xs text-[#A79C91]">點外側關閉</p>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
 
@@ -163,6 +257,7 @@ export default function TripView({
         </div>
       </nav>
 
+      <div id="trip-content">
       {/* Hero */}
       <section className="relative overflow-hidden pb-16 pt-32">
         <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url('${photo}')` }} />
@@ -191,11 +286,12 @@ export default function TripView({
                 ✦ {request} 已排入 Day {requestDayIdx + 2}
               </span>
             )}
+            <LocalTime city={city} />
+            <WeatherWidget city={city} />
           </div>
 
-          {/* Share Button */}
           <div className="mt-6">
-            <ShareButton />
+            <ActionButtons city={city} />
           </div>
         </div>
       </section>
@@ -285,6 +381,8 @@ export default function TripView({
           </button>
         </div>
       </section>
+
+      </div>{/* end trip-content */}
 
       <footer className="border-t border-[#D8D2C7] bg-[#EFE9DF] px-6 py-10 text-center text-sm font-light tracking-widest text-[#7C7168]">
         © 2026 出國優轉 AbroadUturn
