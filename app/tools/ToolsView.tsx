@@ -78,13 +78,19 @@ function CurrencyTab() {
   useEffect(() => {
     const currency = CURRENCY_MAP[city];
     setLoading(true);
-    fetch(`https://api.frankfurter.app/latest?from=TWD&to=${currency}`)
+    fetch(`https://open.er-api.com/v6/latest/TWD`)
       .then((r) => r.json())
       .then((d) => {
         setRate(d.rates?.[currency] ?? null);
         setLoading(false);
       })
-      .catch(() => setLoading(false));
+      .catch(() => {
+        // fallback to Frankfurter
+        fetch(`https://api.frankfurter.app/latest?from=TWD&to=${currency}`)
+          .then((r) => r.json())
+          .then((d) => { setRate(d.rates?.[currency] ?? null); setLoading(false); })
+          .catch(() => setLoading(false));
+      });
   }, [city]);
 
   const currency = CURRENCY_MAP[city];
