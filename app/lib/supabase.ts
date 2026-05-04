@@ -17,3 +17,11 @@ export type SharedTrip = {
   likes: number;
   created_at: string;
 };
+
+export type TripReview = {
+  id: string;
+  trip_id: string;
+  content: string;
+  rating: number;
+  created_at: string;
+};

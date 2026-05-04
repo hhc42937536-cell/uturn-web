@@ -141,11 +141,15 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="mx-auto grid max-w-7xl gap-6 px-6 py-24 md:grid-cols-3">
+      <section className="mx-auto grid max-w-7xl gap-6 px-6 py-24 md:grid-cols-3 lg:grid-cols-4">
         {[
           { icon: "🗺️", title: "地圖式規劃", desc: "拖拉景點到各天，自動按地理位置排最佳路線。LINE Bot 做不到的事。", href: "/planner/首爾" },
           { icon: "📍", title: "附近景點", desc: "出國後開啟定位，立即找出你周圍最值得去的景點與美食。", href: "/nearby" },
           { icon: "🌏", title: "社群行程牆", desc: "看台灣旅客分享的行程，一鍵複製當自己的，Google 也搜尋得到。", href: "/explore" },
+          { icon: "🧰", title: "旅行工具箱", desc: "匯率換算、預算計算、行李清單、天氣預報——出發前一站搞定。", href: "/tools" },
+          { icon: "🗓️", title: "旅遊旺季月曆", desc: "一眼看懂各城市最佳出遊月份，避開人潮和雨季。", href: "/seasons" },
+          { icon: "✈️", title: "機票比價", desc: "即時搜尋台灣出發的最低票價，找到最划算的機票。", href: "/flights" },
+          { icon: "🛂", title: "簽證＆緊急資訊", desc: "台灣護照免簽一覽，大使館電話、當地SIM卡推薦。", href: "/visa" },
         ].map(({ icon, title, desc, href }) => (
           <a
             key={title}
