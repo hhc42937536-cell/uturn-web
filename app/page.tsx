@@ -29,13 +29,12 @@ export default function HomePage() {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const params = new URLSearchParams({
-      destination: form.destination,
       departureDate: form.departureDate,
       returnDate: form.returnDate,
       people: form.people,
       request: form.request,
     });
-    router.push(`/result?${params.toString()}`);
+    router.push(`/trip/${encodeURIComponent(form.destination)}?${params.toString()}`);
   };
 
   return (
@@ -45,9 +44,9 @@ export default function HomePage() {
           <div className="text-xl font-light tracking-[0.18em] text-[#4B4037]">
             ✈️ 出國優轉
           </div>
-          <div className="flex gap-8 text-sm font-light tracking-widest text-[#6F675F]">
-            <a href="#" className="transition hover:text-[#A86F5A]">關於</a>
-            <a href="#" className="transition hover:text-[#A86F5A]">我的行程</a>
+          <div className="flex gap-6 text-sm font-light tracking-widest text-[#6F675F]">
+            <a href="/explore" className="transition hover:text-[#A86F5A]">社群行程</a>
+            <a href="/nearby" className="transition hover:text-[#A86F5A]">📍 附近景點</a>
           </div>
         </div>
       </nav>
@@ -144,18 +143,19 @@ export default function HomePage() {
 
       <section className="mx-auto grid max-w-7xl gap-6 px-6 py-24 md:grid-cols-3">
         {[
-          ["𓇬", "慢慢生成", "輸入目的地與日期，整理出舒服、不趕路的旅程節奏。"],
-          ["✈︎", "輕鬆比價", "依照出發地與航線偏好，找到剛剛好的出國方式。"],
-          ["☕", "城市小記", "首爾、東京、大阪、曼谷等城市攻略，像手帳一樣清楚。"],
-        ].map(([icon, title, desc]) => (
-          <div
+          { icon: "🗺️", title: "地圖式規劃", desc: "拖拉景點到各天，自動按地理位置排最佳路線。LINE Bot 做不到的事。", href: "/planner/首爾" },
+          { icon: "📍", title: "附近景點", desc: "出國後開啟定位，立即找出你周圍最值得去的景點與美食。", href: "/nearby" },
+          { icon: "🌏", title: "社群行程牆", desc: "看台灣旅客分享的行程，一鍵複製當自己的，Google 也搜尋得到。", href: "/explore" },
+        ].map(({ icon, title, desc, href }) => (
+          <a
             key={title}
-            className="rounded-[2rem] border border-[#D8D2C7] bg-[#FBF8F1] p-10 transition hover:bg-[#FFFDF8]"
+            href={href}
+            className="rounded-[2rem] border border-[#D8D2C7] bg-[#FBF8F1] p-10 transition hover:bg-[#FFFDF8] hover:border-[#A86F5A] block"
           >
             <div className="mb-6 text-4xl text-[#8FA39A]">{icon}</div>
             <h3 className="mb-4 text-2xl font-light tracking-wide text-[#4B4037]">{title}</h3>
             <p className="font-light leading-8 tracking-wide text-[#6F675F]">{desc}</p>
-          </div>
+          </a>
         ))}
       </section>
 
