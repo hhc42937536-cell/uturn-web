@@ -1,65 +1,167 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+
+const destinations = ["首爾", "東京", "大阪", "曼谷", "新加坡", "香港", "沖繩", "胡志明市", "釜山"];
+const departureCities = ["高雄", "台北", "台中", "台南"];
+
+const inputClass =
+  "h-14 w-full rounded-2xl border border-[#D8D2C7] bg-[#FFFDF8] px-4 text-base font-light text-[#4B4037] outline-none transition placeholder:text-[#A79C91] focus:border-[#8FA39A] focus:bg-white";
+
+export default function HomePage() {
+  const [form, setForm] = useState({
+    destination: "首爾",
+    departureDate: "",
+    returnDate: "",
+    departureCity: "高雄",
+    people: "2",
+    request: "",
+  });
+
+  const router = useRouter();
+
+  const updateForm = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const params = new URLSearchParams({
+      destination: form.destination,
+      departureDate: form.departureDate,
+      returnDate: form.returnDate,
+      people: form.people,
+      request: form.request,
+    });
+    router.push(`/result?${params.toString()}`);
+  };
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <main className="min-h-screen bg-[#F7F3EC] text-[#4B4037]">
+      <nav className="fixed left-0 top-0 z-50 w-full border-b border-[#DDD6CA] bg-[#F7F3EC]/90 backdrop-blur-md">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-5">
+          <div className="text-xl font-light tracking-[0.18em] text-[#4B4037]">
+            ✈️ 出國優轉
+          </div>
+          <div className="flex gap-8 text-sm font-light tracking-widest text-[#6F675F]">
+            <a href="#" className="transition hover:text-[#A86F5A]">關於</a>
+            <a href="#" className="transition hover:text-[#A86F5A]">我的行程</a>
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+      </nav>
+
+      <section className="relative overflow-hidden bg-[#EDE7DD] pb-24 pt-36">
+        <div className="relative z-10 mx-auto grid max-w-7xl items-center gap-12 px-6 lg:grid-cols-[1.1fr_0.9fr]">
+          <div>
+            <p className="mb-5 text-xs font-light uppercase tracking-[0.45em] text-[#8FA39A]">
+              AbroadUturn Travel Planner
+            </p>
+            <h1 className="text-5xl font-light leading-[1.18] tracking-wide text-[#4B4037] md:text-7xl">
+              說走就走，<br />
+              3分鐘搞定旅程
+            </h1>
+            <p className="mt-7 max-w-xl text-lg font-light leading-9 tracking-wide text-[#6F675F]">
+              台灣人專屬出國旅程規劃師，替你把日期、目的地與小小願望，
+              慢慢整理成一趟剛剛好的旅行。
+            </p>
+          </div>
+
+          <div className="relative hidden lg:block">
+            <div className="rounded-[3rem] border border-[#D8D2C7] bg-[#F9F6EF] p-10">
+              <div className="mx-auto h-64 w-64 rounded-full border border-[#CFC6B8] bg-[#E5DDD0]" />
+              <div className="mt-8 space-y-3 text-center">
+                <p className="text-3xl">☁️ 𓂃 ✈︎</p>
+                <p className="text-sm font-light tracking-[0.3em] text-[#8A7F73]">
+                  quiet travel, gentle plan
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
-      </main>
-    </div>
+
+        <div className="relative z-20 mx-auto mt-14 max-w-7xl px-6">
+          <form
+            onSubmit={handleSubmit}
+            className="rounded-[2rem] border border-[#D8D2C7] bg-[#FBF8F1]/95 p-6 md:p-8"
+          >
+            <div className="grid gap-5 md:grid-cols-3 lg:grid-cols-6">
+              <label className="block">
+                <span className="mb-2 block text-sm font-light tracking-widest text-[#6F675F]">目的地</span>
+                <select name="destination" value={form.destination} onChange={updateForm} className={inputClass}>
+                  {destinations.map((c) => <option key={c}>{c}</option>)}
+                </select>
+              </label>
+
+              <label className="block">
+                <span className="mb-2 block text-sm font-light tracking-widest text-[#6F675F]">出發日期</span>
+                <input type="date" name="departureDate" value={form.departureDate} onChange={updateForm} className={inputClass} />
+              </label>
+
+              <label className="block">
+                <span className="mb-2 block text-sm font-light tracking-widest text-[#6F675F]">回程日期</span>
+                <input type="date" name="returnDate" value={form.returnDate} onChange={updateForm} className={inputClass} />
+              </label>
+
+              <label className="block">
+                <span className="mb-2 block text-sm font-light tracking-widest text-[#6F675F]">出發地</span>
+                <select name="departureCity" value={form.departureCity} onChange={updateForm} className={inputClass}>
+                  {departureCities.map((c) => <option key={c}>{c}</option>)}
+                </select>
+              </label>
+
+              <label className="block">
+                <span className="mb-2 block text-sm font-light tracking-widest text-[#6F675F]">人數</span>
+                <select name="people" value={form.people} onChange={updateForm} className={inputClass}>
+                  {Array.from({ length: 10 }, (_, i) => i + 1).map((n) => (
+                    <option key={n} value={n}>{n}人</option>
+                  ))}
+                </select>
+              </label>
+
+              <label className="block">
+                <span className="mb-2 block text-sm font-light tracking-widest text-[#6F675F]">特別需求</span>
+                <input
+                  name="request"
+                  value={form.request}
+                  onChange={updateForm}
+                  placeholder="咖啡店、老街、美術館…"
+                  className={inputClass}
+                />
+              </label>
+            </div>
+
+            <button
+              type="submit"
+              className="mt-7 w-full rounded-full border border-[#A86F5A] bg-[#B98774]/15 py-5 text-base font-light tracking-[0.2em] text-[#7D5548] transition hover:bg-[#B98774]/25"
+            >
+              立即規劃行程
+            </button>
+          </form>
+        </div>
+      </section>
+
+      <section className="mx-auto grid max-w-7xl gap-6 px-6 py-24 md:grid-cols-3">
+        {[
+          ["𓇬", "慢慢生成", "輸入目的地與日期，整理出舒服、不趕路的旅程節奏。"],
+          ["✈︎", "輕鬆比價", "依照出發地與航線偏好，找到剛剛好的出國方式。"],
+          ["☕", "城市小記", "首爾、東京、大阪、曼谷等城市攻略，像手帳一樣清楚。"],
+        ].map(([icon, title, desc]) => (
+          <div
+            key={title}
+            className="rounded-[2rem] border border-[#D8D2C7] bg-[#FBF8F1] p-10 transition hover:bg-[#FFFDF8]"
+          >
+            <div className="mb-6 text-4xl text-[#8FA39A]">{icon}</div>
+            <h3 className="mb-4 text-2xl font-light tracking-wide text-[#4B4037]">{title}</h3>
+            <p className="font-light leading-8 tracking-wide text-[#6F675F]">{desc}</p>
+          </div>
+        ))}
+      </section>
+
+      <footer className="border-t border-[#D8D2C7] bg-[#EFE9DF] px-6 py-10 text-center text-sm font-light tracking-widest text-[#7C7168]">
+        © 2026 出國優轉 AbroadUturn
+      </footer>
+    </main>
   );
 }
