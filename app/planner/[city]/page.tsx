@@ -26,5 +26,5 @@ export default async function PlannerPage({ params }: Props) {
 }
 
 export function generateStaticParams() {
-  return Object.keys(CITY_CODE).map((city) => ({ city: encodeURIComponent(city) }));
+  return Object.keys(CITY_CODE).map((city) => ({ city }));
 }

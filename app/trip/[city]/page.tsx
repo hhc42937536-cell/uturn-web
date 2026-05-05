@@ -110,5 +110,5 @@ export default async function TripPage({ params, searchParams }: Props) {
 
 // 預先生成熱門城市的靜態頁（SEO 加速）
 export function generateStaticParams() {
-  return Object.keys(CITY_CODE).map((city) => ({ city: encodeURIComponent(city) }));
+  return Object.keys(CITY_CODE).map((city) => ({ city }));
 }
