@@ -397,7 +397,13 @@ export default function PlannerView({ country, countryName, flag, center, mapZoo
 
   const unassigned = allSpots
     .filter((s) => !assigned.has(s.id) && (cityFilter === "all" || s.city === cityFilter))
-    .sort((a, b) => (clusterMap.get(a.id) ?? 0) - (clusterMap.get(b.id) ?? 0));
+    .sort((a, b) => {
+      const ca = clusterMap.get(a.id) ?? 0;
+      const cb = clusterMap.get(b.id) ?? 0;
+      if (ca !== cb) return ca - cb;
+      if (a.lat !== b.lat) return a.lat - b.lat;
+      return a.lng - b.lng;
+    });
   const assignedSpots = allSpots.filter((s) => assigned.has(s.id));
   const spotsForDay = useCallback((day: number) =>
     allSpots.filter((s) => assigned.get(s.id) === day), [allSpots, assigned]);
