@@ -317,7 +317,7 @@ function PlanModal({
     try {
       const { toJpeg } = await import("html-to-image");
       const { jsPDF } = await import("jspdf");
-      const dataUrl = await toJpeg(el, { quality: 0.95, backgroundColor: "#FFFDF8", pixelRatio: 2 });
+      const dataUrl = await toJpeg(el, { quality: 0.95, backgroundColor: "#FFFDF8", pixelRatio: 2, style: { borderRadius: "0", margin: "0" } });
       const img = new Image();
       img.src = dataUrl;
       await new Promise((r) => { img.onload = r; });
@@ -331,7 +331,7 @@ function PlanModal({
 
   return (
     <div className="fixed inset-0 z-[1100] overflow-y-auto bg-black/60 p-4" onClick={onClose}>
-      <div ref={captureRef} className="mx-auto mt-6 max-w-2xl rounded-[2rem] bg-[#FFFDF8] shadow-2xl" onClick={(e) => e.stopPropagation()}>
+      <div className="mx-auto mt-6 max-w-2xl rounded-[2rem] bg-[#FFFDF8] shadow-2xl" onClick={(e) => e.stopPropagation()}>
         {/* Modal header */}
         <div className="flex items-center justify-between border-b border-[#E8E0D5] px-8 py-5">
           <div>
@@ -356,7 +356,7 @@ function PlanModal({
         </div>
 
         {/* Printable content */}
-        <div id="plan-print-content" className="px-8 py-6" style={{ fontFamily: "sans-serif" }}>
+        <div ref={captureRef} id="plan-print-content" className="px-8 py-6" style={{ fontFamily: "sans-serif" }}>
           {/* Cover */}
           <div className="mb-8 rounded-2xl bg-[#3A2E26] px-8 py-10 text-center text-white">
             <p className="mb-2 text-4xl">{flag}</p>
