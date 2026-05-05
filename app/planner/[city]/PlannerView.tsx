@@ -104,7 +104,7 @@ function DayColumn({ day, spots, onRemove }: { day: number; spots: Spot[]; onRem
   );
 }
 
-function CityMap({ spots, dayMap }: { spots: Spot[]; dayMap: Map<string, number> }) {
+function CityMap({ spots, dayMap, defaultCenter }: { spots: Spot[]; dayMap: Map<string, number>; defaultCenter: [number, number] }) {
   const mapId = "planner-map";
   useEffect(() => {
     let mapInstance: ReturnType<typeof import("leaflet")["map"]> | null = null;
@@ -114,7 +114,7 @@ function CityMap({ spots, dayMap }: { spots: Spot[]; dayMap: Map<string, number>
       const el = document.getElementById(mapId);
       if (!el || (el as HTMLElement & { _leaflet_id?: number })._leaflet_id) return;
       const first = spots[0];
-      mapInstance = L.map(mapId).setView([first?.lat ?? 37.55, first?.lng ?? 126.97], 13);
+      mapInstance = L.map(mapId).setView(first ? [first.lat, first.lng] : defaultCenter, 13);
       L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
         attribution: "© OpenStreetMap contributors",
       }).addTo(mapInstance);
@@ -376,7 +376,11 @@ export default function PlannerView({ city, code, flag }: { city: string; code: 
 
             {/* 中欄：地圖 */}
             <div className="relative flex-1 p-3">
-              <CityMap spots={assignedSpots} dayMap={assigned} />
+              <CityMap
+                spots={assignedSpots}
+                dayMap={assigned}
+                defaultCenter={allSpots[0] ? [allSpots[0].lat, allSpots[0].lng] : [25.04, 121.51]}
+              />
               {assignedSpots.length === 0 && (
                 <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                   <p className="rounded-2xl bg-white/80 px-6 py-4 text-sm font-light text-[#8FA39A] shadow">
