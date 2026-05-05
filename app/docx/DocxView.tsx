@@ -82,6 +82,36 @@ export default function DocxView() {
   const [generating, setGenerating] = useState(false);
 
   useEffect(() => {
+    const token = searchParams.get("token");
+    if (token) {
+      // LINE Bot 產生的計畫 token → 從 abroad-uturn 拿資料預填
+      fetch(`https://abroad-uturn.vercel.app/api/plan?token=${token}`)
+        .then((r) => r.json())
+        .then((data) => {
+          if (data.error) return;
+          const dest = DESTINATIONS.includes(data.destination) ? data.destination : "首爾";
+          const depDate = data.dep_date || "";
+          // 從 days_text 解析天數（例如「5天4夜」→ 5）
+          const daysMatch = typeof data.days_text === "string"
+            ? data.days_text.match(/(\d+)\s*天/)
+            : null;
+          const numDays = daysMatch ? parseInt(daysMatch[1]) - 1 : 4;
+          const retDate = depDate ? addDays(depDate, numDays) : "";
+          setForm({
+            destination: dest,
+            depCity: "高雄",
+            depDate,
+            retDate,
+            people: String(data.people ?? 2),
+            budget: String(data.budget ?? ""),
+            style: data.style || "",
+            memo: "",
+          });
+        })
+        .catch(() => {});
+      return;
+    }
+
     const dest = searchParams.get("dest");
     if (!dest) return;
     const depDate = searchParams.get("depDate") || "";
