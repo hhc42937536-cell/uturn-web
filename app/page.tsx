@@ -46,6 +46,8 @@ export default function HomePage() {
           </div>
           <div className="flex gap-6 text-sm font-light tracking-widest text-[#6F675F]">
             <a href="/explore" className="transition hover:text-[#A86F5A]">社群行程</a>
+            <a href="/trending" className="transition hover:text-[#A86F5A]">🔥 最夯</a>
+            <a href="/idol" className="transition hover:text-[#A86F5A]">⭐ 追星</a>
             <a href="/nearby" className="transition hover:text-[#A86F5A]">📍 附近景點</a>
           </div>
         </div>
@@ -143,6 +145,8 @@ export default function HomePage() {
 
       <section className="mx-auto grid max-w-7xl gap-6 px-6 py-24 md:grid-cols-3 lg:grid-cols-4">
         {[
+          { icon: "🔥", title: "現在最夯", desc: "即時整合 Dcard、KKday、Olive Young、Cosme 排行。這個月去日本韓國必買什麼、必玩什麼。", href: "/trending" },
+          { icon: "⭐", title: "追星行程", desc: "輸入藝人名字，查演唱會與見面會，搭配聖地巡禮景點，規劃專屬追星旅程。", href: "/idol" },
           { icon: "🗺️", title: "地圖式規劃", desc: "拖拉景點到各天，自動按地理位置排最佳路線。LINE Bot 做不到的事。", href: "/planner/首爾" },
           { icon: "📍", title: "附近景點", desc: "出國後開啟定位，立即找出你周圍最值得去的景點與美食。", href: "/nearby" },
           { icon: "🌏", title: "社群行程牆", desc: "看台灣旅客分享的行程，一鍵複製當自己的，Google 也搜尋得到。", href: "/explore" },
