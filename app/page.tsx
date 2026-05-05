@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 const STEPS = [
@@ -17,8 +18,21 @@ const INCLUDED = [
   "📝 備忘事項",
 ];
 
+const ALL_FEATURES = [
+  { icon: "🔥", title: "現在最夯", desc: "即時整合 Dcard、KKday、Olive Young、Cosme 排行。這個月去日本韓國必買什麼、必玩什麼。", href: "/trending" },
+  { icon: "⭐", title: "追星行程", desc: "輸入藝人名字，查演唱會與見面會，搭配聖地巡禮景點，規劃專屬追星旅程。", href: "/idol" },
+  { icon: "🧠", title: "深度在地知識庫", desc: "票務時機、人潮規律、交通眉角、隱藏景點——去過的人才知道的細節。", href: "/tips" },
+  { icon: "📚", title: "我的計畫庫", desc: "所有規劃過的行程自動儲存，可命名、比較不同版本、一鍵重開規劃。", href: "/saved" },
+  { icon: "🎒", title: "打包比價試算", desc: "機票＋住宿＋票券，勾選你想參加的活動，即時試算整趟旅行的真實總花費。", href: "/bundle" },
+  { icon: "📍", title: "附近景點", desc: "出國後開啟定位，立即找出你周圍最值得去的景點與美食。", href: "/nearby" },
+  { icon: "🌏", title: "社群行程牆", desc: "看台灣旅客分享的行程，一鍵複製當自己的，Google 也搜尋得到。", href: "/explore" },
+  { icon: "🧰", title: "旅行工具箱", desc: "匯率換算、預算計算、行李清單、天氣預報——出發前一站搞定。", href: "/tools" },
+  { icon: "🗓️", title: "旅遊旺季月曆", desc: "一眼看懂各城市最佳出遊月份，避開人潮和雨季。", href: "/seasons" },
+];
+
 export default function HomePage() {
   const router = useRouter();
+  const [showAll, setShowAll] = useState(false);
 
   return (
     <main className="min-h-screen bg-[#F7F3EC] text-[#4B4037]">
@@ -169,24 +183,29 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── 其他工具（低調） ── */}
+      {/* ── 更多功能（可展開） ── */}
       <section className="py-16">
-        <div className="mx-auto max-w-3xl px-6">
-          <p className="mb-8 text-center text-xs font-light uppercase tracking-[0.45em] text-[#C4BCB4]">其他工具</p>
-          <div className="flex flex-wrap justify-center gap-4 text-sm font-light text-[#8A7F73]">
-            {[
-              { label: "🗺 地圖式行程規劃", href: "/planner/首爾" },
-              { label: "🛂 台灣護照情報", href: "/visa" },
-              { label: "✈️ 機票比價", href: "/flights" },
-              { label: "⭐ 追星行程", href: "/idol" },
-              { label: "📚 我的計畫庫", href: "/saved" },
-            ].map(({ label, href }) => (
-              <a key={href} href={href}
-                className="rounded-full border border-[#D8D2C7] px-5 py-2 transition hover:border-[#A86F5A] hover:text-[#A86F5A]">
-                {label}
-              </a>
-            ))}
-          </div>
+        <div className="mx-auto max-w-4xl px-6">
+          <button
+            onClick={() => setShowAll((v) => !v)}
+            className="mx-auto flex items-center gap-2 text-sm font-light text-[#8A7F73] transition hover:text-[#A86F5A]"
+          >
+            <span>{showAll ? "▲" : "▼"}</span>
+            <span>{showAll ? "收起其他功能" : "查看更多功能"}</span>
+          </button>
+
+          {showAll && (
+            <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+              {ALL_FEATURES.map(({ icon, title, desc, href }) => (
+                <a key={href} href={href}
+                  className="rounded-[2rem] border border-[#D8D2C7] bg-[#FBF8F1] p-7 transition hover:border-[#A86F5A] hover:bg-[#FFFDF8] block">
+                  <div className="mb-3 text-3xl">{icon}</div>
+                  <h3 className="mb-2 text-base font-light tracking-wide text-[#4B4037]">{title}</h3>
+                  <p className="text-sm font-light leading-7 text-[#6F675F]">{desc}</p>
+                </a>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
