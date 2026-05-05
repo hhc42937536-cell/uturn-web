@@ -35,7 +35,7 @@ function SpotCard({ spot, mini = false }: { spot: Spot; mini?: boolean }) {
       {!mini && (
         <>
           <div className="mt-0.5 text-xs opacity-70">{spot.category} · {spot.duration}</div>
-          <div className="mt-1 text-xs opacity-60 line-clamp-1">{spot.tip}</div>
+          <div className="mt-1 text-xs opacity-60 line-clamp-2 leading-relaxed">{spot.tip}</div>
         </>
       )}
       {mini && (
