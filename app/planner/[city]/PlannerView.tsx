@@ -164,8 +164,8 @@ const CITY_MAP_CENTER: Record<string, { center: [number, number]; zoom: number }
 
 const DAY_COLORS_MAP = ["#A86F5A", "#5A8AA8", "#5AA87A", "#A85A8A", "#8AA85A", "#A8A05A", "#5A5AA8"];
 
-function CityMap({ spots, dayMap, clusterMap, defaultCenter, defaultZoom, focusCity }: {
-  spots: Spot[]; dayMap: Map<string, number>; clusterMap: Map<string, number>;
+function CityMap({ allSpots, dayMap, clusterMap, defaultCenter, defaultZoom, focusCity }: {
+  allSpots: Spot[]; dayMap: Map<string, number>; clusterMap: Map<string, number>;
   defaultCenter: [number, number]; defaultZoom: number; focusCity: string;
 }) {
   const mapId = "planner-map";
@@ -190,25 +190,29 @@ function CityMap({ spots, dayMap, clusterMap, defaultCenter, defaultZoom, focusC
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Update markers when spots/dayMap changes
+  // Update markers when dayMap changes
   useEffect(() => {
     const map = mapRef.current;
     const L = lRef.current;
     if (!map || !L) return;
     markersRef.current.forEach((m) => m.remove());
     markersRef.current = [];
-    spots.forEach((spot) => {
+    allSpots.forEach((spot) => {
       const dayNum = dayMap.get(spot.id);
       const ci = clusterMap.get(spot.id) ?? 0;
       const areaHex = AREA_PALETTE[ci % AREA_PALETTE.length].hex;
-      const fillColor = dayNum !== undefined ? DAY_COLORS_MAP[(dayNum - 1) % DAY_COLORS_MAP.length] : areaHex;
+      const isAssigned = dayNum !== undefined;
+      const fillColor = isAssigned ? DAY_COLORS_MAP[(dayNum! - 1) % DAY_COLORS_MAP.length] : areaHex;
+      const size = isAssigned ? 28 : 16;
       const icon = L.divIcon({
         className: "",
-        html: `<div style="background:${fillColor};width:28px;height:28px;border-radius:50%;border:3px solid ${areaHex};display:flex;align-items:center;justify-content:center;color:white;font-size:11px;font-weight:700;box-shadow:0 2px 6px rgba(0,0,0,0.25)">${dayNum ?? "·"}</div>`,
-        iconSize: [28, 28], iconAnchor: [14, 14],
+        html: isAssigned
+          ? `<div style="background:${fillColor};width:28px;height:28px;border-radius:50%;border:3px solid ${areaHex};display:flex;align-items:center;justify-content:center;color:white;font-size:11px;font-weight:700;box-shadow:0 2px 6px rgba(0,0,0,0.3)">${dayNum}</div>`
+          : `<div style="background:${areaHex};width:14px;height:14px;border-radius:50%;border:2px solid white;opacity:0.75;box-shadow:0 1px 4px rgba(0,0,0,0.25)"></div>`,
+        iconSize: [size, size], iconAnchor: [size / 2, size / 2],
       });
       const marker = L.marker([spot.lat, spot.lng], { icon })
-        .bindPopup(`<b>${spot.name}</b><br/>${spot.category} · ${spot.duration}<br/><small>${spot.tip}</small>`)
+        .bindPopup(`<b>${spot.name}</b><br/>${spot.category} · ${spot.duration}<br/><small style="color:#888">${spot.tip}</small>`)
         .addTo(map);
       markersRef.current.push(marker);
     });
@@ -385,7 +389,7 @@ export default function PlannerView({ country, countryName, flag, center, mapZoo
 }) {
   const router = useRouter();
   const allSpots = getCountrySpots(country);
-  const clusterMap = useMemo(() => buildClusterMap(allSpots), [country]);
+  const clusterMap = useMemo(() => buildClusterMap(allSpots, 1.5), [country]);
   const cities = [...new Set(allSpots.map((s) => s.city).filter(Boolean))] as string[];
   const [cityFilter, setCityFilter] = useState<string>("all");
   const [days, setDays] = useState(5);
@@ -498,17 +502,17 @@ export default function PlannerView({ country, countryName, flag, center, mapZoo
             {/* 中欄：地圖 */}
             <div className="relative flex-1 p-3">
               <CityMap
-                spots={assignedSpots}
+                allSpots={allSpots}
                 dayMap={assigned}
                 clusterMap={clusterMap}
                 defaultCenter={center}
                 defaultZoom={mapZoom}
                 focusCity={cityFilter}
               />
-              {assignedSpots.length === 0 && (
-                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                  <p className="rounded-2xl bg-white/80 px-6 py-4 text-sm font-light text-[#8FA39A] shadow">
-                    從左側拖拉景點，地圖會即時顯示 ✦ 每天可加入多個景點
+              {assigned.size === 0 && (
+                <div className="absolute bottom-6 left-1/2 -translate-x-1/2 pointer-events-none">
+                  <p className="rounded-2xl bg-white/90 px-5 py-3 text-xs font-light text-[#8FA39A] shadow whitespace-nowrap">
+                    色點 = 同色同區 ✦ 把同色景點拖進同一天
                   </p>
                 </div>
               )}
