@@ -54,9 +54,18 @@ function DayColumn({ day, spots, onRemove }: { day: number; spots: Spot[]; onRem
     >
       <div className="flex items-center justify-between">
         <span className="text-[10px] font-semibold uppercase tracking-widest text-[#8FA39A]">Day {day}</span>
-        {spots.length > 0 && (
-          <span className="text-[9px] text-[#C5BEB6]">{spots.length} 個景點</span>
-        )}
+        {spots.length >= 2 ? (
+          <a
+            href={buildGoogleMapsUrl(spots)}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[9px] text-[#8FA39A] underline hover:text-[#4B6B63]"
+          >
+            🗺️ 導航
+          </a>
+        ) : spots.length === 1 ? (
+          <span className="text-[9px] text-[#C5BEB6]">1 個景點</span>
+        ) : null}
       </div>
       {spots.length === 0 && (
         <p className="flex-1 flex items-center justify-center text-center text-xs text-[#C5BEB6] py-2">
@@ -122,6 +131,17 @@ function CityMap({ spots, dayMap }: { spots: Spot[]; dayMap: Map<string, number>
 // ── Plan Modal ─────────────────────────────────────────────────────────────────
 
 const DAY_COLORS_CSS = ["#A86F5A", "#5A8AA8", "#5AA87A", "#A85A8A", "#8AA85A", "#A8A05A", "#5A5AA8"];
+
+function buildGoogleMapsUrl(spots: Spot[]): string {
+  if (spots.length === 0) return "";
+  if (spots.length === 1) {
+    return `https://www.google.com/maps/search/?api=1&query=${spots[0].lat},${spots[0].lng}`;
+  }
+  const origin = `${spots[0].lat},${spots[0].lng}`;
+  const destination = `${spots[spots.length - 1].lat},${spots[spots.length - 1].lng}`;
+  const waypoints = spots.slice(1, -1).map((s) => `${s.lat},${s.lng}`).join("|");
+  return `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}${waypoints ? `&waypoints=${waypoints}` : ""}&travelmode=transit`;
+}
 
 function PlanModal({
   city, flag, days, allSpots, assigned, onClose,
@@ -206,8 +226,20 @@ function PlanModal({
                   >
                     {day}
                   </div>
-                  <div>
-                    <div className="text-sm font-semibold text-[#3A2E26]">Day {day}</div>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-3">
+                      <div className="text-sm font-semibold text-[#3A2E26]">Day {day}</div>
+                      {spots.length >= 2 && (
+                        <a
+                          href={buildGoogleMapsUrl(spots)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="rounded-full border border-[#8FA39A] bg-[#8FA39A]/10 px-2 py-0.5 text-[10px] font-light text-[#4B6B63] transition hover:bg-[#8FA39A]/25"
+                        >
+                          🗺️ Google Maps
+                        </a>
+                      )}
+                    </div>
                     {spots.length === 0 && (
                       <div className="text-xs text-[#C5BEB6]">尚未安排景點</div>
                     )}
