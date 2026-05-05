@@ -293,17 +293,54 @@ export const CITY_SPOTS: Record<string, Spot[]> = {
     { id: "kbe-5",  name: "神戶牛排街",         category: "美食", lat: 34.6931, lng: 135.1956, duration: "1.5hr", tip: "「Mouriya 本店」1885年創業，¥8,000 起，鐵板現煎神戶牛是神聖體驗" },
     { id: "kbe-6",  name: "六甲山牧場",         category: "體驗", lat: 34.7636, lng: 135.2432, duration: "2hr",   tip: "搭六甲ケーブル纜車上山，可餵羊・做起司，夜景是關西代表性百萬夜景" },
   ],
+
+  CTS: [
+    { id: "cts-1",  name: "大通公園",           category: "景點", lat: 43.0594, lng: 141.3508, duration: "1hr",   tip: "薩波羅市中心綠帶，雪祭（2月）主會場，夏天啤酒花園必來" },
+    { id: "cts-2",  name: "時計台",             category: "景點", lat: 43.0643, lng: 141.3534, duration: "0.5hr", tip: "1878年建，內部小博物館免費介紹薩波羅建城史" },
+    { id: "cts-3",  name: "狸小路商店街",       category: "購物", lat: 43.0557, lng: 141.3527, duration: "2hr",   tip: "全長約900m的室內商店街，伴手禮・藥妝・餐廳一條街" },
+    { id: "cts-4",  name: "薄野夜生活區",       category: "體驗", lat: 43.0553, lng: 141.3572, duration: "2hr",   tip: "日本最北的繁華歡樂街，居酒屋・拉麵・成吉思汗烤肉密集" },
+    { id: "cts-5",  name: "二条市場",           category: "美食", lat: 43.0609, lng: 141.3590, duration: "1.5hr", tip: "新鮮毛蟹・海膽・鮭魚卵，可現場代寄冷藏回台灣" },
+    { id: "cts-6",  name: "北海道廳舊本廳舍",   category: "景點", lat: 43.0642, lng: 141.3483, duration: "0.5hr", tip: "紅磚巴洛克建築，免費入場，春天紫丁香花節在此舉辦" },
+    { id: "cts-7",  name: "白色戀人公園",       category: "體驗", lat: 43.0811, lng: 141.3133, duration: "1.5hr", tip: "白色戀人工廠參觀、體驗製作餅乾，網路預約有折扣" },
+    { id: "cts-8",  name: "圓山動物園",         category: "體驗", lat: 43.0567, lng: 141.3175, duration: "2hr",   tip: "北海道熊・阿穆爾虎・北極熊是明星，冬天動物行為最有趣" },
+    { id: "cts-9",  name: "大倉山跳台競技場",   category: "景點", lat: 43.0690, lng: 141.2862, duration: "1.5hr", tip: "纜車上到跳台頂端，眺望薩波羅市區，體驗跳台滑雪模擬器" },
+    { id: "cts-10", name: "北海道神宮",         category: "景點", lat: 43.0557, lng: 141.3208, duration: "1hr",   tip: "薩波羅最重要神社，春天櫻花（5月）是北海道最早開花地點" },
+    { id: "cts-11", name: "薩波羅啤酒博物館",   category: "體驗", lat: 43.0757, lng: 141.3694, duration: "1.5hr", tip: "免費參觀釀造史，付費試飲3款比較最值得，周邊美食廣場一起逛" },
+    { id: "cts-12", name: "藻岩山夜景",         category: "景點", lat: 43.0200, lng: 141.3186, duration: "1.5hr", tip: "搭纜車+迷你纜車登頂，薩波羅夜景是北海道三大夜景之一" },
+    { id: "cts-13", name: "定山溪溫泉",         category: "體驗", lat: 42.9850, lng: 141.1012, duration: "半天",  tip: "距薩波羅市區1hr車程，河谷溫泉街，秋天紅葉配露天風呂最美" },
+    { id: "cts-14", name: "小樽運河",           category: "景點", lat: 43.1931, lng: 140.9944, duration: "2hr",   tip: "距薩波羅30分鐘，石造倉庫瓦斯燈夜景是北海道最具代表的風景" },
+    { id: "cts-15", name: "Niseko 滑雪場",      category: "體驗", lat: 42.8600, lng: 140.6860, duration: "全天",  tip: "世界頂級粉雪，11月至4月開放，Grand Hirafu纜車數量最多最適合新手" },
+  ],
+
+  CJU: [
+    { id: "cju-1",  name: "城山日出峰",         category: "景點", lat: 33.4582, lng: 126.9425, duration: "2hr",   tip: "UNESCO世界遺產，清晨5點日出人潮最多，爬頂約20分鐘，門票₩5,000" },
+    { id: "cju-2",  name: "漢拿山白鹿潭",       category: "體驗", lat: 33.3617, lng: 126.5292, duration: "全天",  tip: "韓國最高峰1,950m，白鹿潭路線來回10hr，需早上6點前出發" },
+    { id: "cju-3",  name: "牛島",               category: "景點", lat: 33.5000, lng: 126.9333, duration: "半天",  tip: "渡輪15分鐘，花生冰淇淋是必吃，珊瑚礁海岸租單車環島最愉快" },
+    { id: "cju-4",  name: "萬丈窟",             category: "景點", lat: 33.5283, lng: 126.7710, duration: "1.5hr", tip: "UNESCO世界遺產熔岩洞，全長13.4km，開放段1km，夏天洞內超涼爽" },
+    { id: "cju-5",  name: "涉地可支",           category: "景點", lat: 33.4561, lng: 126.9300, duration: "1hr",   tip: "城山日出峰旁的玄武岩海岸，《我們結婚了》拍攝地，夕陽最美" },
+    { id: "cju-6",  name: "天地淵瀑布",         category: "景點", lat: 33.2462, lng: 126.5600, duration: "1hr",   tip: "三大瀑布之一，瀑布入口到底部步行約15分鐘，夜間有燈光秀" },
+    { id: "cju-7",  name: "O'sulloc 茶博物館",  category: "體驗", lat: 33.3055, lng: 126.2898, duration: "1.5hr", tip: "綠茶田景觀咖啡廳，抹茶冰淇淋是打卡必點，周邊茶田散步免費" },
+    { id: "cju-8",  name: "挾才海水浴場",       category: "體驗", lat: 33.3939, lng: 126.2428, duration: "2hr",   tip: "西部最美白沙灘，珊瑚礁淺水區適合親子，附近Biyangdo島一日遊可安排" },
+    { id: "cju-9",  name: "濟州民俗村博物館",   category: "景點", lat: 33.3197, lng: 126.8649, duration: "1.5hr", tip: "復原傳統濟州石屋與生活場景，海女（해녀）文化體驗展最珍貴" },
+    { id: "cju-10", name: "西歸浦柑橘果園",     category: "體驗", lat: 33.2500, lng: 126.5800, duration: "1hr",   tip: "11～2月柑橘季可入園採摘，漢拿峰甜度最高，現摘現吃免費嚐" },
+    { id: "cju-11", name: "山房山",             category: "景點", lat: 33.2446, lng: 126.3138, duration: "1hr",   tip: "圓頂火山岩突岩，山腰龍院寺廟俯瞰西南海岸，油菜花田春天最美" },
+    { id: "cju-12", name: "翰林公園",           category: "體驗", lat: 33.3988, lng: 126.2626, duration: "2hr",   tip: "植物園+熔岩洞複合園區，仙人掌溫室與亞熱帶植物是一大亮點" },
+    { id: "cju-13", name: "濟州東門市場",       category: "美食", lat: 33.5130, lng: 126.5228, duration: "1.5hr", tip: "傳統市場夜市從18:00開始，黑豬肉・魚糕・海女撈的鮑魚粥必點" },
+    { id: "cju-14", name: "비자림（榧子林）",   category: "景點", lat: 33.4939, lng: 126.8108, duration: "1.5hr", tip: "2,800棵千年榧樹森林步道，空氣清新，霧天更有仙境感，門票₩3,000" },
+    { id: "cju-15", name: "龍頭海岸",           category: "景點", lat: 33.5134, lng: 126.5119, duration: "1hr",   tip: "濟州市區就能走到的玄武岩海岸，黃昏夕陽倒影最美，免費入場" },
+  ],
 };
 
 const CODE_TO_CITY: Record<string, string> = {
   SEL: "首爾", TYO: "東京", OSA: "大阪", KYO: "京都", KBE: "神戶",
   BKK: "曼谷", SIN: "新加坡", HKG: "香港", OKA: "沖繩", SGN: "胡志明市", PUS: "釜山",
   DAD: "峴港", HAN: "河內", HOI: "會安", PQC: "富國島",
+  CTS: "札幌", CJU: "濟州島",
 };
 
 export const COUNTRY_CITIES: Record<string, string[]> = {
-  korea:     ["SEL", "PUS"],
-  japan:     ["TYO", "OSA", "KYO", "KBE", "OKA"],
+  korea:     ["SEL", "PUS", "CJU"],
+  japan:     ["TYO", "OSA", "KYO", "KBE", "OKA", "CTS"],
   thailand:  ["BKK"],
   singapore: ["SIN"],
   hongkong:  ["HKG"],
@@ -312,7 +349,7 @@ export const COUNTRY_CITIES: Record<string, string[]> = {
 
 export const COUNTRY_INFO: Record<string, { name: string; flag: string; center: [number, number]; zoom: number }> = {
   korea:     { name: "韓國",   flag: "🇰🇷", center: [36.5,  127.5],  zoom: 7  },
-  japan:     { name: "日本",   flag: "🇯🇵", center: [35.5,  136.0],  zoom: 6  },
+  japan:     { name: "日本",   flag: "🇯🇵", center: [37.0,  136.0],  zoom: 5  },
   thailand:  { name: "泰國",   flag: "🇹🇭", center: [13.7,  100.5],  zoom: 10 },
   singapore: { name: "新加坡", flag: "🇸🇬", center: [1.35,  103.82], zoom: 12 },
   hongkong:  { name: "香港",   flag: "🇭🇰", center: [22.33, 114.18], zoom: 11 },
