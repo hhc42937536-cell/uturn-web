@@ -155,7 +155,7 @@ export const CITY_SPOTS: Record<string, Spot[]> = {
     { id: "hkg-20", name: "深水埗布料街",       category: "購物", lat: 22.3310, lng: 114.1607, duration: "2hr",   tip: "布料・電子零件・港式老鋪，最道地香港生活" },
   ],
 
-  OKN: [
+  OKA: [
     { id: "okn-1",  name: "美麗海水族館",       category: "景點", lat: 26.6940, lng: 127.8779, duration: "3hr",   tip: "世界最大鯨鯊水槽，建議早上開館前抵達" },
     { id: "okn-2",  name: "首里城",             category: "景點", lat: 26.2169, lng: 127.7197, duration: "1.5hr", tip: "2019年火災後正在修復中，部分開放參觀" },
     { id: "okn-3",  name: "國際通",             category: "購物", lat: 26.2163, lng: 127.6868, duration: "2hr",   tip: "那霸必逛大街，Orion 啤酒、琉球玻璃必買" },
