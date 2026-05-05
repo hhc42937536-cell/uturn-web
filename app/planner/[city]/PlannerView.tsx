@@ -309,9 +309,31 @@ function PlanModal({
     saveAs(blob, `${city}行程計畫書.docx`);
   };
 
+  const captureRef = useRef<HTMLDivElement>(null);
+
+  const exportPdf = async () => {
+    const el = captureRef.current;
+    if (!el) return;
+    try {
+      const html2canvas = (await import("html2canvas")).default;
+      const { jsPDF } = await import("jspdf");
+      const canvas = await html2canvas(el, {
+        scale: 2, useCORS: true, backgroundColor: "#FFFDF8", logging: false,
+        width: el.scrollWidth, height: el.scrollHeight,
+        windowWidth: el.scrollWidth, windowHeight: el.scrollHeight,
+      });
+      const imgData = canvas.toDataURL("image/jpeg", 0.95);
+      const pdf = new jsPDF({ orientation: "portrait", unit: "px", format: [canvas.width / 2, canvas.height / 2] });
+      pdf.addImage(imgData, "JPEG", 0, 0, canvas.width / 2, canvas.height / 2);
+      pdf.save(`${city}行程計畫書.pdf`);
+    } catch (err) {
+      alert("匯出失敗：" + (err instanceof Error ? err.message : String(err)));
+    }
+  };
+
   return (
     <div className="fixed inset-0 z-[1100] overflow-y-auto bg-black/60 p-4" onClick={onClose}>
-      <div className="mx-auto mt-6 max-w-2xl rounded-[2rem] bg-[#FFFDF8] shadow-2xl" onClick={(e) => e.stopPropagation()}>
+      <div ref={captureRef} className="mx-auto mt-6 max-w-2xl rounded-[2rem] bg-[#FFFDF8] shadow-2xl" onClick={(e) => e.stopPropagation()}>
         {/* Modal header */}
         <div className="flex items-center justify-between border-b border-[#E8E0D5] px-8 py-5">
           <div>
@@ -320,8 +342,14 @@ function PlanModal({
           </div>
           <div className="flex gap-3">
             <button
-              onClick={exportDocx}
+              onClick={exportPdf}
               className="rounded-full border border-[#A86F5A] bg-[#B98774]/15 px-5 py-2 text-sm font-light text-[#7D5548] transition hover:bg-[#B98774]/25"
+            >
+              🖼 匯出 PDF
+            </button>
+            <button
+              onClick={exportDocx}
+              className="rounded-full border border-[#5A8AA8] bg-[#5A8AA8]/10 px-5 py-2 text-sm font-light text-[#3A6A88] transition hover:bg-[#5A8AA8]/20"
             >
               📄 下載 .docx
             </button>
