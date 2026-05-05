@@ -105,6 +105,57 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* ── 網頁限定功能 ── */}
+      <section className="bg-[#EDE7DD] py-24">
+        <div className="mx-auto max-w-4xl px-6">
+          <p className="mb-3 text-center text-xs font-light uppercase tracking-[0.45em] text-[#8FA39A]">Web Exclusive</p>
+          <h2 className="mb-3 text-center text-2xl font-light tracking-wide">LINE Bot 做不到的事</h2>
+          <p className="mb-12 text-center text-sm font-light text-[#8A7F73]">這幾個功能需要螢幕空間，只在網頁版提供</p>
+          <div className="grid gap-6 sm:grid-cols-2">
+            {[
+              {
+                icon: "🗺",
+                title: "地圖式行程規劃",
+                desc: "把景點拖進每一天，地圖即時顯示位置分佈，視覺化安排不走冤枉路。",
+                href: "/planner/首爾",
+                cta: "開始拖拉規劃",
+              },
+              {
+                icon: "🛂",
+                title: "台灣護照即時情報",
+                desc: "選目的地，直接看簽證、海關禁品、文化禁忌、SIM 卡推薦、大使館電話。",
+                href: "/visa",
+                cta: "查詢護照情報",
+              },
+              {
+                icon: "✈️",
+                title: "南部出發比較器",
+                desc: "KHH / RMQ / TNN vs 桃園，幫你算清楚哪個出發方式最省錢、最省時。",
+                href: "/compare",
+                cta: "比較出發方案",
+              },
+              {
+                icon: "📄",
+                title: "計畫書工作室",
+                desc: "所見即所得編輯每日行程，一鍵匯出含封面、簽證、打包清單的 .docx。",
+                href: "/docx",
+                cta: "製作計畫書",
+              },
+            ].map(({ icon, title, desc, href, cta }) => (
+              <a key={href} href={href}
+                className="group rounded-[2rem] border border-[#D8D2C7] bg-[#FBF8F1] p-8 transition hover:border-[#A86F5A] hover:bg-[#FFFDF8] block">
+                <div className="mb-4 text-3xl">{icon}</div>
+                <h3 className="mb-2 text-lg font-light tracking-wide text-[#4B4037]">{title}</h3>
+                <p className="mb-5 text-sm font-light leading-7 text-[#6F675F]">{desc}</p>
+                <span className="text-xs font-light tracking-widest text-[#A86F5A] transition group-hover:underline">
+                  {cta} →
+                </span>
+              </a>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* ── 差異化說明 ── */}
       <section className="bg-[#3A2E26] py-20 text-white">
         <div className="mx-auto max-w-3xl px-6 text-center">
