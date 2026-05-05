@@ -1,10 +1,11 @@
 export type Spot = {
   id: string;
   name: string;
+  city?: string;
   category: "景點" | "美食" | "購物" | "體驗";
   lat: number;
   lng: number;
-  duration: string;  // 建議停留時間
+  duration: string;
   tip: string;
 };
 
@@ -224,3 +225,33 @@ export const CITY_SPOTS: Record<string, Spot[]> = {
     { id: "sgn-20", name: "靈應寺",             category: "景點", lat: 10.8027, lng: 106.7196, duration: "1hr",   tip: "西貢著名佛寺，觀音像俯瞰全市" },
   ],
 };
+
+const CODE_TO_CITY: Record<string, string> = {
+  SEL: "首爾", TYO: "東京", OSA: "大阪", BKK: "曼谷",
+  SIN: "新加坡", HKG: "香港", OKA: "沖繩", SGN: "胡志明市", PUS: "釜山",
+};
+
+export const COUNTRY_CITIES: Record<string, string[]> = {
+  korea:     ["SEL", "PUS"],
+  japan:     ["TYO", "OSA", "OKA"],
+  thailand:  ["BKK"],
+  singapore: ["SIN"],
+  hongkong:  ["HKG"],
+  vietnam:   ["SGN"],
+};
+
+export const COUNTRY_INFO: Record<string, { name: string; flag: string; center: [number, number]; zoom: number }> = {
+  korea:     { name: "韓國",   flag: "🇰🇷", center: [36.5,  127.5],  zoom: 7  },
+  japan:     { name: "日本",   flag: "🇯🇵", center: [35.5,  136.0],  zoom: 6  },
+  thailand:  { name: "泰國",   flag: "🇹🇭", center: [13.7,  100.5],  zoom: 10 },
+  singapore: { name: "新加坡", flag: "🇸🇬", center: [1.35,  103.82], zoom: 12 },
+  hongkong:  { name: "香港",   flag: "🇭🇰", center: [22.33, 114.18], zoom: 11 },
+  vietnam:   { name: "越南",   flag: "🇻🇳", center: [10.82, 106.63], zoom: 10 },
+};
+
+export function getCountrySpots(country: string): Spot[] {
+  const cities = COUNTRY_CITIES[country] ?? [];
+  return cities.flatMap((code) =>
+    (CITY_SPOTS[code] ?? []).map((spot) => ({ ...spot, city: CODE_TO_CITY[code] ?? code }))
+  );
+}

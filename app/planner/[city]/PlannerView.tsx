@@ -7,8 +7,7 @@ import {
   DragOverlay, PointerSensor, useSensor, useSensors,
   useDroppable, useDraggable,
 } from "@dnd-kit/core";
-import { CITY_SPOTS, type Spot } from "../../lib/spotData";
-import { CITY_CODE, CITY_DATA } from "../../lib/cityData";
+import { getCountrySpots, COUNTRY_INFO, type Spot } from "../../lib/spotData";
 
 function buildGoogleMapsUrl(spots: Spot[]): string {
   if (spots.length === 0) return "";
@@ -34,12 +33,18 @@ function SpotCard({ spot, mini = false }: { spot: Spot; mini?: boolean }) {
       <div className="font-medium leading-tight">{spot.name}</div>
       {!mini && (
         <>
-          <div className="mt-0.5 text-xs opacity-70">{spot.category} · {spot.duration}</div>
+          <div className="mt-0.5 flex items-center gap-1 text-xs opacity-70">
+            {spot.city && <span className="rounded-full bg-black/10 px-1.5 py-0.5 text-[10px]">{spot.city}</span>}
+            <span>{spot.category} · {spot.duration}</span>
+          </div>
           <div className="mt-1 text-xs opacity-60 line-clamp-2 leading-relaxed">{spot.tip}</div>
         </>
       )}
       {mini && (
-        <div className="mt-0.5 text-[10px] opacity-60">{spot.category} · {spot.duration}</div>
+        <div className="mt-0.5 text-[10px] opacity-60">
+          {spot.city && <span className="mr-1 rounded-full bg-black/10 px-1 py-0.5">{spot.city}</span>}
+          {spot.category} · {spot.duration}
+        </div>
       )}
     </div>
   );
@@ -104,7 +109,7 @@ function DayColumn({ day, spots, onRemove }: { day: number; spots: Spot[]; onRem
   );
 }
 
-function CityMap({ spots, dayMap, defaultCenter }: { spots: Spot[]; dayMap: Map<string, number>; defaultCenter: [number, number] }) {
+function CityMap({ spots, dayMap, defaultCenter, defaultZoom }: { spots: Spot[]; dayMap: Map<string, number>; defaultCenter: [number, number]; defaultZoom: number }) {
   const mapId = "planner-map";
   useEffect(() => {
     let mapInstance: ReturnType<typeof import("leaflet")["map"]> | null = null;
@@ -113,8 +118,7 @@ function CityMap({ spots, dayMap, defaultCenter }: { spots: Spot[]; dayMap: Map<
       await import("leaflet/dist/leaflet.css");
       const el = document.getElementById(mapId);
       if (!el || (el as HTMLElement & { _leaflet_id?: number })._leaflet_id) return;
-      const first = spots[0];
-      mapInstance = L.map(mapId).setView(first ? [first.lat, first.lng] : defaultCenter, 13);
+      mapInstance = L.map(mapId).setView(defaultCenter, defaultZoom);
       L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
         attribution: "© OpenStreetMap contributors",
       }).addTo(mapInstance);
@@ -175,7 +179,7 @@ function PlanModal({
         pdf.addImage(imgData, "JPEG", 0, -yOffset, pdfW, totalH);
         yOffset += pdfH;
       }
-      pdf.save(`${city}行程規劃.pdf`);
+      pdf.save(`${city}行程規劃.pdf`);  // city = countryName here
     } finally {
       setExporting(false);
     }
@@ -287,9 +291,11 @@ function PlanModal({
 
 // ── Main ──────────────────────────────────────────────────────────────────────
 
-export default function PlannerView({ city, code, flag }: { city: string; code: string; flag: string }) {
+export default function PlannerView({ country, countryName, flag, center, mapZoom }: {
+  country: string; countryName: string; flag: string; center: [number, number]; mapZoom: number;
+}) {
   const router = useRouter();
-  const allSpots = CITY_SPOTS[code] ?? [];
+  const allSpots = getCountrySpots(country);
   const [days, setDays] = useState(5);
   const [assigned, setAssigned] = useState<Map<string, number>>(new Map());
   const [activeSpot, setActiveSpot] = useState<Spot | null>(null);
@@ -330,12 +336,12 @@ export default function PlannerView({ city, code, flag }: { city: string; code: 
             <div className="flex items-center gap-2">
               <span className="text-xl">{flag}</span>
               <select
-                value={city}
-                onChange={(e) => router.push(`/planner/${encodeURIComponent(e.target.value)}`)}
+                value={country}
+                onChange={(e) => router.push(`/planner/${e.target.value}`)}
                 className="rounded-xl border border-[#D8D2C7] bg-[#F7F3EC] px-3 py-1.5 text-base font-light tracking-wide text-[#4B4037] outline-none focus:border-[#A86F5A]"
               >
-                {Object.keys(CITY_CODE).map((c) => (
-                  <option key={c} value={c}>{CITY_DATA[CITY_CODE[c]]?.flag} {c}</option>
+                {Object.entries(COUNTRY_INFO).map(([slug, info]) => (
+                  <option key={slug} value={slug}>{info.flag} {info.name}</option>
                 ))}
               </select>
               <span className="text-sm font-light text-[#8A7F73]">行程規劃</span>
@@ -379,7 +385,8 @@ export default function PlannerView({ city, code, flag }: { city: string; code: 
               <CityMap
                 spots={assignedSpots}
                 dayMap={assigned}
-                defaultCenter={allSpots[0] ? [allSpots[0].lat, allSpots[0].lng] : [25.04, 121.51]}
+                defaultCenter={center}
+                defaultZoom={mapZoom}
               />
               {assignedSpots.length === 0 && (
                 <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
@@ -417,7 +424,7 @@ export default function PlannerView({ city, code, flag }: { city: string; code: 
 
       {showPlan && (
         <PlanModal
-          city={city}
+          city={countryName}
           flag={flag}
           days={days}
           allSpots={allSpots}

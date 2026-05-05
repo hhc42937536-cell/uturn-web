@@ -19,7 +19,7 @@ const STEPS = [
 ];
 
 const WEB_ONLY = [
-  { icon: "🗺", title: "地圖式行程規劃", desc: "拖拉景點到每一天，地圖即時顯示分佈，不走冤枉路。", href: "/planner/首爾" },
+  { icon: "🗺", title: "跨城市地圖規劃", desc: "選國家，把首爾+釜山或東京+大阪同時排進行程，地圖即時顯示城市間分佈。", href: "/planner/korea" },
   { icon: "🛂", title: "台灣護照即時情報", desc: "選目的地，直接看簽證、海關禁品、SIM 卡推薦、大使館電話。", href: "/visa" },
   { icon: "✈️", title: "南部出發比較器", desc: "KHH / RMQ / TNN vs 桃園，算清楚哪個方案最省錢省時。", href: "/compare" },
 ];
