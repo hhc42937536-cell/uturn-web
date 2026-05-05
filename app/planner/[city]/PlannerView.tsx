@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import {
   DndContext, DragEndEvent, DragStartEvent,
@@ -21,35 +21,53 @@ function buildGoogleMapsUrl(spots: Spot[]): string {
 }
 
 const AREA_PALETTE = [
-  "bg-blue-50 border-blue-200 text-blue-900",
-  "bg-orange-50 border-orange-200 text-orange-900",
-  "bg-green-50 border-green-200 text-green-900",
-  "bg-purple-50 border-purple-200 text-purple-900",
-  "bg-teal-50 border-teal-200 text-teal-900",
-  "bg-rose-50 border-rose-200 text-rose-900",
-  "bg-yellow-50 border-yellow-200 text-yellow-900",
-  "bg-indigo-50 border-indigo-200 text-indigo-900",
+  { bg: "bg-blue-100 border-blue-300 text-blue-900",    dot: "bg-blue-400",    hex: "#60A5FA" },
+  { bg: "bg-orange-100 border-orange-300 text-orange-900", dot: "bg-orange-400", hex: "#FB923C" },
+  { bg: "bg-emerald-100 border-emerald-300 text-emerald-900", dot: "bg-emerald-500", hex: "#34D399" },
+  { bg: "bg-purple-100 border-purple-300 text-purple-900", dot: "bg-purple-400",  hex: "#C084FC" },
+  { bg: "bg-rose-100 border-rose-300 text-rose-900",    dot: "bg-rose-400",    hex: "#FB7185" },
+  { bg: "bg-amber-100 border-amber-300 text-amber-900", dot: "bg-amber-400",   hex: "#FBBF24" },
+  { bg: "bg-cyan-100 border-cyan-300 text-cyan-900",    dot: "bg-cyan-400",    hex: "#22D3EE" },
+  { bg: "bg-pink-100 border-pink-300 text-pink-900",    dot: "bg-pink-400",    hex: "#F472B6" },
+  { bg: "bg-lime-100 border-lime-300 text-lime-900",    dot: "bg-lime-500",    hex: "#84CC16" },
+  { bg: "bg-sky-100 border-sky-300 text-sky-900",       dot: "bg-sky-400",     hex: "#38BDF8" },
+  { bg: "bg-violet-100 border-violet-300 text-violet-900", dot: "bg-violet-400", hex: "#818CF8" },
+  { bg: "bg-red-100 border-red-300 text-red-900",       dot: "bg-red-400",     hex: "#F87171" },
 ];
 
-const AREA_DOT = [
-  "bg-blue-400", "bg-orange-400", "bg-green-500",
-  "bg-purple-400", "bg-teal-400", "bg-rose-400",
-  "bg-yellow-400", "bg-indigo-400",
-];
-
-function getAreaIndex(spot: Spot): number {
-  const key = `${Math.floor(spot.lat * 40)},${Math.floor(spot.lng * 40)}`;
-  let h = 0;
-  for (const c of key) h = (h * 31 + c.charCodeAt(0)) & 0xffff;
-  return h % AREA_PALETTE.length;
+function haversineKm(lat1: number, lng1: number, lat2: number, lng2: number): number {
+  const R = 6371;
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLng = (lng2 - lng1) * Math.PI / 180;
+  const a = Math.sin(dLat / 2) ** 2 + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLng / 2) ** 2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
-function SpotCard({ spot, mini = false }: { spot: Spot; mini?: boolean }) {
-  const ai = getAreaIndex(spot);
+function buildClusterMap(spots: Spot[], thresholdKm = 3): Map<string, number> {
+  const centroids: { lat: number; lng: number }[] = [];
+  const result = new Map<string, number>();
+  for (const spot of spots) {
+    let nearest = -1, nearestDist = Infinity;
+    centroids.forEach((c, i) => {
+      const d = haversineKm(spot.lat, spot.lng, c.lat, c.lng);
+      if (d < nearestDist) { nearestDist = d; nearest = i; }
+    });
+    if (nearest >= 0 && nearestDist <= thresholdKm) {
+      result.set(spot.id, nearest);
+    } else {
+      result.set(spot.id, centroids.length);
+      centroids.push({ lat: spot.lat, lng: spot.lng });
+    }
+  }
+  return result;
+}
+
+function SpotCard({ spot, areaIndex, mini = false }: { spot: Spot; areaIndex: number; mini?: boolean }) {
+  const p = AREA_PALETTE[areaIndex % AREA_PALETTE.length];
   return (
-    <div className={`rounded-xl border px-3 py-2 text-sm ${AREA_PALETTE[ai]} ${mini ? "" : "cursor-grab active:cursor-grabbing"}`}>
+    <div className={`rounded-xl border px-3 py-2 text-sm ${p.bg} ${mini ? "" : "cursor-grab active:cursor-grabbing"}`}>
       <div className="flex items-center gap-1.5 font-medium leading-tight">
-        <span className={`inline-block h-2 w-2 flex-shrink-0 rounded-full ${AREA_DOT[ai]}`} />
+        <span className={`inline-block h-2 w-2 flex-shrink-0 rounded-full ${p.dot}`} />
         {spot.name}
       </div>
       {!mini && (
@@ -71,16 +89,16 @@ function SpotCard({ spot, mini = false }: { spot: Spot; mini?: boolean }) {
   );
 }
 
-function DraggableSpot({ spot }: { spot: Spot }) {
+function DraggableSpot({ spot, areaIndex }: { spot: Spot; areaIndex: number }) {
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({ id: spot.id, data: { spot } });
   return (
     <div ref={setNodeRef} {...attributes} {...listeners} style={{ opacity: isDragging ? 0.4 : 1 }}>
-      <SpotCard spot={spot} />
+      <SpotCard spot={spot} areaIndex={areaIndex} />
     </div>
   );
 }
 
-function DayColumn({ day, spots, onRemove }: { day: number; spots: Spot[]; onRemove: (id: string) => void }) {
+function DayColumn({ day, spots, onRemove, clusterMap }: { day: number; spots: Spot[]; onRemove: (id: string) => void; clusterMap: Map<string, number> }) {
   const { setNodeRef, isOver } = useDroppable({ id: `day-${day}` });
   return (
     <div
@@ -110,7 +128,7 @@ function DayColumn({ day, spots, onRemove }: { day: number; spots: Spot[]; onRem
       )}
       {spots.map((s) => (
         <div key={s.id} className="group relative">
-          <SpotCard spot={s} mini />
+          <SpotCard spot={s} areaIndex={clusterMap.get(s.id) ?? 0} mini />
           <button
             onClick={() => onRemove(s.id)}
             className="absolute -right-1 -top-1 hidden h-4 w-4 items-center justify-center rounded-full bg-red-400 text-[9px] text-white group-hover:flex"
@@ -130,7 +148,7 @@ function DayColumn({ day, spots, onRemove }: { day: number; spots: Spot[]; onRem
   );
 }
 
-function CityMap({ spots, dayMap, defaultCenter, defaultZoom }: { spots: Spot[]; dayMap: Map<string, number>; defaultCenter: [number, number]; defaultZoom: number }) {
+function CityMap({ spots, dayMap, clusterMap, defaultCenter, defaultZoom }: { spots: Spot[]; dayMap: Map<string, number>; clusterMap: Map<string, number>; defaultCenter: [number, number]; defaultZoom: number }) {
   const mapId = "planner-map";
   useEffect(() => {
     let mapInstance: ReturnType<typeof import("leaflet")["map"]> | null = null;
@@ -143,17 +161,15 @@ function CityMap({ spots, dayMap, defaultCenter, defaultZoom }: { spots: Spot[];
       L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
         attribution: "© OpenStreetMap contributors",
       }).addTo(mapInstance);
-      const AREA_HEX = ["#60A5FA","#FB923C","#4ADE80","#C084FC","#2DD4BF","#FB7185","#FACC15","#818CF8"];
       const DAY_COLORS = ["#A86F5A", "#5A8AA8", "#5AA87A", "#A85A8A", "#8AA85A", "#A8A05A", "#5A5AA8"];
       spots.forEach((spot) => {
         const dayNum = dayMap.get(spot.id);
-        const key = `${Math.floor(spot.lat * 40)},${Math.floor(spot.lng * 40)}`;
-        let h = 0; for (const c of key) h = (h * 31 + c.charCodeAt(0)) & 0xffff;
-        const areaColor = AREA_HEX[h % AREA_HEX.length];
-        const dayColor = dayNum !== undefined ? DAY_COLORS[(dayNum - 1) % DAY_COLORS.length] : areaColor;
+        const ci = clusterMap.get(spot.id) ?? 0;
+        const areaHex = AREA_PALETTE[ci % AREA_PALETTE.length].hex;
+        const fillColor = dayNum !== undefined ? DAY_COLORS[(dayNum - 1) % DAY_COLORS.length] : areaHex;
         const icon = L.divIcon({
           className: "",
-          html: `<div style="background:${dayColor};width:28px;height:28px;border-radius:50%;border:3px solid ${areaColor};display:flex;align-items:center;justify-content:center;color:white;font-size:11px;font-weight:700;box-shadow:0 2px 6px rgba(0,0,0,0.25)">${dayNum ?? "·"}</div>`,
+          html: `<div style="background:${fillColor};width:28px;height:28px;border-radius:50%;border:3px solid ${areaHex};display:flex;align-items:center;justify-content:center;color:white;font-size:11px;font-weight:700;box-shadow:0 2px 6px rgba(0,0,0,0.25)">${dayNum ?? "·"}</div>`,
           iconSize: [28, 28], iconAnchor: [14, 14],
         });
         L.marker([spot.lat, spot.lng], { icon })
@@ -321,6 +337,7 @@ export default function PlannerView({ country, countryName, flag, center, mapZoo
 }) {
   const router = useRouter();
   const allSpots = getCountrySpots(country);
+  const clusterMap = useMemo(() => buildClusterMap(allSpots), [country]);
   const cities = [...new Set(allSpots.map((s) => s.city).filter(Boolean))] as string[];
   const [cityFilter, setCityFilter] = useState<string>("all");
   const [days, setDays] = useState(5);
@@ -419,7 +436,7 @@ export default function PlannerView({ country, countryName, flag, center, mapZoo
                   {cityFilter === "all" ? "全部排完了！" : "這個城市的景點都排完了"}
                 </p>
               )}
-              {unassigned.map((s) => <DraggableSpot key={s.id} spot={s} />)}
+              {unassigned.map((s) => <DraggableSpot key={s.id} spot={s} areaIndex={clusterMap.get(s.id) ?? 0} />)}
             </aside>
 
             {/* 中欄：地圖 */}
@@ -427,6 +444,7 @@ export default function PlannerView({ country, countryName, flag, center, mapZoo
               <CityMap
                 spots={assignedSpots}
                 dayMap={assigned}
+                clusterMap={clusterMap}
                 defaultCenter={center}
                 defaultZoom={mapZoom}
               />
@@ -453,6 +471,7 @@ export default function PlannerView({ country, countryName, flag, center, mapZoo
                   day={day}
                   spots={spotsForDay(day)}
                   onRemove={removeFromDay}
+                  clusterMap={clusterMap}
                 />
               ))}
             </aside>
@@ -460,7 +479,7 @@ export default function PlannerView({ country, countryName, flag, center, mapZoo
         </div>
 
         <DragOverlay>
-          {activeSpot && <SpotCard spot={activeSpot} />}
+          {activeSpot && <SpotCard spot={activeSpot} areaIndex={clusterMap.get(activeSpot.id) ?? 0} />}
         </DragOverlay>
       </DndContext>
 
