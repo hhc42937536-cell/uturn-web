@@ -315,16 +315,14 @@ function PlanModal({
     const el = captureRef.current;
     if (!el) return;
     try {
-      const html2canvas = (await import("html2canvas")).default;
+      const { toJpeg } = await import("html-to-image");
       const { jsPDF } = await import("jspdf");
-      const canvas = await html2canvas(el, {
-        scale: 2, useCORS: true, backgroundColor: "#FFFDF8", logging: false,
-        width: el.scrollWidth, height: el.scrollHeight,
-        windowWidth: el.scrollWidth, windowHeight: el.scrollHeight,
-      });
-      const imgData = canvas.toDataURL("image/jpeg", 0.95);
-      const pdf = new jsPDF({ orientation: "portrait", unit: "px", format: [canvas.width / 2, canvas.height / 2] });
-      pdf.addImage(imgData, "JPEG", 0, 0, canvas.width / 2, canvas.height / 2);
+      const dataUrl = await toJpeg(el, { quality: 0.95, backgroundColor: "#FFFDF8", pixelRatio: 2 });
+      const img = new Image();
+      img.src = dataUrl;
+      await new Promise((r) => { img.onload = r; });
+      const pdf = new jsPDF({ orientation: "portrait", unit: "px", format: [img.width / 2, img.height / 2] });
+      pdf.addImage(dataUrl, "JPEG", 0, 0, img.width / 2, img.height / 2);
       pdf.save(`${city}行程計畫書.pdf`);
     } catch (err) {
       alert("匯出失敗：" + (err instanceof Error ? err.message : String(err)));
