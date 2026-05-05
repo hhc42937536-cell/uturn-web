@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { buildAndDownloadDocx } from "@/app/lib/buildDocx";
 
 const DESTINATIONS = ["首爾", "東京", "大阪", "沖繩", "釜山", "曼谷", "新加坡", "香港", "胡志明市", "吉隆坡"];
 const DEP_CITIES = ["高雄", "台北", "台中", "台南"];
@@ -66,7 +67,6 @@ function getWeekday(dateStr: string) {
 
 export default function DocxView() {
   const router = useRouter();
-  const printRef = useRef<HTMLDivElement>(null);
   const [step, setStep] = useState<"form" | "edit" | "preview">("form");
   const [exporting, setExporting] = useState(false);
 
@@ -89,24 +89,9 @@ export default function DocxView() {
   };
 
   const handleExport = async () => {
-    if (!printRef.current) return;
     setExporting(true);
     try {
-      const html2canvas = (await import("html2canvas")).default;
-      const { jsPDF } = await import("jspdf");
-      const el = printRef.current;
-      const canvas = await html2canvas(el, { scale: 1.8, useCORS: true, backgroundColor: "#FBF8F1" });
-      const pdf = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
-      const imgW = 210;
-      const imgH = (canvas.height * imgW) / canvas.width;
-      let y = 0;
-      const pageH = 297;
-      while (y < imgH) {
-        if (y > 0) pdf.addPage();
-        pdf.addImage(canvas.toDataURL("image/jpeg", 0.9), "JPEG", 0, -y, imgW, imgH);
-        y += pageH;
-      }
-      pdf.save(`${form.destination}旅遊計畫書.pdf`);
+      await buildAndDownloadDocx(form, days);
     } finally {
       setExporting(false);
     }
@@ -135,7 +120,7 @@ export default function DocxView() {
               <p className="mb-2 text-xs font-light uppercase tracking-[0.45em] text-[#8FA39A]">Trip Planner · Document Studio</p>
               <h1 className="text-3xl font-light tracking-wide">製作你的<br className="sm:hidden" />旅遊計畫書</h1>
               <p className="mt-3 text-sm font-light leading-7 text-[#6F675F]">
-                填寫旅遊資訊，逐日記錄行程，一鍵匯出 PDF 計畫書，含封面、簽證提醒與緊急聯絡。
+                填寫旅遊資訊，逐日記錄行程，一鍵匯出專業 .docx 計畫書，含封面、目錄、每日行程卡片、海關簽證、打包清單與緊急聯絡。
               </p>
             </div>
 
@@ -253,12 +238,12 @@ export default function DocxView() {
               <h2 className="text-2xl font-light tracking-wide">預覽計畫書</h2>
               <button onClick={handleExport} disabled={exporting}
                 className="rounded-full border border-[#A86F5A] bg-[#B98774]/15 px-8 py-3 text-sm font-light tracking-[0.15em] text-[#7D5548] transition hover:bg-[#B98774]/25 disabled:opacity-60">
-                {exporting ? "匯出中…" : "📄 下載 PDF"}
+                {exporting ? "產生中…" : "📄 下載 .docx"}
               </button>
             </div>
 
             {/* ── Printable Document ── */}
-            <div ref={printRef} className="rounded-[2rem] border border-[#D8D2C7] bg-[#FBF8F1] overflow-hidden">
+            <div className="rounded-[2rem] border border-[#D8D2C7] bg-[#FBF8F1] overflow-hidden">
 
               {/* Cover */}
               <div className="bg-[#3A2E26] px-10 py-16 text-center text-white">
