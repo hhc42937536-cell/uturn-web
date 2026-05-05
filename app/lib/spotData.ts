@@ -225,6 +225,53 @@ export const CITY_SPOTS: Record<string, Spot[]> = {
     { id: "sgn-20", name: "靈應寺",             category: "景點", lat: 10.8027, lng: 106.7196, duration: "1hr",   tip: "西貢著名佛寺，觀音像俯瞰全市" },
   ],
 
+  DAD: [
+    { id: "dad-1",  name: "龍橋",               category: "景點", lat: 16.0614, lng: 108.2276, duration: "1hr",   tip: "週末晚上9點噴火噴水秀，免費觀賞，提前1小時佔位" },
+    { id: "dad-2",  name: "峴港大教堂",         category: "景點", lat: 16.0678, lng: 108.2243, duration: "0.5hr", tip: "法國殖民時期粉紅教堂，外牆壁畫是最佳拍照點" },
+    { id: "dad-3",  name: "美溪海灘",           category: "體驗", lat: 16.0544, lng: 108.2473, duration: "3hr",   tip: "峴港最長白沙灘，早晨6-8點有當地人晨運，海水清澈適合游泳" },
+    { id: "dad-4",  name: "五行山",             category: "景點", lat: 15.9733, lng: 108.2618, duration: "2hr",   tip: "五座大理石山，搭電梯（2萬越盾）省力，山洞佛像必看" },
+    { id: "dad-5",  name: "靈應寺",             category: "景點", lat: 16.1093, lng: 108.2810, duration: "1.5hr", tip: "山茶半島頂端，67m白色觀音像，可俯瞰整個峴港灣" },
+    { id: "dad-6",  name: "韓市場",             category: "購物", lat: 16.0706, lng: 108.2237, duration: "1.5hr", tip: "峴港最大傳統市場，腰果・咖啡・燈籠最便宜，需砍價" },
+    { id: "dad-7",  name: "巴拿山纜車",         category: "體驗", lat: 15.9960, lng: 107.9920, duration: "全天",  tip: "世界最長纜車，山頂法式村落+金手橋，早去避下午霧" },
+    { id: "dad-8",  name: "峴港夜市",           category: "美食", lat: 16.0564, lng: 108.2221, duration: "2hr",   tip: "An Thuong夜市，燒烤海鮮・越南煎餅・甘蔗汁一條街" },
+    { id: "dad-9",  name: "峴港海鮮街",         category: "美食", lat: 16.0650, lng: 108.2300, duration: "1.5hr", tip: "Tran Phu路海鮮餐廳密集，自選活海鮮現烤，龍蝦必點" },
+  ],
+
+  HAN: [
+    { id: "han-1",  name: "還劍湖",             category: "景點", lat: 21.0285, lng: 105.8542, duration: "1hr",   tip: "河內市中心地標，清晨太極拳・傍晚散步，龜塔在湖中間" },
+    { id: "han-2",  name: "胡志明陵寢",         category: "景點", lat: 21.0368, lng: 105.8352, duration: "1.5hr", tip: "需提前預約，衣著要莊重（長褲長袖），週一五不開放" },
+    { id: "han-3",  name: "文廟",               category: "景點", lat: 21.0277, lng: 105.8354, duration: "1hr",   tip: "越南第一所大學遺址，1070年建，科舉考試石碑是國寶" },
+    { id: "han-4",  name: "河內古街36條",       category: "體驗", lat: 21.0338, lng: 105.8490, duration: "2hr",   tip: "每條街賣一種商品（絲綢街・紙街・銀街），週末封街步行" },
+    { id: "han-5",  name: "火車街",             category: "景點", lat: 21.0272, lng: 105.8463, duration: "1hr",   tip: "火車通過時距民宅僅1m，正確觀看時間需查當天時刻表" },
+    { id: "han-6",  name: "西湖",               category: "景點", lat: 21.0542, lng: 105.8231, duration: "1.5hr", tip: "河內最大湖，傍晚騎車環湖最愜意，湖邊蓮花茶館必試" },
+    { id: "han-7",  name: "升龍皇城",           category: "景點", lat: 21.0353, lng: 105.8388, duration: "1.5hr", tip: "UNESCO世界遺產，越南千年首都宮殿遺址，地下考古區必看" },
+    { id: "han-8",  name: "同春市場",           category: "購物", lat: 21.0322, lng: 105.8497, duration: "1.5hr", tip: "河內最大室內市場，越南傳統服飾・手工藝品・香料超齊全" },
+    { id: "han-9",  name: "河內夜市",           category: "美食", lat: 21.0350, lng: 105.8510, duration: "2hr",   tip: "週五六日夜晚封街，烤肉串・螺蛳粉・越南甜品一次滿足" },
+    { id: "han-10", name: "下龍灣一日遊",       category: "體驗", lat: 20.9101, lng: 107.1839, duration: "全天",  tip: "從河內巴士3hr，UNESCO奇景，包含遊船・溶洞・划獨木舟" },
+  ],
+
+  HOI: [
+    { id: "hoi-1",  name: "會安古城",           category: "景點", lat: 15.8800, lng: 108.3350, duration: "3hr",   tip: "UNESCO世界遺產，買聯票可入5個景點，傍晚燈籠點亮最美" },
+    { id: "hoi-2",  name: "日本橋",             category: "景點", lat: 15.8774, lng: 108.3262, duration: "0.5hr", tip: "400年歷史廊橋，進入需用古城聯票，早晨人少最佳拍照時機" },
+    { id: "hoi-3",  name: "廣肇會館",           category: "景點", lat: 15.8772, lng: 108.3285, duration: "1hr",   tip: "華人移民建造的廟宇，天后廟精雕細琢，香火繚繞氣氛古樸" },
+    { id: "hoi-4",  name: "訂製服裝",           category: "體驗", lat: 15.8795, lng: 108.3320, duration: "2hr",   tip: "24小時快速訂製，帶參考圖給裁縫，試衣2-3次確認版型" },
+    { id: "hoi-5",  name: "會安夜市",           category: "美食", lat: 15.8779, lng: 108.3275, duration: "2hr",   tip: "Thu Bon河畔夜市，白玫瑰餃・炸雲吞・cao lau是會安三寶" },
+    { id: "hoi-6",  name: "安邦海灘",           category: "體驗", lat: 15.9176, lng: 108.3627, duration: "3hr",   tip: "距古城4km，安靜白沙灘，比峴港美溪更少觀光客" },
+    { id: "hoi-7",  name: "越南料理課",         category: "體驗", lat: 15.8810, lng: 108.3340, duration: "3hr",   tip: "市場採購+烹飪課約$25，學做河粉・春捲，含午餐" },
+    { id: "hoi-8",  name: "美山聖地",           category: "景點", lat: 15.7683, lng: 108.1250, duration: "半天",  tip: "占婆王朝印度教神廟遺址，UNESCO遺產，距會安45分鐘車程" },
+  ],
+
+  PQC: [
+    { id: "pqc-1",  name: "長灘",               category: "體驗", lat: 10.2897, lng: 103.9840, duration: "3hr",   tip: "富國島最長海灘，夕陽從海平面沉落，傍晚5點最美" },
+    { id: "pqc-2",  name: "翁浪海灘",           category: "體驗", lat: 10.3267, lng: 103.8533, duration: "3hr",   tip: "島西北岸未開發海灘，海水透明度極高，珊瑚礁浮潛聖地" },
+    { id: "pqc-3",  name: "Sao海灘",            category: "體驗", lat: 10.0667, lng: 104.0167, duration: "3hr",   tip: "島南端，白沙如粉末，東岸最美海灘，遠離市區需包車" },
+    { id: "pqc-4",  name: "翁朱夜市",           category: "美食", lat: 10.2175, lng: 103.9625, duration: "2hr",   tip: "富國島最熱鬧夜市，海鮮燒烤・胡椒蟹・越南煎餅，砍價必備" },
+    { id: "pqc-5",  name: "VinWonders樂園",     category: "體驗", lat: 10.3400, lng: 103.8600, duration: "全天",  tip: "東南亞最大主題樂園，纜車跨海到北島，水上樂園+遊樂設施" },
+    { id: "pqc-6",  name: "Grand World",         category: "體驗", lat: 10.3350, lng: 103.8620, duration: "2hr",   tip: "夜間燈光秀+威尼斯水道，各國美食街，夜晚必訪" },
+    { id: "pqc-7",  name: "胡椒農場",           category: "體驗", lat: 10.2500, lng: 103.9700, duration: "1hr",   tip: "富國島特產胡椒，農場免費參觀，直購比市區便宜30%" },
+    { id: "pqc-8",  name: "浮潛珊瑚礁",         category: "體驗", lat: 10.1800, lng: 103.9500, duration: "半天",  tip: "南島群島（An Thoi群島）浮潛，出發點在翁朱碼頭，$15起" },
+  ],
+
   KYO: [
     { id: "kyo-1",  name: "伏見稻荷大社",       category: "景點", lat: 34.9671, lng: 135.7727, duration: "2hr",   tip: "千本鳥居最佳拍攝時段是早上6點前，人少且光線美" },
     { id: "kyo-2",  name: "嵐山竹林",           category: "景點", lat: 35.0168, lng: 135.6717, duration: "1.5hr", tip: "搭嵐電從京都站25分鐘，竹林走道早晨最靜謐" },
@@ -251,6 +298,7 @@ export const CITY_SPOTS: Record<string, Spot[]> = {
 const CODE_TO_CITY: Record<string, string> = {
   SEL: "首爾", TYO: "東京", OSA: "大阪", KYO: "京都", KBE: "神戶",
   BKK: "曼谷", SIN: "新加坡", HKG: "香港", OKA: "沖繩", SGN: "胡志明市", PUS: "釜山",
+  DAD: "峴港", HAN: "河內", HOI: "會安", PQC: "富國島",
 };
 
 export const COUNTRY_CITIES: Record<string, string[]> = {
@@ -259,7 +307,7 @@ export const COUNTRY_CITIES: Record<string, string[]> = {
   thailand:  ["BKK"],
   singapore: ["SIN"],
   hongkong:  ["HKG"],
-  vietnam:   ["SGN"],
+  vietnam:   ["SGN", "DAD", "HAN", "HOI", "PQC"],
 };
 
 export const COUNTRY_INFO: Record<string, { name: string; flag: string; center: [number, number]; zoom: number }> = {
@@ -268,7 +316,7 @@ export const COUNTRY_INFO: Record<string, { name: string; flag: string; center: 
   thailand:  { name: "泰國",   flag: "🇹🇭", center: [13.7,  100.5],  zoom: 10 },
   singapore: { name: "新加坡", flag: "🇸🇬", center: [1.35,  103.82], zoom: 12 },
   hongkong:  { name: "香港",   flag: "🇭🇰", center: [22.33, 114.18], zoom: 11 },
-  vietnam:   { name: "越南",   flag: "🇻🇳", center: [10.82, 106.63], zoom: 10 },
+  vietnam:   { name: "越南",   flag: "🇻🇳", center: [16.5,  107.5],  zoom: 6  },
 };
 
 export function getCountrySpots(country: string): Spot[] {

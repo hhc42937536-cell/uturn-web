@@ -160,6 +160,10 @@ const CITY_MAP_CENTER: Record<string, { center: [number, number]; zoom: number }
   "新加坡": { center: [1.35, 103.82], zoom: 12 },
   "香港": { center: [22.33, 114.18], zoom: 12 },
   "胡志明市": { center: [10.82, 106.63], zoom: 13 },
+  "峴港":     { center: [16.06, 108.22], zoom: 13 },
+  "河內":     { center: [21.03, 105.85], zoom: 13 },
+  "會安":     { center: [15.88, 108.33], zoom: 14 },
+  "富國島":   { center: [10.22, 103.96], zoom: 12 },
 };
 
 const DAY_COLORS_MAP = ["#A86F5A", "#5A8AA8", "#5AA87A", "#A85A8A", "#8AA85A", "#A8A05A", "#5A5AA8"];
