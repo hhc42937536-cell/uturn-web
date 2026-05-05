@@ -245,13 +245,68 @@ function PlanModal({
   city: string; flag: string; days: number;
   allSpots: Spot[]; assigned: Map<string, number>; onClose: () => void;
 }) {
-  const printRef = useRef<HTMLDivElement>(null);
-
   const spotsForDay = (day: number) => allSpots.filter((s) => assigned.get(s.id) === day);
   const totalSpots = allSpots.filter((s) => assigned.has(s.id)).length;
 
-  const exportPdf = () => {
-    window.print();
+  const DAY_HEX = ["A86F5A", "5A8AA8", "5AA87A", "A85A8A", "8AA85A", "A8A05A", "5A5AA8"];
+
+  const exportDocx = async () => {
+    const { Document, Packer, Paragraph, TextRun, ShadingType, AlignmentType, BorderStyle } = await import("docx");
+    const { saveAs } = await import("file-saver");
+
+    const children: InstanceType<typeof Paragraph>[] = [];
+
+    // Cover
+    children.push(
+      new Paragraph({ alignment: AlignmentType.CENTER, spacing: { before: 400, after: 200 }, children: [new TextRun({ text: `${flag} ${city}`, size: 64, bold: true, color: "3A2E26" })] }),
+      new Paragraph({ alignment: AlignmentType.CENTER, spacing: { after: 100 }, children: [new TextRun({ text: `TRAVEL ITINERARY · ${days} DAYS`, size: 22, color: "8A7F73", characterSpacing: 120 })] }),
+      new Paragraph({ alignment: AlignmentType.CENTER, spacing: { after: 600 }, children: [new TextRun({ text: "由 出國優轉 自動生成", size: 18, color: "A79C91" })] }),
+    );
+
+    for (let d = 1; d <= days; d++) {
+      const spots = spotsForDay(d);
+      if (spots.length === 0) continue;
+      const hex = DAY_HEX[(d - 1) % DAY_HEX.length];
+      const route = spots.map((s) => s.name).join(" → ");
+
+      // Day header
+      children.push(
+        new Paragraph({
+          spacing: { before: 400, after: 0 },
+          shading: { type: ShadingType.SOLID, color: hex, fill: hex },
+          children: [new TextRun({ text: `  Day ${d}  ${route}`, size: 28, bold: true, color: "FFFFFF" })],
+        }),
+      );
+
+      // Spots
+      spots.forEach((s, idx) => {
+        children.push(
+          new Paragraph({
+            spacing: { before: 180, after: 0 },
+            border: { left: { style: BorderStyle.THICK, size: 12, color: hex } },
+            indent: { left: 220 },
+            children: [
+              new TextRun({ text: `#${idx + 1} ${s.name}`, size: 26, bold: true, color: "3A2E26" }),
+              new TextRun({ text: `　${s.category} · ${s.duration}`, size: 20, color: "8A7F73" }),
+            ],
+          }),
+          new Paragraph({
+            spacing: { before: 40, after: 160 },
+            indent: { left: 220 },
+            children: [new TextRun({ text: s.tip, size: 20, color: "6F675F", italics: true })],
+          }),
+        );
+      });
+    }
+
+    // Footer
+    children.push(
+      new Paragraph({ spacing: { before: 600 }, border: { top: { style: BorderStyle.SINGLE, size: 4, color: "D8D2C7" } }, alignment: AlignmentType.CENTER, children: [new TextRun({ text: "✈️ 出國優轉 AbroadUturn · uturn-web.vercel.app", size: 16, color: "A79C91" })] }),
+    );
+
+    const doc = new Document({ sections: [{ children }] });
+    const blob = await Packer.toBlob(doc);
+    saveAs(blob, `${city}行程計畫書.docx`);
   };
 
   return (
@@ -265,17 +320,17 @@ function PlanModal({
           </div>
           <div className="flex gap-3">
             <button
-              onClick={exportPdf}
+              onClick={exportDocx}
               className="rounded-full border border-[#A86F5A] bg-[#B98774]/15 px-5 py-2 text-sm font-light text-[#7D5548] transition hover:bg-[#B98774]/25"
             >
-              📄 匯出 PDF
+              📄 下載 .docx
             </button>
             <button onClick={onClose} className="text-sm font-light text-[#8A7F73] hover:text-[#4B4037]">✕ 關閉</button>
           </div>
         </div>
 
         {/* Printable content */}
-        <div ref={printRef} id="plan-print-content" className="px-8 py-6" style={{ fontFamily: "sans-serif" }}>
+        <div id="plan-print-content" className="px-8 py-6" style={{ fontFamily: "sans-serif" }}>
           {/* Cover */}
           <div className="mb-8 rounded-2xl bg-[#3A2E26] px-8 py-10 text-center text-white">
             <p className="mb-2 text-4xl">{flag}</p>
