@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { buildAndDownloadDocx } from "@/app/lib/buildDocx";
 
 const DESTINATIONS = ["首爾", "東京", "大阪", "沖繩", "釜山", "曼谷", "新加坡", "香港", "胡志明市", "吉隆坡"];
@@ -67,6 +67,7 @@ function getWeekday(dateStr: string) {
 
 export default function DocxView() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [step, setStep] = useState<"form" | "edit" | "preview">("form");
   const [exporting, setExporting] = useState(false);
 
@@ -78,6 +79,27 @@ export default function DocxView() {
 
   const dayCount = getDayCount(form.depDate, form.retDate);
   const [days, setDays] = useState<DayNote[]>([]);
+
+  useEffect(() => {
+    const dest = searchParams.get("dest");
+    if (!dest) return;
+    const depDate = searchParams.get("depDate") || "";
+    const retDate = searchParams.get("retDate") || "";
+    const filled = {
+      destination: dest,
+      depCity: searchParams.get("depCity") || "高雄",
+      depDate,
+      retDate,
+      people: searchParams.get("people") || "2",
+      budget: searchParams.get("budget") || "",
+      style: searchParams.get("style") || "",
+      memo: searchParams.get("memo") || "",
+    };
+    setForm(filled);
+    const count = getDayCount(depDate, retDate);
+    setDays(Array.from({ length: count }, () => emptyDay()));
+    setStep("edit");
+  }, []);
 
   const initDays = () => {
     setDays(Array.from({ length: dayCount }, () => emptyDay()));
