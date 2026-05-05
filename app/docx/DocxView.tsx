@@ -142,29 +142,56 @@ export default function DocxView() {
       alert("請先填寫目的地與日期");
       return;
     }
+    const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
+    if (!apiKey) {
+      alert("AI 功能未設定，請聯絡管理員");
+      return;
+    }
+    const diff = new Date(form.retDate).getTime() - new Date(form.depDate).getTime();
+    const days = Math.max(2, Math.round(diff / 86400000) + 1);
+    const prompt = `你是台灣人出國行程規劃師。請為以下旅程生成每日建議行程，以 JSON 陣列回傳，不要有其他文字。
+
+旅程資訊：
+- 目的地：${form.destination}
+- 出發日期：${form.depDate}
+- 回程日期：${form.retDate}
+- 人數：${form.people}人
+- 旅遊風格：${form.style || "綜合"}
+- 天數：${days} 天
+
+JSON 格式（每個元素對應一天，共 ${days} 個）：
+[
+  {
+    "morning": "上午活動（1-2 個景點或體驗，具體說明地點）",
+    "afternoon": "下午活動（1-2 個景點，考慮移動時間）",
+    "evening": "晚上活動（夜市、夜景、酒吧或演出）",
+    "food": "今日必吃（具體餐廳名或料理名）",
+    "note": "交通小提示或注意事項（簡短）"
+  }
+]
+
+第一天以抵達為主、最後一天以返程為主，安排不要太滿。`;
     setGenerating(true);
     try {
-      const res = await fetch("/api/generate-itinerary", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          destination: form.destination,
-          depDate: form.depDate,
-          retDate: form.retDate,
-          people: form.people,
-          style: form.style,
-        }),
-      });
+      const res = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] }),
+        }
+      );
       const data = await res.json();
-      if (data.itinerary) {
-        setDays(data.itinerary);
-        setStep("edit");
-      } else {
-        const is429 = typeof data.error === "string" && data.error.includes("429");
-        alert(is429
-          ? "AI 目前請求太多，請等 1 分鐘後再試 🙏"
-          : "AI 生成失敗，請稍後再試");
+      if (!res.ok) {
+        const is429 = data?.error?.code === 429;
+        alert(is429 ? "AI 目前請求太多，請等 1 分鐘後再試 🙏" : "AI 生成失敗，請稍後再試");
+        return;
       }
+      const raw = data.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
+      const jsonMatch = raw.match(/\[[\s\S]*\]/);
+      if (!jsonMatch) throw new Error("No JSON");
+      setDays(JSON.parse(jsonMatch[0]));
+      setStep("edit");
     } catch {
       alert("連線失敗，請稍後再試");
     } finally {
