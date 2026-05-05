@@ -296,6 +296,8 @@ export default function PlannerView({ country, countryName, flag, center, mapZoo
 }) {
   const router = useRouter();
   const allSpots = getCountrySpots(country);
+  const cities = [...new Set(allSpots.map((s) => s.city).filter(Boolean))] as string[];
+  const [cityFilter, setCityFilter] = useState<string>("all");
   const [days, setDays] = useState(5);
   const [assigned, setAssigned] = useState<Map<string, number>>(new Map());
   const [activeSpot, setActiveSpot] = useState<Spot | null>(null);
@@ -303,7 +305,7 @@ export default function PlannerView({ country, countryName, flag, center, mapZoo
 
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }));
 
-  const unassigned = allSpots.filter((s) => !assigned.has(s.id));
+  const unassigned = allSpots.filter((s) => !assigned.has(s.id) && (cityFilter === "all" || s.city === cityFilter));
   const assignedSpots = allSpots.filter((s) => assigned.has(s.id));
   const spotsForDay = useCallback((day: number) =>
     allSpots.filter((s) => assigned.get(s.id) === day), [allSpots, assigned]);
@@ -371,11 +373,26 @@ export default function PlannerView({ country, countryName, flag, center, mapZoo
 
             {/* 左欄：景點選單 */}
             <aside className="flex w-56 flex-col gap-2 overflow-y-auto border-r border-[#DDD6CA] bg-white p-4">
-              <p className="mb-1 text-[10px] font-semibold uppercase tracking-widest text-[#8FA39A]">
+              {/* 城市篩選 chips */}
+              <div className="flex flex-wrap gap-1 pb-2 border-b border-[#EDE7DD]">
+                <button
+                  onClick={() => setCityFilter("all")}
+                  className={`rounded-full px-2.5 py-0.5 text-[11px] transition ${cityFilter === "all" ? "bg-[#A86F5A] text-white" : "bg-[#F0EBE4] text-[#6F675F] hover:bg-[#E8DED5]"}`}
+                >全部</button>
+                {cities.map((c) => (
+                  <button key={c}
+                    onClick={() => setCityFilter(c)}
+                    className={`rounded-full px-2.5 py-0.5 text-[11px] transition ${cityFilter === c ? "bg-[#A86F5A] text-white" : "bg-[#F0EBE4] text-[#6F675F] hover:bg-[#E8DED5]"}`}
+                  >{c}</button>
+                ))}
+              </div>
+              <p className="text-[10px] font-semibold uppercase tracking-widest text-[#8FA39A]">
                 未排景點 ({unassigned.length})
               </p>
               {unassigned.length === 0 && (
-                <p className="mt-4 text-center text-xs text-[#C5BEB6]">全部排完了！</p>
+                <p className="mt-4 text-center text-xs text-[#C5BEB6]">
+                  {cityFilter === "all" ? "全部排完了！" : "這個城市的景點都排完了"}
+                </p>
               )}
               {unassigned.map((s) => <DraggableSpot key={s.id} spot={s} />)}
             </aside>

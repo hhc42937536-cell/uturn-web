@@ -224,16 +224,38 @@ export const CITY_SPOTS: Record<string, Spot[]> = {
     { id: "sgn-19", name: "金融塔Bitexco",      category: "景點", lat: 10.7717, lng: 106.7042, duration: "1hr",   tip: "49樓觀景台俯瞰西貢河全景" },
     { id: "sgn-20", name: "靈應寺",             category: "景點", lat: 10.8027, lng: 106.7196, duration: "1hr",   tip: "西貢著名佛寺，觀音像俯瞰全市" },
   ],
+
+  KYO: [
+    { id: "kyo-1",  name: "伏見稻荷大社",       category: "景點", lat: 34.9671, lng: 135.7727, duration: "2hr",   tip: "千本鳥居最佳拍攝時段是早上6點前，人少且光線美" },
+    { id: "kyo-2",  name: "嵐山竹林",           category: "景點", lat: 35.0168, lng: 135.6717, duration: "1.5hr", tip: "搭嵐電從京都站25分鐘，竹林走道早晨最靜謐" },
+    { id: "kyo-3",  name: "清水寺",             category: "景點", lat: 34.9948, lng: 135.7850, duration: "2hr",   tip: "三年坂、二年坂散步必走，清水舞台木造建築是UNESCO遺產" },
+    { id: "kyo-4",  name: "金閣寺",             category: "景點", lat: 35.0394, lng: 135.7292, duration: "1hr",   tip: "開門前15分鐘排隊，黃金反射池最佳角度在正門入口直走" },
+    { id: "kyo-5",  name: "錦市場",             category: "美食", lat: 35.0050, lng: 135.7658, duration: "1.5hr", tip: "京都人的廚房，玉子燒・漬物・湯葉豆腐必試，週末最熱鬧" },
+    { id: "kyo-6",  name: "哲學之道",           category: "景點", lat: 35.0269, lng: 135.7943, duration: "1hr",   tip: "春天櫻花隧道，秋天楓葉夾道，全長2km悠閒散步" },
+    { id: "kyo-7",  name: "祇園花見小路",       category: "體驗", lat: 35.0035, lng: 135.7754, duration: "1.5hr", tip: "傍晚5-7點可能遇見藝妓，禁止拍照騷擾，靜靜欣賞最美" },
+    { id: "kyo-8",  name: "二條城",             category: "景點", lat: 35.0142, lng: 135.7482, duration: "1.5hr", tip: "江戶時代德川幕府宮殿，鶯聲地板走路會響是防刺客設計" },
+    { id: "kyo-9",  name: "嵐山渡月橋",         category: "景點", lat: 35.0133, lng: 135.6789, duration: "1hr",   tip: "保津川泛舟可在旁邊的「嵐山渡月橋」旁預約，秋天楓葉最美" },
+    { id: "kyo-10", name: "天龍寺庭園",         category: "景點", lat: 35.0171, lng: 135.6727, duration: "1hr",   tip: "UNESCO世界遺產，嵐山最美禪宗庭園，春天枯山水配竹林絕美" },
+  ],
+
+  KBE: [
+    { id: "kbe-1",  name: "北野異人館街",       category: "景點", lat: 34.7023, lng: 135.1889, duration: "2hr",   tip: "明治時代外國人居留地，風見雞館（¥500）和萊茵館最值得入內" },
+    { id: "kbe-2",  name: "南京町中華街",       category: "美食", lat: 34.6907, lng: 135.1943, duration: "1.5hr", tip: "日本三大中華街之一，豚包・焼餃子是必吃，週末午間最熱鬧" },
+    { id: "kbe-3",  name: "神戶港美利堅公園",   category: "景點", lat: 34.6856, lng: 135.1993, duration: "1.5hr", tip: "神戶海洋博物館在旁，夜景是關西最美之一，BE KOBE 字樣打卡" },
+    { id: "kbe-4",  name: "有馬溫泉",           category: "體驗", lat: 34.7988, lng: 135.2486, duration: "3hr",   tip: "日本最古老溫泉之一，金泉（含鐵鹽泉）是招牌，搭神戶電鐵30分鐘" },
+    { id: "kbe-5",  name: "神戶牛排街",         category: "美食", lat: 34.6931, lng: 135.1956, duration: "1.5hr", tip: "「Mouriya 本店」1885年創業，¥8,000 起，鐵板現煎神戶牛是神聖體驗" },
+    { id: "kbe-6",  name: "六甲山牧場",         category: "體驗", lat: 34.7636, lng: 135.2432, duration: "2hr",   tip: "搭六甲ケーブル纜車上山，可餵羊・做起司，夜景是關西代表性百萬夜景" },
+  ],
 };
 
 const CODE_TO_CITY: Record<string, string> = {
-  SEL: "首爾", TYO: "東京", OSA: "大阪", BKK: "曼谷",
-  SIN: "新加坡", HKG: "香港", OKA: "沖繩", SGN: "胡志明市", PUS: "釜山",
+  SEL: "首爾", TYO: "東京", OSA: "大阪", KYO: "京都", KBE: "神戶",
+  BKK: "曼谷", SIN: "新加坡", HKG: "香港", OKA: "沖繩", SGN: "胡志明市", PUS: "釜山",
 };
 
 export const COUNTRY_CITIES: Record<string, string[]> = {
   korea:     ["SEL", "PUS"],
-  japan:     ["TYO", "OSA", "OKA"],
+  japan:     ["TYO", "OSA", "KYO", "KBE", "OKA"],
   thailand:  ["BKK"],
   singapore: ["SIN"],
   hongkong:  ["HKG"],
