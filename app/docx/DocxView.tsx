@@ -160,7 +160,10 @@ export default function DocxView() {
         setDays(data.itinerary);
         setStep("edit");
       } else {
-        alert("AI 生成失敗，請稍後再試");
+        const is429 = typeof data.error === "string" && data.error.includes("429");
+        alert(is429
+          ? "AI 目前請求太多，請等 1 分鐘後再試 🙏"
+          : "AI 生成失敗，請稍後再試");
       }
     } catch {
       alert("連線失敗，請稍後再試");
