@@ -347,7 +347,9 @@ export default function PlannerView({ country, countryName, flag, center, mapZoo
 
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }));
 
-  const unassigned = allSpots.filter((s) => !assigned.has(s.id) && (cityFilter === "all" || s.city === cityFilter));
+  const unassigned = allSpots
+    .filter((s) => !assigned.has(s.id) && (cityFilter === "all" || s.city === cityFilter))
+    .sort((a, b) => (clusterMap.get(a.id) ?? 0) - (clusterMap.get(b.id) ?? 0));
   const assignedSpots = allSpots.filter((s) => assigned.has(s.id));
   const spotsForDay = useCallback((day: number) =>
     allSpots.filter((s) => assigned.get(s.id) === day), [allSpots, assigned]);
