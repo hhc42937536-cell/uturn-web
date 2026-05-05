@@ -246,36 +246,12 @@ function PlanModal({
   allSpots: Spot[]; assigned: Map<string, number>; onClose: () => void;
 }) {
   const printRef = useRef<HTMLDivElement>(null);
-  const [exporting, setExporting] = useState(false);
 
   const spotsForDay = (day: number) => allSpots.filter((s) => assigned.get(s.id) === day);
   const totalSpots = allSpots.filter((s) => assigned.has(s.id)).length;
 
-  const exportPdf = async () => {
-    if (!printRef.current) return;
-    setExporting(true);
-    try {
-      const html2canvas = (await import("html2canvas")).default;
-      const { jsPDF } = await import("jspdf");
-      const canvas = await html2canvas(printRef.current, { scale: 2, useCORS: true, backgroundColor: "#FFFDF8" });
-      const imgData = canvas.toDataURL("image/jpeg", 0.92);
-      const pdf = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
-      const pdfW = pdf.internal.pageSize.getWidth();
-      const pdfH = pdf.internal.pageSize.getHeight();
-      const imgW = canvas.width;
-      const imgH = canvas.height;
-      const ratio = pdfW / imgW;
-      const totalH = imgH * ratio;
-      let yOffset = 0;
-      while (yOffset < totalH) {
-        if (yOffset > 0) pdf.addPage();
-        pdf.addImage(imgData, "JPEG", 0, -yOffset, pdfW, totalH);
-        yOffset += pdfH;
-      }
-      pdf.save(`${city}行程規劃.pdf`);  // city = countryName here
-    } finally {
-      setExporting(false);
-    }
+  const exportPdf = () => {
+    window.print();
   };
 
   return (
@@ -290,17 +266,16 @@ function PlanModal({
           <div className="flex gap-3">
             <button
               onClick={exportPdf}
-              disabled={exporting}
-              className="rounded-full border border-[#A86F5A] bg-[#B98774]/15 px-5 py-2 text-sm font-light text-[#7D5548] transition hover:bg-[#B98774]/25 disabled:opacity-50"
+              className="rounded-full border border-[#A86F5A] bg-[#B98774]/15 px-5 py-2 text-sm font-light text-[#7D5548] transition hover:bg-[#B98774]/25"
             >
-              {exporting ? "匯出中…" : "📄 匯出 PDF"}
+              📄 匯出 PDF
             </button>
             <button onClick={onClose} className="text-sm font-light text-[#8A7F73] hover:text-[#4B4037]">✕ 關閉</button>
           </div>
         </div>
 
         {/* Printable content */}
-        <div ref={printRef} className="px-8 py-6" style={{ fontFamily: "sans-serif" }}>
+        <div ref={printRef} id="plan-print-content" className="px-8 py-6" style={{ fontFamily: "sans-serif" }}>
           {/* Cover */}
           <div className="mb-8 rounded-2xl bg-[#3A2E26] px-8 py-10 text-center text-white">
             <p className="mb-2 text-4xl">{flag}</p>
