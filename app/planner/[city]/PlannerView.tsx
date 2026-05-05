@@ -254,6 +254,32 @@ function PlanModal({
 
   const DAY_HEX = ["A86F5A", "5A8AA8", "5AA87A", "A85A8A", "8AA85A", "A8A05A", "5A5AA8"];
 
+  // ── 景點照片（Wikimedia Commons） ────────────────────────
+  const [photos, setPhotos] = useState<Map<string, string>>(new Map());
+  const [photosReady, setPhotosReady] = useState(false);
+
+  useEffect(() => {
+    const assigned_spots = allSpots.filter((s) => assigned.has(s.id));
+    if (assigned_spots.length === 0) { setPhotosReady(true); return; }
+    Promise.all(
+      assigned_spots.map(async (s) => {
+        try {
+          const res = await fetch(`/api/wiki-photo?q=${encodeURIComponent(s.name)}`);
+          const { url } = await res.json() as { url: string | null };
+          return { id: s.id, url };
+        } catch {
+          return { id: s.id, url: null };
+        }
+      })
+    ).then((results) => {
+      const map = new Map<string, string>();
+      results.forEach(({ id, url }) => { if (url) map.set(id, url); });
+      setPhotos(map);
+      setPhotosReady(true);
+    });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const exportDocx = async () => {
     const { Document, Packer, Paragraph, TextRun, ShadingType, AlignmentType, BorderStyle } = await import("docx");
     const { saveAs } = await import("file-saver");
@@ -318,10 +344,23 @@ function PlanModal({
   const exportPdf = async () => {
     const el = captureRef.current;
     if (!el) return;
+    // 等待所有 <img> 載入完畢（包含 Wikimedia 照片）
+    const imgs = Array.from(el.querySelectorAll("img"));
+    await Promise.all(imgs.map((img) =>
+      img.complete
+        ? Promise.resolve()
+        : new Promise<void>((r) => { img.onload = () => r(); img.onerror = () => r(); })
+    ));
     try {
       const { toJpeg } = await import("html-to-image");
       const { jsPDF } = await import("jspdf");
-      const dataUrl = await toJpeg(el, { quality: 0.95, backgroundColor: "#FFFDF8", pixelRatio: 2, style: { borderRadius: "0", margin: "0" } });
+      const dataUrl = await toJpeg(el, {
+        quality: 0.95,
+        backgroundColor: "#FFFDF8",
+        pixelRatio: 2,
+        style: { borderRadius: "0", margin: "0" },
+        skipAutoScale: false,
+      });
       const img = new Image();
       img.src = dataUrl;
       await new Promise((r) => { img.onload = r; });
@@ -345,9 +384,10 @@ function PlanModal({
           <div className="flex gap-3">
             <button
               onClick={exportPdf}
-              className="rounded-full border border-[#A86F5A] bg-[#B98774]/15 px-5 py-2 text-sm font-light text-[#7D5548] transition hover:bg-[#B98774]/25"
+              disabled={!photosReady}
+              className="rounded-full border border-[#A86F5A] bg-[#B98774]/15 px-5 py-2 text-sm font-light text-[#7D5548] transition hover:bg-[#B98774]/25 disabled:cursor-wait disabled:opacity-50"
             >
-              🖼 匯出 PDF
+              {photosReady ? "🖼 匯出 PDF" : "⏳ 載入照片中…"}
             </button>
             <button
               onClick={exportDocx}
@@ -414,7 +454,7 @@ function PlanModal({
                         <div className="flex-shrink-0 text-center">
                           <div className="text-[10px] font-light text-[#A79C91]">#{idx + 1}</div>
                         </div>
-                        <div className="flex-1">
+                        <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2">
                             <span className="font-medium text-[#3A2E26]">{s.name}</span>
                             <span className="rounded-full border px-2 py-0.5 text-[10px] border-[#D8D2C7] text-[#6F675F]">
@@ -424,6 +464,14 @@ function PlanModal({
                           </div>
                           <p className="mt-1 text-xs leading-5 text-[#6F675F]">{s.tip}</p>
                         </div>
+                        {photos.get(s.id) && (
+                          <img
+                            src={photos.get(s.id)}
+                            alt={s.name}
+                            crossOrigin="anonymous"
+                            className="h-20 w-20 flex-shrink-0 rounded-xl object-cover"
+                          />
+                        )}
                       </div>
                     ))}
                   </div>
