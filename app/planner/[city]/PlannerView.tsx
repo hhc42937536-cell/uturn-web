@@ -58,7 +58,7 @@ function DayColumn({ day, spots, onRemove }: { day: number; spots: Spot[]; onRem
   return (
     <div
       ref={setNodeRef}
-      className={`flex flex-col gap-2 rounded-2xl border-2 border-dashed p-3 transition-colors ${
+      className={`flex flex-shrink-0 flex-col gap-2 rounded-2xl border-2 border-dashed p-3 transition-colors ${
         isOver ? "border-[#A86F5A] bg-[#FBF3EE]" : "border-[#D8D2C7] bg-[#FAF8F4]"
       }`}
       style={{ minHeight: "140px" }}
