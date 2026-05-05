@@ -92,19 +92,25 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── 社會證明 ── */}
-      <section className="border-y border-[#DDD6CA] bg-[#EDE7DD] py-10">
-        <div className="mx-auto flex max-w-3xl flex-wrap justify-center gap-10 px-6 text-center">
-          {[
-            { num: "2,400+", label: "份計畫書已下載" },
-            { num: "10", label: "個熱門目的地" },
-            { num: "100%", label: "免費・不需登入" },
-          ].map(({ num, label }) => (
-            <div key={label}>
-              <div className="text-3xl font-light text-[#A86F5A]">{num}</div>
-              <div className="mt-1 text-sm font-light text-[#8A7F73]">{label}</div>
-            </div>
-          ))}
+      {/* ── LINE Bot 做不到的（網頁限定）── */}
+      <section className="py-20">
+        <div className="mx-auto max-w-4xl px-6">
+          <p className="mb-3 text-center text-xs font-light uppercase tracking-[0.45em] text-[#8FA39A]">Web Exclusive</p>
+          <h2 className="mb-3 text-center text-2xl font-light tracking-wide">LINE Bot 做不到的事</h2>
+          <p className="mb-10 text-center text-sm font-light text-[#8A7F73]">需要螢幕空間的功能，只在網頁版提供</p>
+          <div className="grid gap-6 md:grid-cols-3">
+            {WEB_ONLY.map(({ icon, title, desc, href }) => (
+              <a key={href} href={href}
+                className="group rounded-[2rem] border border-[#D8D2C7] bg-[#FBF8F1] p-8 transition hover:border-[#A86F5A] hover:bg-[#FFFDF8] block">
+                <div className="mb-4 text-3xl">{icon}</div>
+                <h3 className="mb-2 text-base font-light tracking-wide">{title}</h3>
+                <p className="text-sm font-light leading-7 text-[#6F675F]">{desc}</p>
+                <p className="mt-4 text-xs font-light tracking-widest text-[#A86F5A] transition group-hover:underline">
+                  前往 →
+                </p>
+              </a>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -181,28 +187,6 @@ export default function HomePage() {
             <span className="text-[#C4A882]">可以直接印出來、傳給家人、用 Word 繼續修改</span>的正式文件。
             格式、排版、資訊分類——都幫你做好了。
           </p>
-        </div>
-      </section>
-
-      {/* ── LINE Bot 做不到的（網頁限定）── */}
-      <section className="py-20">
-        <div className="mx-auto max-w-4xl px-6">
-          <p className="mb-3 text-center text-xs font-light uppercase tracking-[0.45em] text-[#8FA39A]">Web Exclusive</p>
-          <h2 className="mb-3 text-center text-2xl font-light tracking-wide">LINE Bot 做不到的事</h2>
-          <p className="mb-10 text-center text-sm font-light text-[#8A7F73]">需要螢幕空間的功能，只在網頁版提供</p>
-          <div className="grid gap-6 md:grid-cols-3">
-            {WEB_ONLY.map(({ icon, title, desc, href }) => (
-              <a key={href} href={href}
-                className="group rounded-[2rem] border border-[#D8D2C7] bg-[#FBF8F1] p-8 transition hover:border-[#A86F5A] hover:bg-[#FFFDF8] block">
-                <div className="mb-4 text-3xl">{icon}</div>
-                <h3 className="mb-2 text-base font-light tracking-wide">{title}</h3>
-                <p className="text-sm font-light leading-7 text-[#6F675F]">{desc}</p>
-                <p className="mt-4 text-xs font-light tracking-widest text-[#A86F5A] transition group-hover:underline">
-                  前往 →
-                </p>
-              </a>
-            ))}
-          </div>
         </div>
       </section>
 
