@@ -1,12 +1,11 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
 import { NextRequest, NextResponse } from "next/server";
-
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY ?? "", {
-  apiVersion: "v1beta",
-});
 
 export async function POST(req: NextRequest) {
   const { destination, depDate, retDate, people, style } = await req.json();
+
+  if (!process.env.GEMINI_API_KEY) {
+    return NextResponse.json({ error: "GEMINI_API_KEY not set" }, { status: 500 });
+  }
 
   const diff = new Date(retDate).getTime() - new Date(depDate).getTime();
   const days = Math.max(2, Math.round(diff / 86400000) + 1);
@@ -34,14 +33,26 @@ JSON 格式（每個元素對應一天，共 ${days} 個）：
 
 第一天以抵達為主、最後一天以返程為主，安排不要太滿。`;
 
-  if (!process.env.GEMINI_API_KEY) {
-    return NextResponse.json({ error: "GEMINI_API_KEY not set" }, { status: 500 });
-  }
-
   try {
-    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
-    const result = await model.generateContent(prompt);
-    const raw = result.response.text();
+    const res = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: prompt }] }],
+        }),
+      }
+    );
+
+    if (!res.ok) {
+      const errText = await res.text();
+      console.error("[generate-itinerary] API error:", errText);
+      return NextResponse.json({ error: errText }, { status: 500 });
+    }
+
+    const data = await res.json();
+    const raw = data.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
     const jsonMatch = raw.match(/\[[\s\S]*\]/);
     if (!jsonMatch) throw new Error("No JSON found in response");
     const itinerary = JSON.parse(jsonMatch[0]);
