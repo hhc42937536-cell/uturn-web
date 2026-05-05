@@ -20,17 +20,38 @@ function buildGoogleMapsUrl(spots: Spot[]): string {
   return `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}${waypoints ? `&waypoints=${waypoints}` : ""}&travelmode=transit`;
 }
 
-const CAT_COLOR: Record<string, string> = {
-  景點: "bg-blue-50 border-blue-200 text-blue-800",
-  美食: "bg-orange-50 border-orange-200 text-orange-800",
-  購物: "bg-pink-50 border-pink-200 text-pink-800",
-  體驗: "bg-green-50 border-green-200 text-green-800",
-};
+const AREA_PALETTE = [
+  "bg-blue-50 border-blue-200 text-blue-900",
+  "bg-orange-50 border-orange-200 text-orange-900",
+  "bg-green-50 border-green-200 text-green-900",
+  "bg-purple-50 border-purple-200 text-purple-900",
+  "bg-teal-50 border-teal-200 text-teal-900",
+  "bg-rose-50 border-rose-200 text-rose-900",
+  "bg-yellow-50 border-yellow-200 text-yellow-900",
+  "bg-indigo-50 border-indigo-200 text-indigo-900",
+];
+
+const AREA_DOT = [
+  "bg-blue-400", "bg-orange-400", "bg-green-500",
+  "bg-purple-400", "bg-teal-400", "bg-rose-400",
+  "bg-yellow-400", "bg-indigo-400",
+];
+
+function getAreaIndex(spot: Spot): number {
+  const key = `${Math.floor(spot.lat * 40)},${Math.floor(spot.lng * 40)}`;
+  let h = 0;
+  for (const c of key) h = (h * 31 + c.charCodeAt(0)) & 0xffff;
+  return h % AREA_PALETTE.length;
+}
 
 function SpotCard({ spot, mini = false }: { spot: Spot; mini?: boolean }) {
+  const ai = getAreaIndex(spot);
   return (
-    <div className={`rounded-xl border px-3 py-2 text-sm ${CAT_COLOR[spot.category] ?? "bg-gray-50 border-gray-200"} ${mini ? "" : "cursor-grab active:cursor-grabbing"}`}>
-      <div className="font-medium leading-tight">{spot.name}</div>
+    <div className={`rounded-xl border px-3 py-2 text-sm ${AREA_PALETTE[ai]} ${mini ? "" : "cursor-grab active:cursor-grabbing"}`}>
+      <div className="flex items-center gap-1.5 font-medium leading-tight">
+        <span className={`inline-block h-2 w-2 flex-shrink-0 rounded-full ${AREA_DOT[ai]}`} />
+        {spot.name}
+      </div>
       {!mini && (
         <>
           <div className="mt-0.5 flex items-center gap-1 text-xs opacity-70">
@@ -122,13 +143,17 @@ function CityMap({ spots, dayMap, defaultCenter, defaultZoom }: { spots: Spot[];
       L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
         attribution: "© OpenStreetMap contributors",
       }).addTo(mapInstance);
+      const AREA_HEX = ["#60A5FA","#FB923C","#4ADE80","#C084FC","#2DD4BF","#FB7185","#FACC15","#818CF8"];
       const DAY_COLORS = ["#A86F5A", "#5A8AA8", "#5AA87A", "#A85A8A", "#8AA85A", "#A8A05A", "#5A5AA8"];
       spots.forEach((spot) => {
         const dayNum = dayMap.get(spot.id);
-        const color = dayNum !== undefined ? DAY_COLORS[(dayNum - 1) % DAY_COLORS.length] : "#8FA39A";
+        const key = `${Math.floor(spot.lat * 40)},${Math.floor(spot.lng * 40)}`;
+        let h = 0; for (const c of key) h = (h * 31 + c.charCodeAt(0)) & 0xffff;
+        const areaColor = AREA_HEX[h % AREA_HEX.length];
+        const dayColor = dayNum !== undefined ? DAY_COLORS[(dayNum - 1) % DAY_COLORS.length] : areaColor;
         const icon = L.divIcon({
           className: "",
-          html: `<div style="background:${color};width:28px;height:28px;border-radius:50%;border:2px solid white;display:flex;align-items:center;justify-content:center;color:white;font-size:11px;font-weight:700;box-shadow:0 2px 6px rgba(0,0,0,0.25)">${dayNum ?? "?"}</div>`,
+          html: `<div style="background:${dayColor};width:28px;height:28px;border-radius:50%;border:3px solid ${areaColor};display:flex;align-items:center;justify-content:center;color:white;font-size:11px;font-weight:700;box-shadow:0 2px 6px rgba(0,0,0,0.25)">${dayNum ?? "·"}</div>`,
           iconSize: [28, 28], iconAnchor: [14, 14],
         });
         L.marker([spot.lat, spot.lng], { icon })
