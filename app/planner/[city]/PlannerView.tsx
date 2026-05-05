@@ -148,38 +148,86 @@ function DayColumn({ day, spots, onRemove, clusterMap }: { day: number; spots: S
   );
 }
 
-function CityMap({ spots, dayMap, clusterMap, defaultCenter, defaultZoom }: { spots: Spot[]; dayMap: Map<string, number>; clusterMap: Map<string, number>; defaultCenter: [number, number]; defaultZoom: number }) {
+const CITY_MAP_CENTER: Record<string, { center: [number, number]; zoom: number }> = {
+  "首爾": { center: [37.56, 126.98], zoom: 12 },
+  "釜山": { center: [35.18, 129.07], zoom: 12 },
+  "東京": { center: [35.69, 139.69], zoom: 12 },
+  "大阪": { center: [34.69, 135.50], zoom: 12 },
+  "京都": { center: [35.01, 135.77], zoom: 13 },
+  "神戶": { center: [34.69, 135.20], zoom: 13 },
+  "沖繩": { center: [26.33, 127.80], zoom: 12 },
+  "曼谷": { center: [13.75, 100.50], zoom: 12 },
+  "新加坡": { center: [1.35, 103.82], zoom: 12 },
+  "香港": { center: [22.33, 114.18], zoom: 12 },
+  "胡志明市": { center: [10.82, 106.63], zoom: 13 },
+};
+
+const DAY_COLORS_MAP = ["#A86F5A", "#5A8AA8", "#5AA87A", "#A85A8A", "#8AA85A", "#A8A05A", "#5A5AA8"];
+
+function CityMap({ spots, dayMap, clusterMap, defaultCenter, defaultZoom, focusCity }: {
+  spots: Spot[]; dayMap: Map<string, number>; clusterMap: Map<string, number>;
+  defaultCenter: [number, number]; defaultZoom: number; focusCity: string;
+}) {
   const mapId = "planner-map";
+  const mapRef = useRef<any>(null);
+  const lRef = useRef<any>(null);
+  const markersRef = useRef<any[]>([]);
+
+  // Init map once
   useEffect(() => {
-    let mapInstance: ReturnType<typeof import("leaflet")["map"]> | null = null;
     (async () => {
       const L = (await import("leaflet")).default;
       await import("leaflet/dist/leaflet.css");
       const el = document.getElementById(mapId);
       if (!el || (el as HTMLElement & { _leaflet_id?: number })._leaflet_id) return;
-      mapInstance = L.map(mapId).setView(defaultCenter, defaultZoom);
+      lRef.current = L;
+      mapRef.current = L.map(mapId).setView(defaultCenter, defaultZoom);
       L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
         attribution: "© OpenStreetMap contributors",
-      }).addTo(mapInstance);
-      const DAY_COLORS = ["#A86F5A", "#5A8AA8", "#5AA87A", "#A85A8A", "#8AA85A", "#A8A05A", "#5A5AA8"];
-      spots.forEach((spot) => {
-        const dayNum = dayMap.get(spot.id);
-        const ci = clusterMap.get(spot.id) ?? 0;
-        const areaHex = AREA_PALETTE[ci % AREA_PALETTE.length].hex;
-        const fillColor = dayNum !== undefined ? DAY_COLORS[(dayNum - 1) % DAY_COLORS.length] : areaHex;
-        const icon = L.divIcon({
-          className: "",
-          html: `<div style="background:${fillColor};width:28px;height:28px;border-radius:50%;border:3px solid ${areaHex};display:flex;align-items:center;justify-content:center;color:white;font-size:11px;font-weight:700;box-shadow:0 2px 6px rgba(0,0,0,0.25)">${dayNum ?? "·"}</div>`,
-          iconSize: [28, 28], iconAnchor: [14, 14],
-        });
-        L.marker([spot.lat, spot.lng], { icon })
-          .bindPopup(`<b>${spot.name}</b><br/>${spot.category} · ${spot.duration}<br/><small>${spot.tip}</small>`)
-          .addTo(mapInstance!);
-      });
+      }).addTo(mapRef.current);
     })();
-    return () => { mapInstance?.remove(); };
+    return () => { mapRef.current?.remove(); mapRef.current = null; };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Update markers when spots/dayMap changes
+  useEffect(() => {
+    const map = mapRef.current;
+    const L = lRef.current;
+    if (!map || !L) return;
+    markersRef.current.forEach((m) => m.remove());
+    markersRef.current = [];
+    spots.forEach((spot) => {
+      const dayNum = dayMap.get(spot.id);
+      const ci = clusterMap.get(spot.id) ?? 0;
+      const areaHex = AREA_PALETTE[ci % AREA_PALETTE.length].hex;
+      const fillColor = dayNum !== undefined ? DAY_COLORS_MAP[(dayNum - 1) % DAY_COLORS_MAP.length] : areaHex;
+      const icon = L.divIcon({
+        className: "",
+        html: `<div style="background:${fillColor};width:28px;height:28px;border-radius:50%;border:3px solid ${areaHex};display:flex;align-items:center;justify-content:center;color:white;font-size:11px;font-weight:700;box-shadow:0 2px 6px rgba(0,0,0,0.25)">${dayNum ?? "·"}</div>`,
+        iconSize: [28, 28], iconAnchor: [14, 14],
+      });
+      const marker = L.marker([spot.lat, spot.lng], { icon })
+        .bindPopup(`<b>${spot.name}</b><br/>${spot.category} · ${spot.duration}<br/><small>${spot.tip}</small>`)
+        .addTo(map);
+      markersRef.current.push(marker);
+    });
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [JSON.stringify([...dayMap.entries()])]);
+
+  // Fly to city when filter changes
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+    if (focusCity === "all") {
+      map.flyTo(defaultCenter, defaultZoom, { duration: 0.8 });
+    } else {
+      const info = CITY_MAP_CENTER[focusCity];
+      if (info) map.flyTo(info.center, info.zoom, { duration: 0.8 });
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [focusCity]);
+
   return <div id={mapId} className="h-full w-full rounded-2xl" />;
 }
 
@@ -449,6 +497,7 @@ export default function PlannerView({ country, countryName, flag, center, mapZoo
                 clusterMap={clusterMap}
                 defaultCenter={center}
                 defaultZoom={mapZoom}
+                focusCity={cityFilter}
               />
               {assignedSpots.length === 0 && (
                 <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
