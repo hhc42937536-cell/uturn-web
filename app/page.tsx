@@ -150,6 +150,7 @@ export default function HomePage() {
           { icon: "⭐", title: "追星行程", desc: "輸入藝人名字，查演唱會與見面會，搭配聖地巡禮景點，規劃專屬追星旅程。", href: "/idol" },
           { icon: "📄", title: "計畫書工作室", desc: "逐日填寫行程，一鍵匯出 PDF 計畫書，含封面、目錄、簽證提醒與緊急聯絡。", href: "/docx" },
           { icon: "🛂", title: "台灣護照情報", desc: "40+ 國家簽證一覽，含入境須知、海關禁令、文化禁忌、SIM 卡推薦。", href: "/visa" },
+          { icon: "🗺️", title: "南部出發比較器", desc: "KHH/RMQ/TNN vs 桃園，幫你算清楚哪個出發方式最省錢、最省時。", href: "/compare" },
           { icon: "🗺️", title: "地圖式規劃", desc: "拖拉景點到各天，自動按地理位置排最佳路線。LINE Bot 做不到的事。", href: "/planner/首爾" },
           { icon: "📍", title: "附近景點", desc: "出國後開啟定位，立即找出你周圍最值得去的景點與美食。", href: "/nearby" },
           { icon: "🌏", title: "社群行程牆", desc: "看台灣旅客分享的行程，一鍵複製當自己的，Google 也搜尋得到。", href: "/explore" },
