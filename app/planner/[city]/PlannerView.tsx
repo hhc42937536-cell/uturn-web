@@ -8,6 +8,7 @@ import {
   useDroppable, useDraggable,
 } from "@dnd-kit/core";
 import { CITY_SPOTS, type Spot } from "../../lib/spotData";
+import { CITY_CODE, CITY_DATA } from "../../lib/cityData";
 
 function buildGoogleMapsUrl(spots: Spot[]): string {
   if (spots.length === 0) return "";
@@ -326,8 +327,18 @@ export default function PlannerView({ city, code, flag }: { city: string; code: 
           {/* Header */}
           <nav className="flex items-center justify-between border-b border-[#DDD6CA] bg-[#F7F3EC]/95 px-6 py-4">
             <button onClick={() => router.push("/")} className="text-sm font-light text-[#6F675F] hover:text-[#A86F5A]">← 返回</button>
-            <div className="text-lg font-light tracking-wide text-[#4B4037]">
-              {flag} {city} 行程規劃
+            <div className="flex items-center gap-2">
+              <span className="text-xl">{flag}</span>
+              <select
+                value={city}
+                onChange={(e) => router.push(`/planner/${encodeURIComponent(e.target.value)}`)}
+                className="rounded-xl border border-[#D8D2C7] bg-[#F7F3EC] px-3 py-1.5 text-base font-light tracking-wide text-[#4B4037] outline-none focus:border-[#A86F5A]"
+              >
+                {Object.keys(CITY_CODE).map((c) => (
+                  <option key={c} value={c}>{CITY_DATA[CITY_CODE[c]]?.flag} {c}</option>
+                ))}
+              </select>
+              <span className="text-sm font-light text-[#8A7F73]">行程規劃</span>
             </div>
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2 text-sm font-light text-[#6F675F]">
