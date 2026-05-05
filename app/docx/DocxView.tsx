@@ -79,6 +79,7 @@ export default function DocxView() {
 
   const dayCount = getDayCount(form.depDate, form.retDate);
   const [days, setDays] = useState<DayNote[]>([]);
+  const [generating, setGenerating] = useState(false);
 
   useEffect(() => {
     const dest = searchParams.get("dest");
@@ -104,6 +105,38 @@ export default function DocxView() {
   const initDays = () => {
     setDays(Array.from({ length: dayCount }, () => emptyDay()));
     setStep("edit");
+  };
+
+  const generateWithAI = async () => {
+    if (!form.destination || !form.depDate || !form.retDate) {
+      alert("請先填寫目的地與日期");
+      return;
+    }
+    setGenerating(true);
+    try {
+      const res = await fetch("/api/generate-itinerary", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          destination: form.destination,
+          depDate: form.depDate,
+          retDate: form.retDate,
+          people: form.people,
+          style: form.style,
+        }),
+      });
+      const data = await res.json();
+      if (data.itinerary) {
+        setDays(data.itinerary);
+        setStep("edit");
+      } else {
+        alert("AI 生成失敗，請稍後再試");
+      }
+    } catch {
+      alert("連線失敗，請稍後再試");
+    } finally {
+      setGenerating(false);
+    }
   };
 
   const updateDay = (i: number, field: keyof DayNote, val: string) => {
@@ -190,10 +223,17 @@ export default function DocxView() {
                     rows={2} placeholder="住宿訂房號、機票確認碼、特別注意事項…" className={ta} />
                 </label>
               </div>
-              <button onClick={initDays}
-                className="mt-6 w-full rounded-full border border-[#A86F5A] bg-[#B98774]/15 py-4 text-sm font-light tracking-[0.2em] text-[#7D5548] transition hover:bg-[#B98774]/25">
-                開始填寫每日行程 →
-              </button>
+              <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+                <button onClick={generateWithAI} disabled={generating}
+                  className="flex-1 rounded-full bg-[#A86F5A] py-4 text-sm font-light tracking-[0.2em] text-white transition hover:bg-[#96604D] disabled:opacity-60">
+                  {generating ? "✨ AI 生成中…" : "✨ AI 幫我生成建議行程"}
+                </button>
+                <button onClick={initDays}
+                  className="flex-1 rounded-full border border-[#A86F5A] bg-[#B98774]/15 py-4 text-sm font-light tracking-[0.2em] text-[#7D5548] transition hover:bg-[#B98774]/25">
+                  自己填寫每日行程
+                </button>
+              </div>
+              <p className="mt-2 text-center text-xs font-light text-[#A79C91]">AI 生成後仍可自由編輯</p>
             </div>
           </>
         )}

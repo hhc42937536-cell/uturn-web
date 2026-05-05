@@ -47,12 +47,14 @@ export default function HomePage() {
       <nav className="fixed left-0 top-0 z-50 w-full border-b border-[#DDD6CA] bg-[#F7F3EC]/90 backdrop-blur-md">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-4">
           <div className="text-lg font-light tracking-[0.18em]">✈️ 出國優轉</div>
-          <button
-            onClick={() => router.push("/docx")}
-            className="rounded-full border border-[#A86F5A] bg-[#B98774]/15 px-5 py-2 text-sm font-light text-[#7D5548] transition hover:bg-[#B98774]/25"
+          <a
+            href="https://line.me/R/ti/p/@031ywxwq"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="rounded-full border border-[#4CAF50] bg-[#4CAF50]/10 px-5 py-2 text-sm font-light text-[#2E7D32] transition hover:bg-[#4CAF50]/20"
           >
-            開始製作計畫書
-          </button>
+            🤖 加入 LINE Bot
+          </a>
         </div>
       </nav>
 
@@ -70,13 +72,23 @@ export default function HomePage() {
             <strong className="font-normal text-[#A86F5A]">Word 計畫書</strong>。
             簽證、海關、打包清單、緊急電話——全部幫你整理好。
           </p>
-          <button
-            onClick={() => router.push("/docx")}
-            className="mt-10 rounded-full bg-[#A86F5A] px-12 py-5 text-base font-light tracking-[0.2em] text-white transition hover:bg-[#96604D]"
-          >
-            📄 開始製作計畫書
-          </button>
-          <p className="mt-4 text-sm font-light text-[#A79C91]">免費・不用登入・直接下載</p>
+          <div className="mt-10 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
+            <button
+              onClick={() => router.push("/docx")}
+              className="rounded-full bg-[#A86F5A] px-10 py-4 text-base font-light tracking-[0.2em] text-white transition hover:bg-[#96604D]"
+            >
+              📄 自己手動製作計畫書
+            </button>
+            <a
+              href="https://line.me/R/ti/p/@031ywxwq"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="rounded-full border-2 border-[#06C755] bg-[#06C755]/10 px-10 py-4 text-base font-light tracking-[0.2em] text-[#06C755] transition hover:bg-[#06C755]/20"
+            >
+              🤖 讓 LINE Bot 幫我規劃
+            </a>
+          </div>
+          <p className="mt-4 text-sm font-light text-[#A79C91]">免費・不用登入・LINE Bot 規劃後自動帶入</p>
         </div>
       </section>
 
@@ -125,6 +137,35 @@ export default function HomePage() {
                 <p className="text-sm font-light leading-7 text-[#6F675F]">{s.desc}</p>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── LINE × 網頁 連結說明 ── */}
+      <section className="py-20">
+        <div className="mx-auto max-w-4xl px-6">
+          <p className="mb-3 text-center text-xs font-light uppercase tracking-[0.45em] text-[#8FA39A]">Best Combo</p>
+          <h2 className="mb-3 text-center text-2xl font-light tracking-wide">LINE Bot + 網頁 = 完整出國規劃</h2>
+          <p className="mb-10 text-center text-sm font-light text-[#8A7F73]">Bot 負責 AI 對話規劃，網頁負責輸出正式文件</p>
+          <div className="grid gap-4 md:grid-cols-3 items-center">
+            <a href="https://line.me/R/ti/p/@031ywxwq" target="_blank" rel="noopener noreferrer"
+              className="group rounded-[2rem] border-2 border-[#06C755]/40 bg-[#06C755]/5 p-8 text-center transition hover:border-[#06C755] hover:bg-[#06C755]/10 block">
+              <div className="mb-4 text-4xl">🤖</div>
+              <h3 className="mb-2 text-base font-light tracking-wide">LINE Bot 規劃行程</h3>
+              <p className="text-sm font-light leading-7 text-[#6F675F]">8 步對話，AI 幫你安排每日行程、查簽證、選機票、估預算</p>
+              <p className="mt-4 text-xs font-light tracking-widest text-[#06C755] transition group-hover:underline">加入 LINE Bot →</p>
+            </a>
+            <div className="flex flex-col items-center gap-2 text-center">
+              <div className="text-3xl text-[#C4BCB4]">→</div>
+              <p className="text-xs font-light text-[#A79C91]">完成後 Bot 自動發送連結</p>
+              <div className="text-3xl text-[#C4BCB4]">→</div>
+            </div>
+            <div onClick={() => router.push("/docx")} className="group cursor-pointer rounded-[2rem] border-2 border-[#A86F5A]/40 bg-[#A86F5A]/5 p-8 text-center transition hover:border-[#A86F5A] hover:bg-[#A86F5A]/10">
+              <div className="mb-4 text-4xl">📄</div>
+              <h3 className="mb-2 text-base font-light tracking-wide">網頁下載 Word 計畫書</h3>
+              <p className="text-sm font-light leading-7 text-[#6F675F]">資料自動帶入，確認後一鍵下載含封面、簽證、打包清單的正式文件</p>
+              <p className="mt-4 text-xs font-light tracking-widest text-[#A86F5A] transition group-hover:underline">製作計畫書 →</p>
+            </div>
           </div>
         </div>
       </section>
