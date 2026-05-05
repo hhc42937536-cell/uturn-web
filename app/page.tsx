@@ -153,6 +153,7 @@ export default function HomePage() {
           { icon: "🗺️", title: "南部出發比較器", desc: "KHH/RMQ/TNN vs 桃園，幫你算清楚哪個出發方式最省錢、最省時。", href: "/compare" },
           { icon: "🧠", title: "深度在地知識庫", desc: "票務時機、人潮規律、交通眉角、隱藏景點——去過的人才知道的細節，還可以貢獻你的眉角。", href: "/tips" },
           { icon: "📚", title: "我的計畫庫", desc: "所有規劃過的行程自動儲存，可命名、比較不同版本、一鍵重開規劃。", href: "/saved" },
+          { icon: "🎒", title: "打包比價試算", desc: "機票＋住宿＋票券，勾選你想參加的活動，即時試算整趟旅行的真實總花費。", href: "/bundle" },
           { icon: "🗺️", title: "地圖式規劃", desc: "拖拉景點到各天，自動按地理位置排最佳路線。LINE Bot 做不到的事。", href: "/planner/首爾" },
           { icon: "📍", title: "附近景點", desc: "出國後開啟定位，立即找出你周圍最值得去的景點與美食。", href: "/nearby" },
           { icon: "🌏", title: "社群行程牆", desc: "看台灣旅客分享的行程，一鍵複製當自己的，Google 也搜尋得到。", href: "/explore" },
