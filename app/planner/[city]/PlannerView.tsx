@@ -182,7 +182,7 @@ function PlanModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-black/60 p-4" onClick={onClose}>
+    <div className="fixed inset-0 z-[1100] overflow-y-auto bg-black/60 p-4" onClick={onClose}>
       <div className="mx-auto mt-6 max-w-2xl rounded-[2rem] bg-[#FFFDF8] shadow-2xl" onClick={(e) => e.stopPropagation()}>
         {/* Modal header */}
         <div className="flex items-center justify-between border-b border-[#E8E0D5] px-8 py-5">
