@@ -32,15 +32,20 @@ JSON 格式（每個元素對應一天，共 ${days} 個）：
 
 第一天以抵達為主、最後一天以返程為主，安排不要太滿。`;
 
+  if (!process.env.GEMINI_API_KEY) {
+    return NextResponse.json({ error: "GEMINI_API_KEY not set" }, { status: 500 });
+  }
+
   try {
     const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
     const result = await model.generateContent(prompt);
     const raw = result.response.text();
     const jsonMatch = raw.match(/\[[\s\S]*\]/);
-    if (!jsonMatch) throw new Error("No JSON found");
+    if (!jsonMatch) throw new Error("No JSON found in response");
     const itinerary = JSON.parse(jsonMatch[0]);
     return NextResponse.json({ itinerary });
   } catch (e) {
+    console.error("[generate-itinerary]", e);
     return NextResponse.json({ error: String(e) }, { status: 500 });
   }
 }
