@@ -91,12 +91,12 @@ export default function DocxView() {
           if (data.error) return;
           const dest = DESTINATIONS.includes(data.destination) ? data.destination : "首爾";
           const depDate = data.dep_date || "";
-          // 從 days_text 解析天數（例如「5天4夜」→ 5）
-          const daysMatch = typeof data.days_text === "string"
-            ? data.days_text.match(/(\d+)\s*天/)
-            : null;
-          const numDays = daysMatch ? parseInt(daysMatch[1]) - 1 : 4;
-          const retDate = depDate ? addDays(depDate, numDays) : "";
+          const retDate = data.ret_date || (() => {
+            const daysMatch = typeof data.days_text === "string"
+              ? data.days_text.match(/(\d+)\s*天/) : null;
+            const numDays = daysMatch ? parseInt(daysMatch[1]) - 1 : 4;
+            return depDate ? addDays(depDate, numDays) : "";
+          })();
           setForm({
             destination: dest,
             depCity: "高雄",
