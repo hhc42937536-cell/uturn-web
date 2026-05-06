@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 export async function POST(req: NextRequest) {
   const { destination, depDate, retDate, people, style } = await req.json();
 
-  if (!process.env.ANTHROPIC_API_KEY) {
-    return NextResponse.json({ error: "ANTHROPIC_API_KEY not set" }, { status: 500 });
+  if (!process.env.GEMINI_API_KEY) {
+    return NextResponse.json({ error: "GEMINI_API_KEY not set" }, { status: 500 });
   }
 
   const diff = new Date(retDate).getTime() - new Date(depDate).getTime();
@@ -34,28 +35,11 @@ JSON 格式（每個元素對應一天，共 ${days} 個）：
 第一天以抵達為主、最後一天以返程為主，安排不要太滿。`;
 
   try {
-    const res = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": process.env.ANTHROPIC_API_KEY,
-        "anthropic-version": "2023-06-01",
-      },
-      body: JSON.stringify({
-        model: "claude-haiku-4-5-20251001",
-        max_tokens: 2048,
-        messages: [{ role: "user", content: prompt }],
-      }),
-    });
+    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+    const result = await model.generateContent(prompt);
+    const raw = result.response.text();
 
-    if (!res.ok) {
-      const errText = await res.text();
-      console.error("[generate-itinerary] API error:", errText);
-      return NextResponse.json({ error: errText }, { status: 500 });
-    }
-
-    const data = await res.json();
-    const raw = data.content?.[0]?.text ?? "";
     const jsonMatch = raw.match(/\[[\s\S]*\]/);
     if (!jsonMatch) throw new Error("No JSON found in response");
     const itinerary = JSON.parse(jsonMatch[0]);
