@@ -110,22 +110,30 @@ export default function DocxView() {
             style: data.style || "",
             memo: "",
           });
-          // llm_itinerary 有資料時，自動填入每日行程並跳到編輯步驟
+          // llm_itinerary 有資料 → 直接帶入；沒有 → 自動用 Claude 生成
           if (Array.isArray(data.llm_itinerary) && data.llm_itinerary.length > 0) {
             const numDays = getDayCount(depDate, retDate);
             const filled: DayNote[] = Array.from({ length: numDays }, (_, i) => {
-              const mid = data.llm_itinerary[i - 1]; // 第1天和最後一天沒有 llm 資料
+              const mid = data.llm_itinerary[i - 1];
               if (!mid) return emptyDay();
-              return {
-                morning:   mid.am  || "",
-                afternoon: mid.pm  || "",
-                evening:   mid.eve || "",
-                food:  "",
-                note:  mid.theme || "",
-              };
+              return { morning: mid.am || "", afternoon: mid.pm || "", evening: mid.eve || "", food: "", note: mid.theme || "" };
             });
             setDays(filled);
             setStep("edit");
+          } else if (depDate && retDate) {
+            // 自動觸發 Claude 生成，不需使用者再按按鈕
+            setGenerating(true);
+            fetch("/api/generate-itinerary", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ destination: dest, depDate, retDate, people: data.people ?? 2, style: data.style || "" }),
+            })
+              .then((r) => r.json())
+              .then((r) => {
+                if (r.itinerary) { setDays(r.itinerary); setStep("edit"); }
+              })
+              .catch(() => {})
+              .finally(() => setGenerating(false));
           }
         })
         .catch(() => {});
