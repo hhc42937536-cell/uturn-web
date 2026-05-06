@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import Anthropic from "@anthropic-ai/sdk";
 
 export async function POST(req: NextRequest) {
   const { destination, depDate, retDate, people, style } = await req.json();
 
-  if (!process.env.GEMINI_API_KEY) {
-    return NextResponse.json({ error: "GEMINI_API_KEY not set" }, { status: 500 });
+  if (!process.env.ANTHROPIC_API_KEY) {
+    return NextResponse.json({ error: "ANTHROPIC_API_KEY not set" }, { status: 500 });
   }
 
   const diff = new Date(retDate).getTime() - new Date(depDate).getTime();
@@ -35,10 +35,13 @@ JSON 格式（每個元素對應一天，共 ${days} 個）：
 第一天以抵達為主、最後一天以返程為主，安排不要太滿。`;
 
   try {
-    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash-preview-05-20" });
-    const result = await model.generateContent(prompt);
-    const raw = result.response.text();
+    const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+    const message = await client.messages.create({
+      model: "claude-haiku-4-5",
+      max_tokens: 4000,
+      messages: [{ role: "user", content: prompt }],
+    });
+    const raw = message.content[0].type === "text" ? message.content[0].text : "";
 
     const jsonMatch = raw.match(/\[[\s\S]*\]/);
     if (!jsonMatch) throw new Error("No JSON found in response");
