@@ -90,8 +90,11 @@ export default function DocxView() {
         .then((data) => {
           if (data.error) return;
           const dest = DESTINATIONS.includes(data.destination) ? data.destination : "首爾";
-          const depDate = data.dep_date || "";
-          const retDate = data.ret_date || (() => {
+          // "2026-06" → "2026-06-01"，讓 date input 能正確顯示
+          const toFullDate = (s: string) =>
+            s && /^\d{4}-\d{2}$/.test(s) ? s + "-01" : s;
+          const depDate = toFullDate(data.dep_date || "");
+          const retDate = toFullDate(data.ret_date || "") || (() => {
             const daysMatch = typeof data.days_text === "string"
               ? data.days_text.match(/(\d+)\s*天/) : null;
             const numDays = daysMatch ? parseInt(daysMatch[1]) - 1 : 4;
@@ -107,6 +110,23 @@ export default function DocxView() {
             style: data.style || "",
             memo: "",
           });
+          // llm_itinerary 有資料時，自動填入每日行程並跳到編輯步驟
+          if (Array.isArray(data.llm_itinerary) && data.llm_itinerary.length > 0) {
+            const numDays = getDayCount(depDate, retDate);
+            const filled: DayNote[] = Array.from({ length: numDays }, (_, i) => {
+              const mid = data.llm_itinerary[i - 1]; // 第1天和最後一天沒有 llm 資料
+              if (!mid) return emptyDay();
+              return {
+                morning:   mid.am  || "",
+                afternoon: mid.pm  || "",
+                evening:   mid.eve || "",
+                food:  "",
+                note:  mid.theme || "",
+              };
+            });
+            setDays(filled);
+            setStep("edit");
+          }
         })
         .catch(() => {});
       return;
