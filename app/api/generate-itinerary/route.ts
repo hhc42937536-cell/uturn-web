@@ -37,7 +37,7 @@ JSON 格式（每個元素對應一天，共 ${days} 個）：
   try {
     const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
     const message = await client.messages.create({
-      model: "claude-haiku-4-5",
+      model: "claude-opus-4-7",
       max_tokens: 4000,
       messages: [{ role: "user", content: prompt }],
     });
