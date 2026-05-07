@@ -38,6 +38,10 @@ export default function AiPlanPage() {
   const [loading, setLoading] = useState(false);
   const [itinerary, setItinerary] = useState<DayPlan[] | null>(null);
   const [error, setError] = useState("");
+  const [memos, setMemos] = useState<string[]>([]);
+
+  const setMemo = (i: number, val: string) =>
+    setMemos((prev) => { const next = [...prev]; next[i] = val; return next; });
 
   const days = depDate && retDate
     ? Math.max(2, Math.round((new Date(retDate).getTime() - new Date(depDate).getTime()) / 86400000) + 1)
@@ -214,7 +218,7 @@ export default function AiPlanPage() {
                   </div>
 
                   {/* 必吃 + 小提示 */}
-                  <div className="mx-6 mb-5 mt-1 grid grid-cols-1 gap-3 sm:grid-cols-2">
+                  <div className="mx-6 mt-1 grid grid-cols-1 gap-3 sm:grid-cols-2">
                     <div className="rounded-2xl bg-[#FBF3EE] px-4 py-3.5">
                       <p className="mb-1.5 text-xs font-semibold text-[#C8825A]">🍜 必吃</p>
                       <p className="text-sm leading-6 text-[#4B4037]">{day.food}</p>
@@ -223,6 +227,18 @@ export default function AiPlanPage() {
                       <p className="mb-1.5 text-xs font-semibold text-[#5A8AA8]">💡 小提示</p>
                       <p className="text-sm leading-6 text-[#6F675F]">{day.note}</p>
                     </div>
+                  </div>
+
+                  {/* 備忘事項 */}
+                  <div className="mx-6 mb-5 mt-3">
+                    <p className="mb-1.5 text-xs font-semibold text-[#A79C91]">📝 備忘事項</p>
+                    <textarea
+                      rows={2}
+                      placeholder="例：下午兩點建大貨櫃屋、晚上訂位弘大炸雞…"
+                      value={memos[i] ?? ""}
+                      onChange={(e) => setMemo(i, e.target.value)}
+                      className="w-full resize-none rounded-xl border border-[#E0D9D0] bg-[#FAF8F4] px-3 py-2.5 text-sm leading-6 text-[#4B4037] placeholder:text-[#C5BEB6] outline-none focus:border-[#A86F5A]"
+                    />
                   </div>
                 </div>
               );
