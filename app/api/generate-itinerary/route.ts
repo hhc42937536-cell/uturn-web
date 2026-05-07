@@ -25,19 +25,19 @@ export async function POST(req: NextRequest) {
   const diff = new Date(retDate).getTime() - new Date(depDate).getTime();
   const days = Math.max(2, Math.round(diff / 86400000) + 1);
 
-  const mustVisitLine = mustVisit?.trim()
-    ? `- 指定景點（必須安排進行程）：${mustVisit.trim()}`
+  const mustVisitBlock = mustVisit?.trim()
+    ? `\n【強制要求】以下景點用戶指定必去，一定要安排進行程，不可省略或替換：\n${mustVisit.trim()}\n`
     : "";
 
   const prompt = `你是台灣人出國行程規劃師。請為以下旅程生成每日建議行程，以 JSON 陣列回傳，不要有其他文字。
-
+${mustVisitBlock}
 旅程資訊：
 - 目的地：${destination}
 - 出發日期：${depDate}
 - 回程日期：${retDate}
 - 人數：${people}人
 - 旅遊風格：${style || "綜合"}
-- 天數：${days} 天${mustVisitLine ? `\n${mustVisitLine}` : ""}
+- 天數：${days} 天
 
 JSON 格式（每個元素對應一天，共 ${days} 個）：
 [
