@@ -16,6 +16,14 @@ const ARR_AIRPORTS: Record<string, { code: string; label: string }[]> = {
     { code: "NRT", label: "成田（NRT）── 多數國際航班" },
     { code: "HND", label: "羽田（HND）── 離市區近" },
   ],
+  大阪: [
+    { code: "KIX", label: "關西（KIX）── 多數國際航班" },
+    { code: "ITM", label: "伊丹（ITM）── 部分亞洲航線" },
+  ],
+  曼谷: [
+    { code: "BKK", label: "素萬那普（BKK）── 多數國際航班" },
+    { code: "DMK", label: "廊曼（DMK）── 廉航常用（虎航/獅航）" },
+  ],
 };
 
 const VISA_NOTE: Record<string, string> = {
