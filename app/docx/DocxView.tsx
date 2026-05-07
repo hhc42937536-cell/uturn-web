@@ -74,7 +74,7 @@ export default function DocxView() {
   const [form, setForm] = useState({
     destination: "首爾", depCity: "高雄",
     depDate: "", retDate: "", people: "2",
-    budget: "", style: "", memo: "",
+    budget: "", style: "", mustVisit: "", memo: "",
   });
 
   const dayCount = getDayCount(form.depDate, form.retDate);
@@ -181,6 +181,7 @@ export default function DocxView() {
           retDate: form.retDate,
           people: form.people,
           style: form.style,
+          mustVisit: form.mustVisit,
         }),
       });
       const data = await res.json();
@@ -276,6 +277,11 @@ export default function DocxView() {
                   <span className="mb-1.5 block text-xs font-light tracking-widest text-[#6F675F]">旅遊風格</span>
                   <input type="text" value={form.style} onChange={(e) => setForm((p) => ({ ...p, style: e.target.value }))}
                     placeholder="如：美食探索、文青咖啡廳、購物血拼…" className={inputClass} />
+                </label>
+                <label className="block sm:col-span-2">
+                  <span className="mb-1.5 block text-xs font-light tracking-widest text-[#6F675F]">指定景點 <span className="text-[#B0A89E]">（選填，AI 會幫你插入行程）</span></span>
+                  <textarea value={form.mustVisit} onChange={(e) => setForm((p) => ({ ...p, mustVisit: e.target.value }))}
+                    rows={2} placeholder="例：建大貨櫃屋、弘大 MUJI、明洞某某烤肉店…" className={ta} />
                 </label>
                 <label className="block sm:col-span-2">
                   <span className="mb-1.5 block text-xs font-light tracking-widest text-[#6F675F]">備忘事項</span>
