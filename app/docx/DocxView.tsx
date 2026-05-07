@@ -4,7 +4,23 @@ import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { buildAndDownloadDocx } from "@/app/lib/buildDocx";
 
-const DESTINATIONS = ["首爾", "東京", "大阪", "沖繩", "釜山", "曼谷", "新加坡", "香港", "胡志明市", "吉隆坡"];
+const DESTINATIONS = [
+  // 日本
+  "東京", "大阪", "沖繩", "福岡", "札幌", "名古屋",
+  // 韓國
+  "首爾", "釜山", "濟州",
+  // 東南亞
+  "曼谷", "清邁", "普吉島", "新加坡", "吉隆坡", "峇里島",
+  "胡志明市", "河內", "峴港", "馬尼拉", "宿霧", "雅加達",
+  "亞庇", "蘭卡威", "檳城", "金邊", "暹粒",
+  // 東北亞
+  "香港", "澳門", "上海", "北京", "廣州",
+  // 中東/歐洲/美洲/大洋洲
+  "杜拜", "倫敦", "巴黎", "羅馬", "巴塞隆納", "雪梨",
+  "紐約", "洛杉磯", "溫哥華", "多倫多",
+  // 其他
+  "關島", "帛琉",
+];
 const DEP_CITIES = ["高雄", "台北", "台中", "台南"];
 
 const ARR_AIRPORTS: Record<string, { code: string; label: string }[]> = {
