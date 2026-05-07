@@ -164,17 +164,20 @@ export default function DocxView() {
           } else if (depDate && retDate) {
             // 自動觸發 Claude 生成，不需使用者再按按鈕
             setGenerating(true);
+            const ctrl = new AbortController();
+            const timer = setTimeout(() => ctrl.abort(), 55000);
             fetch("/api/generate-itinerary", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ destination: dest, depDate, retDate, people: data.people ?? 2, style: data.style || "" }),
+              body: JSON.stringify({ destination: dest, arrAirport: data.arr_airport || "", depDate, retDate, people: data.people ?? 2, style: data.style || "", mustVisit: data.must_visit || "" }),
+              signal: ctrl.signal,
             })
               .then((r) => r.json())
               .then((r) => {
                 if (r.itinerary) { setDays(r.itinerary); setStep("edit"); }
               })
               .catch(() => {})
-              .finally(() => setGenerating(false));
+              .finally(() => { clearTimeout(timer); setGenerating(false); });
           }
         })
         .catch(() => {});

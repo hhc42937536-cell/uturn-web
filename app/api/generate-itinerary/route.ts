@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const MODELS = ["gemini-2.5-flash-lite", "gemini-2.0-flash-lite", "gemini-flash-lite-latest"];
+export const maxDuration = 60;
+
+const MODELS = ["gemini-2.5-flash", "gemini-2.0-flash-lite", "gemini-1.5-flash"];
 
 async function callGemini(key: string, model: string, prompt: string): Promise<string> {
   const res = await fetch(
