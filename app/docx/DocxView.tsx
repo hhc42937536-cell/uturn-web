@@ -108,7 +108,7 @@ export default function DocxView() {
         .then((r) => r.json())
         .then((data) => {
           if (data.error) return;
-          const dest = DESTINATIONS.includes(data.destination) ? data.destination : "首爾";
+          const dest = data.destination || "首爾";
           // "2026-06" → "2026-06-01"，讓 date input 能正確顯示
           const toFullDate = (s: string) =>
             s && /^\d{4}-\d{2}$/.test(s) ? s + "-01" : s;
