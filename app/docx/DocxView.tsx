@@ -495,10 +495,10 @@ export default function DocxView() {
                 {/* Budget Breakdown */}
                 {budgetBreakdown && budgetBreakdown.total > 0 && (
                   <section className="mb-10">
-                    <h2 className="mb-4 text-[10px] font-light uppercase tracking-[0.5em] text-[#8FA39A]">預估旅遊支出</h2>
+                    <h2 className="mb-4 text-[10px] font-light uppercase tracking-[0.5em] text-[#8FA39A]">整趟旅程預估費用</h2>
                     <div className="rounded-2xl border border-[#D8D2C7] bg-white p-5">
                       <p className="mb-3 text-xs font-light text-[#8A7F73]">
-                        {form.destination} · {budgetBreakdown.days}天{budgetBreakdown.nights}夜 · {budgetBreakdown.adults}人
+                        {form.destination} · {budgetBreakdown.days}天{budgetBreakdown.nights}夜 · {budgetBreakdown.adults}人　｜　以下為整趟旅程合計金額
                       </p>
                       <div className="space-y-2">
                         {[
@@ -514,11 +514,21 @@ export default function DocxView() {
                           </div>
                         ))}
                         <div className="mt-3 border-t border-[#E8E2D8] pt-3 flex justify-between text-sm font-semibold text-[#E53935]">
-                          <span>💰 預估總計</span>
+                          <span>💰 整趟旅程估計</span>
                           <span>NT$ {(budgetBreakdown.total ?? 0).toLocaleString()}</span>
                         </div>
+                        {budgetBreakdown.adults > 1 && (
+                          <div className="flex justify-between text-xs font-light text-[#1565C0]">
+                            <span>📌 每人約</span>
+                            <span>NT$ {(budgetBreakdown.per_person ?? 0).toLocaleString()}</span>
+                          </div>
+                        )}
+                        <div className="mt-2 rounded-lg bg-[#F5F3EF] p-3 flex justify-between text-sm font-medium text-[#5C5248]">
+                          <span>💳 建議實際攜帶金額（×1.2）</span>
+                          <span>NT$ {Math.round((budgetBreakdown.total ?? 0) * 1.2).toLocaleString()}</span>
+                        </div>
                         <p className="mt-2 text-[10px] font-light text-[#A79C91]">
-                          每人每天非機票花費約 NT$ {(budgetBreakdown.daily_non_flight ?? 0).toLocaleString()}｜以上為參考中間值，實際依旅遊方式、住宿等級而異。建議準備總額 × 1.2 作為實際預算。
+                          參考中間值，實際依住宿等級、旅遊方式、匯率而異。不含購物與個人消費。
                         </p>
                       </div>
                     </div>
