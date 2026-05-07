@@ -1,12 +1,26 @@
 import { NextRequest, NextResponse } from "next/server";
 
+const MODELS = ["gemini-2.5-flash-lite", "gemini-2.0-flash-lite", "gemini-flash-lite-latest"];
+
+async function callGemini(key: string, model: string, prompt: string): Promise<string> {
+  const res = await fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] }),
+    }
+  );
+  const data = await res.json();
+  if (!res.ok) throw new Error(`[${model}] ${res.status}: ${data.error?.message ?? "API error"}`);
+  return data.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
+}
+
 export async function POST(req: NextRequest) {
   const { destination, depDate, retDate, people, style } = await req.json();
 
   const key = process.env.GEMINI_API_KEY;
-  if (!key) {
-    return NextResponse.json({ error: "GEMINI_API_KEY not set" }, { status: 500 });
-  }
+  if (!key) return NextResponse.json({ error: "GEMINI_API_KEY not set" }, { status: 500 });
 
   const diff = new Date(retDate).getTime() - new Date(depDate).getTime();
   const days = Math.max(2, Math.round(diff / 86400000) + 1);
@@ -34,30 +48,26 @@ JSON 格式（每個元素對應一天，共 ${days} 個）：
 
 第一天以抵達為主、最後一天以返程為主，安排不要太滿。`;
 
-  try {
-    const res = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${key}`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] }),
+  const errors: string[] = [];
+
+  for (const model of MODELS) {
+    for (let attempt = 0; attempt < 2; attempt++) {
+      try {
+        if (attempt > 0) await new Promise((r) => setTimeout(r, 2000));
+        const raw = await callGemini(key, model, prompt);
+        const jsonMatch = raw.match(/\[[\s\S]*\]/);
+        if (!jsonMatch) throw new Error("No JSON in response");
+        const itinerary = JSON.parse(jsonMatch[0]);
+        return NextResponse.json({ itinerary });
+      } catch (e) {
+        const msg = e instanceof Error ? e.message : String(e);
+        errors.push(msg);
+        console.error(`[generate-itinerary] attempt ${attempt + 1} model=${model}:`, msg);
+        // 只有 503/429 才重試，其他直接換模型
+        if (!msg.includes("503") && !msg.includes("429")) break;
       }
-    );
-
-    const data = await res.json();
-
-    if (!res.ok) {
-      console.error("[generate-itinerary] Gemini error:", JSON.stringify(data));
-      return NextResponse.json({ error: data.error?.message ?? "Gemini API error" }, { status: 500 });
     }
-
-    const raw: string = data.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
-    const jsonMatch = raw.match(/\[[\s\S]*\]/);
-    if (!jsonMatch) throw new Error("No JSON in response");
-    const itinerary = JSON.parse(jsonMatch[0]);
-    return NextResponse.json({ itinerary });
-  } catch (e) {
-    console.error("[generate-itinerary]", e);
-    return NextResponse.json({ error: String(e) }, { status: 500 });
   }
+
+  return NextResponse.json({ error: errors.at(-1) ?? "All models failed" }, { status: 500 });
 }
