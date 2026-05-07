@@ -97,18 +97,25 @@ function getPackingList(destination: string): string[][] {
 }
 
 // ── 顏色常數 ─────────────────────────────────────────────
-const COLOR = {
+const C = {
   primary:  "3A2E26",
   accent:   "A86F5A",
+  accentLt: "F0E6DF",
   light:    "FDF6ED",
+  section:  "F7F3EC",
   gray:     "8A7F73",
   border:   "D8D2C7",
   text:     "4B4037",
   white:    "FFFFFF",
-  section:  "F7F3EC",
+  muted:    "CCBBAA",
+  morning:  "FFF8F0",
+  afternoon:"F0F7FF",
+  evening:  "F5F0FA",
+  food:     "F0FBF0",
+  note:     "F7F3EC",
 };
 
-// ── 輔助函式 ─────────────────────────────────────────────
+// ── 日期輔助 ─────────────────────────────────────────────
 
 function fmtDate(s: string) {
   if (!s) return "";
@@ -126,80 +133,227 @@ function addDays(dateStr: string, n: number) {
 const WEEKDAYS = ["日", "一", "二", "三", "四", "五", "六"];
 function getWeekday(dateStr: string) {
   if (!dateStr) return "";
-  const d = new Date(dateStr + "T00:00:00");
-  return `週${WEEKDAYS[d.getDay()]}`;
+  return `週${WEEKDAYS[new Date(dateStr + "T00:00:00").getDay()]}`;
 }
 
-// ── Paragraph 建構輔助 ────────────────────────────────────
+// ── 邊框輔助 ─────────────────────────────────────────────
 
-function h1(text: string) {
-  return new Paragraph({
-    children: [new TextRun({ text, bold: true, size: 52, color: COLOR.white, font: "微軟正黑體" })],
-    alignment: AlignmentType.CENTER,
-    spacing: { before: 200, after: 200 },
-  });
-}
+const NO_BORDER = {
+  top:    { style: BorderStyle.NONE, size: 0, color: "FFFFFF" },
+  bottom: { style: BorderStyle.NONE, size: 0, color: "FFFFFF" },
+  left:   { style: BorderStyle.NONE, size: 0, color: "FFFFFF" },
+  right:  { style: BorderStyle.NONE, size: 0, color: "FFFFFF" },
+};
+
+const THIN_BORDER = {
+  top:    { style: BorderStyle.SINGLE, size: 4, color: C.border },
+  bottom: { style: BorderStyle.SINGLE, size: 4, color: C.border },
+  left:   { style: BorderStyle.SINGLE, size: 4, color: C.border },
+  right:  { style: BorderStyle.SINGLE, size: 4, color: C.border },
+};
+
+// ── Section 標題 ─────────────────────────────────────────
 
 function h2(text: string) {
   return new Paragraph({
-    children: [new TextRun({ text, bold: true, size: 28, color: COLOR.accent, font: "微軟正黑體" })],
-    spacing: { before: 320, after: 120 },
-    border: { bottom: { style: BorderStyle.SINGLE, size: 4, color: COLOR.border } },
+    children: [new TextRun({ text, bold: true, size: 26, color: C.accent, font: "微軟正黑體" })],
+    spacing: { before: 360, after: 160 },
+    border: { bottom: { style: BorderStyle.SINGLE, size: 6, color: C.accent } },
   });
 }
 
-function h3(text: string, color = COLOR.text) {
+function h3(text: string) {
   return new Paragraph({
-    children: [new TextRun({ text, bold: true, size: 22, color, font: "微軟正黑體" })],
+    children: [new TextRun({ text, bold: true, size: 22, color: C.text, font: "微軟正黑體" })],
     spacing: { before: 200, after: 80 },
   });
 }
 
-function body(text: string, indent = false) {
+function body(text: string) {
   return new Paragraph({
-    children: [new TextRun({ text, size: 20, color: COLOR.text, font: "微軟正黑體" })],
-    indent: indent ? { left: convertInchesToTwip(0.2) } : undefined,
+    children: [new TextRun({ text, size: 20, color: C.text, font: "微軟正黑體" })],
     spacing: { before: 40, after: 40 },
+    indent: { left: convertInchesToTwip(0.15) },
   });
 }
 
 function bullet(text: string) {
   return new Paragraph({
-    children: [new TextRun({ text: `• ${text}`, size: 20, color: COLOR.text, font: "微軟正黑體" })],
-    indent: { left: convertInchesToTwip(0.25) },
-    spacing: { before: 40, after: 40 },
+    children: [new TextRun({ text: `• ${text}`, size: 20, color: C.text, font: "微軟正黑體" })],
+    indent: { left: convertInchesToTwip(0.3) },
+    spacing: { before: 50, after: 50 },
   });
 }
 
-function spacer() {
-  return new Paragraph({ children: [new TextRun({ text: "" })], spacing: { before: 80, after: 80 } });
-}
-
-function coverInfoRow(label: string, value: string) {
-  return new Paragraph({
-    children: [
-      new TextRun({ text: `${label}　`, size: 20, color: "CCBBAA", font: "微軟正黑體" }),
-      new TextRun({ text: value, size: 20, color: COLOR.white, font: "微軟正黑體" }),
-    ],
-    alignment: AlignmentType.CENTER,
-    spacing: { before: 60, after: 60 },
-  });
-}
-
-function labeledRow(icon: string, label: string, value: string) {
-  if (!value.trim()) return null;
-  return new Paragraph({
-    children: [
-      new TextRun({ text: `${icon} ${label}　`, size: 20, bold: true, color: COLOR.accent, font: "微軟正黑體" }),
-      new TextRun({ text: value, size: 20, color: COLOR.text, font: "微軟正黑體" }),
-    ],
-    indent: { left: convertInchesToTwip(0.1) },
-    spacing: { before: 60, after: 60 },
-  });
+function spacer(pt = 120) {
+  return new Paragraph({ children: [new TextRun("")], spacing: { before: pt, after: 0 } });
 }
 
 function pageBreak() {
   return new Paragraph({ children: [new PageBreak()] });
+}
+
+// ── 封面頁（Table 實作，確保全頁深色背景） ───────────────
+
+function buildCover(form: DocxFormData, dateRange: string): Table {
+  const coverRow = (content: Paragraph[]) =>
+    new TableRow({
+      children: [
+        new TableCell({
+          borders: NO_BORDER,
+          shading: { type: ShadingType.SOLID, fill: C.primary },
+          children: content,
+        }),
+      ],
+    });
+
+  const cp = (text: string, opts: {
+    size?: number; bold?: boolean; color?: string; align?: (typeof AlignmentType)[keyof typeof AlignmentType];
+    before?: number; after?: number;
+  } = {}) =>
+    new Paragraph({
+      children: [new TextRun({
+        text,
+        size: opts.size ?? 20,
+        bold: opts.bold,
+        color: opts.color ?? C.white,
+        font: "微軟正黑體",
+      })],
+      alignment: opts.align ?? AlignmentType.CENTER,
+      spacing: { before: opts.before ?? 60, after: opts.after ?? 60 },
+    });
+
+  const infoRows: Paragraph[] = [
+    cp(""),
+    cp(`✈️  出發城市　${form.depCity}`, { color: C.muted }),
+    cp(`👤  出行人數　${form.people} 人`, { color: C.muted }),
+    ...(form.budget ? [cp(`💰  旅遊預算　${form.budget}`, { color: C.muted })] : []),
+    ...(form.style  ? [cp(`🎯  旅遊風格　${form.style}`,  { color: C.muted })] : []),
+    cp(""),
+    cp("", { before: 0, after: 400 }),
+  ];
+
+  return new Table({
+    width: { size: 100, type: WidthType.PERCENTAGE },
+    borders: { ...NO_BORDER, insideH: NO_BORDER.top, insideV: NO_BORDER.top },
+    rows: [
+      coverRow([
+        cp("TRAVEL PLAN", { size: 18, color: "7A6A5A", before: 600, after: 80 }),
+        cp(`${form.destination}　旅遊計畫書`, { size: 52, bold: true, before: 80, after: 100 }),
+        cp(dateRange, { size: 28, color: C.muted, before: 0, after: 240 }),
+        ...infoRows,
+        cp("由 出國優轉 AbroadUturn 計畫書工作室製作", { size: 16, color: "5A5050", before: 60, after: 600 }),
+      ]),
+    ],
+  });
+}
+
+// ── 每日行程卡片（Table 實作） ────────────────────────────
+
+const DAY_COLORS = ["4A3828", "2A4A6A", "2A5A3A", "5A2A5A", "3A5A2A", "5A4A2A", "2A2A5A"];
+
+function slotCell(icon: string, label: string, value: string, bg: string): TableRow {
+  return new TableRow({
+    children: [
+      // 左欄：icon + label
+      new TableCell({
+        width: { size: 18, type: WidthType.PERCENTAGE },
+        borders: NO_BORDER,
+        shading: { type: ShadingType.SOLID, fill: bg },
+        verticalAlign: VerticalAlign.TOP,
+        children: [
+          new Paragraph({
+            children: [
+              new TextRun({ text: icon, size: 22, font: "微軟正黑體" }),
+              new TextRun({ text: `\n${label}`, size: 16, bold: true, color: C.gray, font: "微軟正黑體" }),
+            ],
+            spacing: { before: 100, after: 100 },
+            indent: { left: convertInchesToTwip(0.15) },
+          }),
+        ],
+      }),
+      // 右欄：內容（可換行）
+      new TableCell({
+        width: { size: 82, type: WidthType.PERCENTAGE },
+        borders: { ...NO_BORDER, left: { style: BorderStyle.SINGLE, size: 2, color: C.border } },
+        shading: { type: ShadingType.SOLID, fill: C.white },
+        verticalAlign: VerticalAlign.TOP,
+        children: [
+          new Paragraph({
+            children: [new TextRun({ text: value || "—", size: 19, color: value ? C.text : "BBBBBB", font: "微軟正黑體" })],
+            spacing: { before: 100, after: 100 },
+            indent: { left: convertInchesToTwip(0.15) },
+          }),
+        ],
+      }),
+    ],
+  });
+}
+
+function buildDayCard(day: DayNote, index: number, totalDays: number, depDate: string): (Table | Paragraph)[] {
+  const dateStr = addDays(depDate, index);
+  const dayLabel =
+    index === 0 ? `Day 1  ·  抵達日` :
+    index === totalDays - 1 ? `Day ${index + 1}  ·  返程日` :
+    `Day ${index + 1}`;
+  const dateLabel = dateStr ? `${fmtDate(dateStr)}（${getWeekday(dateStr)}）` : "";
+  const headerColor = DAY_COLORS[index % DAY_COLORS.length];
+
+  const headerRow = new TableRow({
+    children: [
+      new TableCell({
+        columnSpan: 2,
+        borders: NO_BORDER,
+        shading: { type: ShadingType.SOLID, fill: headerColor },
+        children: [
+          new Paragraph({
+            children: [
+              new TextRun({ text: `  ${dayLabel}`, bold: true, size: 22, color: C.white, font: "微軟正黑體" }),
+              new TextRun({ text: `    ${dateLabel}`, size: 18, color: "CCCCCC", font: "微軟正黑體" }),
+            ],
+            spacing: { before: 120, after: 120 },
+          }),
+        ],
+      }),
+    ],
+  });
+
+  const hasContent = [day.morning, day.afternoon, day.evening, day.food].some(v => v.trim());
+
+  const slots: TableRow[] = hasContent
+    ? [
+        slotCell("🌅", "上午", day.morning, C.morning),
+        slotCell("☀️", "下午", day.afternoon, C.afternoon),
+        slotCell("🌙", "晚上", day.evening, C.evening),
+        slotCell("🍜", "美食", day.food, C.food),
+        ...(day.note?.trim() ? [slotCell("📝", "備忘", day.note, C.note)] : []),
+      ]
+    : [
+        new TableRow({
+          children: [
+            new TableCell({
+              columnSpan: 2,
+              borders: NO_BORDER,
+              shading: { type: ShadingType.SOLID, fill: "FAFAFA" },
+              children: [
+                new Paragraph({
+                  children: [new TextRun({ text: "（本日行程尚未填寫）", size: 19, color: "BBBBBB", italics: true, font: "微軟正黑體" })],
+                  alignment: AlignmentType.CENTER,
+                  spacing: { before: 160, after: 160 },
+                }),
+              ],
+            }),
+          ],
+        }),
+      ];
+
+  const table = new Table({
+    width: { size: 100, type: WidthType.PERCENTAGE },
+    borders: THIN_BORDER,
+    rows: [headerRow, ...slots],
+  });
+
+  return [table, spacer(180)];
 }
 
 // ── 打包清單表格 ─────────────────────────────────────────
@@ -207,33 +361,32 @@ function pageBreak() {
 function buildPackingTable(rows: string[][]): Table {
   return new Table({
     width: { size: 100, type: WidthType.PERCENTAGE },
-    borders: {
-      top:    { style: BorderStyle.SINGLE, size: 4, color: COLOR.border },
-      bottom: { style: BorderStyle.SINGLE, size: 4, color: COLOR.border },
-      left:   { style: BorderStyle.SINGLE, size: 4, color: COLOR.border },
-      right:  { style: BorderStyle.SINGLE, size: 4, color: COLOR.border },
-    },
+    borders: THIN_BORDER,
     rows: rows.map(([cat, items], i) =>
       new TableRow({
         children: [
           new TableCell({
             width: { size: 22, type: WidthType.PERCENTAGE },
-            shading: { type: ShadingType.SOLID, fill: i % 2 === 0 ? "F0EBE3" : "FBF8F1" },
+            borders: NO_BORDER,
+            shading: { type: ShadingType.SOLID, fill: i % 2 === 0 ? "EDE6DC" : "F5F0E8" },
             verticalAlign: VerticalAlign.CENTER,
             children: [
               new Paragraph({
-                children: [new TextRun({ text: cat, bold: true, size: 19, color: COLOR.accent, font: "微軟正黑體" })],
-                indent: { left: convertInchesToTwip(0.1) },
+                children: [new TextRun({ text: cat, bold: true, size: 19, color: C.accent, font: "微軟正黑體" })],
+                indent: { left: convertInchesToTwip(0.15) },
+                spacing: { before: 100, after: 100 },
               }),
             ],
           }),
           new TableCell({
             width: { size: 78, type: WidthType.PERCENTAGE },
-            shading: { type: ShadingType.SOLID, fill: i % 2 === 0 ? "FFFDF8" : COLOR.white },
+            borders: { ...NO_BORDER, left: { style: BorderStyle.SINGLE, size: 2, color: C.border } },
+            shading: { type: ShadingType.SOLID, fill: i % 2 === 0 ? C.white : "FFFDF8" },
             children: [
               new Paragraph({
-                children: [new TextRun({ text: items, size: 19, color: COLOR.text, font: "微軟正黑體" })],
-                indent: { left: convertInchesToTwip(0.1) },
+                children: [new TextRun({ text: items, size: 19, color: C.text, font: "微軟正黑體" })],
+                indent: { left: convertInchesToTwip(0.15) },
+                spacing: { before: 100, after: 100 },
               }),
             ],
           }),
@@ -241,72 +394,6 @@ function buildPackingTable(rows: string[][]): Table {
       })
     ),
   });
-}
-
-// ── 每日行程卡片（用 Table 做底色） ─────────────────────
-
-function buildDayCard(day: DayNote, index: number, totalDays: number, depDate: string): Paragraph[] {
-  const dateStr = addDays(depDate, index);
-  const dayLabel =
-    index === 0 ? "Day 1 · 抵達日" :
-    index === totalDays - 1 ? `Day ${index + 1} · 返程日` :
-    `Day ${index + 1}`;
-  const dateLabel = dateStr ? `${fmtDate(dateStr)}（${getWeekday(dateStr)}）` : "";
-
-  const items: [string, string, string][] = [
-    ["🌅", "上午", day.morning],
-    ["☀️", "下午", day.afternoon],
-    ["🌙", "晚上", day.evening],
-    ["🍜", "美食", day.food],
-  ];
-
-  const result: Paragraph[] = [
-    new Paragraph({
-      children: [
-        new TextRun({ text: `  ${dayLabel}`, bold: true, size: 22, color: COLOR.white, font: "微軟正黑體" }),
-        new TextRun({ text: `  ${dateLabel}`, size: 19, color: "CCBBAA", font: "微軟正黑體" }),
-      ],
-      shading: { type: ShadingType.SOLID, fill: COLOR.primary },
-      spacing: { before: 160, after: 0 },
-      indent: { left: convertInchesToTwip(0.1) },
-    }),
-  ];
-
-  const hasContent = items.some(([, , v]) => v.trim()) || day.note.trim();
-  if (!hasContent) {
-    result.push(new Paragraph({
-      children: [new TextRun({ text: "  （本日行程尚未填寫）", size: 19, color: "AAAAAA", font: "微軟正黑體", italics: true })],
-      shading: { type: ShadingType.SOLID, fill: "FFFDF8" },
-      spacing: { before: 0, after: 0 },
-    }));
-  } else {
-    for (const [icon, label, val] of items) {
-      if (!val.trim()) continue;
-      result.push(
-        new Paragraph({
-          children: [
-            new TextRun({ text: `  ${icon} ${label}　`, size: 19, bold: true, color: COLOR.gray, font: "微軟正黑體" }),
-            new TextRun({ text: val, size: 19, color: COLOR.text, font: "微軟正黑體" }),
-          ],
-          shading: { type: ShadingType.SOLID, fill: "FFFDF8" },
-          spacing: { before: 0, after: 0 },
-          indent: { left: convertInchesToTwip(0.1) },
-        })
-      );
-    }
-    if (day.note.trim()) {
-      result.push(
-        new Paragraph({
-          children: [new TextRun({ text: `  📝 ${day.note}`, size: 18, color: COLOR.gray, italics: true, font: "微軟正黑體" })],
-          shading: { type: ShadingType.SOLID, fill: COLOR.section },
-          spacing: { before: 0, after: 0 },
-        })
-      );
-    }
-  }
-
-  result.push(spacer());
-  return result;
 }
 
 // ── 主函式 ───────────────────────────────────────────────
@@ -319,83 +406,57 @@ export async function buildAndDownloadDocx(form: DocxFormData, days: DayNote[]) 
   const dateRange = `${fmtDate(form.depDate)} – ${fmtDate(form.retDate)}`;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const sections: any[] = [];
+  const children: any[] = [];
 
   // ── 封面頁 ──────────────────────────────────────────
-  sections.push(
-    new Paragraph({
-      children: [new TextRun({ text: "TRAVEL PLAN", size: 20, color: "CCBBAA", font: "Montserrat" })],
-      alignment: AlignmentType.CENTER,
-      shading: { type: ShadingType.SOLID, fill: COLOR.primary },
-      spacing: { before: 600, after: 80 },
-    }),
-    h1(`${form.destination}　旅遊計畫書`),
-    new Paragraph({
-      children: [new TextRun({ text: dateRange, size: 28, color: "DDCCBB", font: "微軟正黑體" })],
-      alignment: AlignmentType.CENTER,
-      shading: { type: ShadingType.SOLID, fill: COLOR.primary },
-      spacing: { before: 0, after: 120 },
-    }),
-    coverInfoRow("✈️ 出發城市", form.depCity),
-    coverInfoRow("👤 出行人數", `${form.people} 人`),
-    form.budget ? coverInfoRow("💰 旅遊預算", form.budget) : new Paragraph({ children: [] }),
-    form.style  ? coverInfoRow("🎯 旅遊風格", form.style)  : new Paragraph({ children: [] }),
-    new Paragraph({
-      children: [new TextRun({ text: "由 出國優轉 AbroadUturn 計畫書工作室製作", size: 17, color: "AAAAAA", font: "微軟正黑體" })],
-      alignment: AlignmentType.CENTER,
-      shading: { type: ShadingType.SOLID, fill: COLOR.primary },
-      spacing: { before: 200, after: 800 },
-    }),
-    pageBreak(),
-  );
+  children.push(buildCover(form, dateRange));
+  children.push(pageBreak());
 
   // ── 簽證 & 海關 ──────────────────────────────────────
-  sections.push(h2("🛂  簽證 & 海關資訊"));
-  sections.push(h3("簽證說明", COLOR.accent));
-  sections.push(body(visa, true));
-  sections.push(spacer());
-  sections.push(h3("海關注意事項", COLOR.accent));
-  for (const item of customs) sections.push(bullet(item));
-  sections.push(spacer());
-  sections.push(h3("緊急聯絡資訊", COLOR.accent));
-  for (const line of emergency) sections.push(bullet(line));
-  sections.push(pageBreak());
+  children.push(h2("🛂  簽證 & 海關資訊"));
+  children.push(h3("簽證說明"));
+  children.push(body(visa));
+  children.push(spacer(80));
+  children.push(h3("海關注意事項"));
+  for (const item of customs) children.push(bullet(item));
+  children.push(spacer(80));
+  children.push(h3("緊急聯絡資訊"));
+  for (const line of emergency) children.push(bullet(line));
+  children.push(pageBreak());
 
   // ── 每日行程 ─────────────────────────────────────────
-  sections.push(h2("📅  每日行程"));
+  children.push(h2("📅  每日行程"));
+  children.push(spacer(80));
   for (let i = 0; i < days.length; i++) {
-    const cards = buildDayCard(days[i], i, days.length, form.depDate);
-    sections.push(...cards);
+    children.push(...buildDayCard(days[i], i, days.length, form.depDate));
   }
-  sections.push(pageBreak());
+  children.push(pageBreak());
 
   // ── 打包清單 ─────────────────────────────────────────
-  sections.push(h2("🧳  打包清單"));
-  sections.push(
+  children.push(h2("🧳  打包清單"));
+  children.push(
     new Paragraph({
-      children: [new TextRun({ text: `以下為前往 ${form.destination} 的建議攜帶物品清單：`, size: 20, color: COLOR.gray, font: "微軟正黑體" })],
+      children: [new TextRun({ text: `以下為前往 ${form.destination} 的建議攜帶物品清單：`, size: 20, color: C.gray, font: "微軟正黑體" })],
       spacing: { before: 80, after: 120 },
     })
   );
-  sections.push(buildPackingTable(packing));
-  sections.push(spacer());
+  children.push(buildPackingTable(packing));
+  children.push(spacer());
 
   // ── 備忘事項 ─────────────────────────────────────────
   if (form.memo.trim()) {
-    sections.push(h2("📝  備忘事項"));
-    for (const line of form.memo.split("\n")) {
-      sections.push(body(line || " "));
-    }
-    sections.push(spacer());
+    children.push(h2("📝  備忘事項"));
+    for (const line of form.memo.split("\n")) children.push(body(line || " "));
+    children.push(spacer());
   }
 
-  // ── 頁尾免責聲明 ─────────────────────────────────────
-  sections.push(
+  // ── 頁尾 ─────────────────────────────────────────────
+  children.push(
     new Paragraph({
       children: [new TextRun({ text: "⚠️  簽證 / 海關資訊僅供參考，出發前請以官方公告為準。", size: 17, color: "AAAAAA", italics: true, font: "微軟正黑體" })],
       alignment: AlignmentType.CENTER,
-      border: { top: { style: BorderStyle.SINGLE, size: 4, color: COLOR.border } },
-      spacing: { before: 240, after: 80 },
+      border: { top: { style: BorderStyle.SINGLE, size: 4, color: C.border } },
+      spacing: { before: 240, after: 60 },
     }),
     new Paragraph({
       children: [new TextRun({ text: "出國優轉 AbroadUturn  ·  uturn-web.vercel.app", size: 17, color: "AAAAAA", font: "微軟正黑體" })],
@@ -404,22 +465,20 @@ export async function buildAndDownloadDocx(form: DocxFormData, days: DayNote[]) 
     })
   );
 
-  // ── 組裝 Document ────────────────────────────────────
   const doc = new Document({
     numbering: { config: [] },
     sections: [
       {
         properties: {
           page: {
-            margin: { top: 1134, bottom: 1134, left: 1247, right: 1247 }, // 2cm margins
+            margin: { top: 1134, bottom: 1134, left: 1247, right: 1247 },
           },
         },
-        children: sections,
+        children,
       },
     ],
   });
 
   const blob = await Packer.toBlob(doc);
-  const filename = `${form.destination}_${form.depDate}_旅遊計畫書.docx`;
-  saveAs(blob, filename);
+  saveAs(blob, `${form.destination}_${form.depDate}_旅遊計畫書.docx`);
 }
