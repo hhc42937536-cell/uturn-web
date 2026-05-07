@@ -103,29 +103,29 @@ export default function AiPlanPage() {
             </div>
 
             {/* 日期 */}
-            <div className="flex gap-4">
-              <div className="flex-1">
-                <label className="mb-1.5 block text-xs font-medium text-[#8A7F73]">出發日期</label>
-                <input
-                  type="date"
-                  value={depDate}
-                  onChange={(e) => setDepDate(e.target.value)}
-                  className="w-full rounded-xl border border-[#D8D2C7] bg-[#FAF8F4] px-3 py-2 text-sm text-[#4B4037] outline-none focus:border-[#A86F5A]"
-                />
-              </div>
-              <div className="flex-1">
-                <label className="mb-1.5 block text-xs font-medium text-[#8A7F73]">回程日期</label>
-                <input
-                  type="date"
-                  value={retDate}
-                  onChange={(e) => setRetDate(e.target.value)}
-                  className="w-full rounded-xl border border-[#D8D2C7] bg-[#FAF8F4] px-3 py-2 text-sm text-[#4B4037] outline-none focus:border-[#A86F5A]"
-                />
+            <div>
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
+                <div className="flex-1">
+                  <label className="mb-1.5 block text-xs font-medium text-[#8A7F73]">出發日期</label>
+                  <input
+                    type="date"
+                    value={depDate}
+                    onChange={(e) => setDepDate(e.target.value)}
+                    className="w-full rounded-xl border border-[#D8D2C7] bg-[#FAF8F4] px-3 py-2.5 text-sm text-[#4B4037] outline-none focus:border-[#A86F5A]"
+                  />
+                </div>
+                <div className="flex-1">
+                  <label className="mb-1.5 block text-xs font-medium text-[#8A7F73]">回程日期</label>
+                  <input
+                    type="date"
+                    value={retDate}
+                    onChange={(e) => setRetDate(e.target.value)}
+                    className="w-full rounded-xl border border-[#D8D2C7] bg-[#FAF8F4] px-3 py-2.5 text-sm text-[#4B4037] outline-none focus:border-[#A86F5A]"
+                  />
+                </div>
               </div>
               {days && (
-                <div className="flex items-end pb-2">
-                  <span className="rounded-xl bg-[#F0EBE4] px-3 py-2 text-sm text-[#A86F5A]">{days} 天</span>
-                </div>
+                <p className="mt-2 text-right text-sm text-[#A86F5A]">共 {days} 天</p>
               )}
             </div>
 
@@ -214,7 +214,7 @@ export default function AiPlanPage() {
                   </div>
 
                   {/* 必吃 + 小提示 */}
-                  <div className="mx-6 mb-5 mt-1 grid grid-cols-2 gap-3">
+                  <div className="mx-6 mb-5 mt-1 grid grid-cols-1 gap-3 sm:grid-cols-2">
                     <div className="rounded-2xl bg-[#FBF3EE] px-4 py-3.5">
                       <p className="mb-1.5 text-xs font-semibold text-[#C8825A]">🍜 必吃</p>
                       <p className="text-sm leading-6 text-[#4B4037]">{day.food}</p>
