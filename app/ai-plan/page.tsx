@@ -9,6 +9,7 @@ type DayPlan = {
   evening: string;
   food: string;
   note: string;
+  memo: string;
 };
 
 const DESTINATIONS = [
@@ -229,9 +230,17 @@ export default function AiPlanPage() {
                     </div>
                   </div>
 
-                  {/* 備忘事項 */}
+                  {/* AI 備忘事項 */}
+                  {day.memo && (
+                    <div className="mx-6 mt-3 rounded-2xl bg-[#F3F0EC] px-4 py-3.5">
+                      <p className="mb-1.5 text-xs font-semibold text-[#A79C91]">📝 AI 備忘事項</p>
+                      <p className="whitespace-pre-line text-sm leading-7 text-[#4B4037]">{day.memo}</p>
+                    </div>
+                  )}
+
+                  {/* 手動備忘 */}
                   <div className="mx-6 mb-5 mt-3">
-                    <p className="mb-1.5 text-xs font-semibold text-[#A79C91]">📝 備忘事項</p>
+                    <p className="mb-1.5 text-xs font-semibold text-[#A79C91]">✏️ 我的備忘</p>
                     <textarea
                       rows={2}
                       placeholder="例：下午兩點建大貨櫃屋、晚上訂位弘大炸雞…"
