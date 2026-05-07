@@ -7,6 +7,17 @@ import { buildAndDownloadDocx } from "@/app/lib/buildDocx";
 const DESTINATIONS = ["首爾", "東京", "大阪", "沖繩", "釜山", "曼谷", "新加坡", "香港", "胡志明市", "吉隆坡"];
 const DEP_CITIES = ["高雄", "台北", "台中", "台南"];
 
+const ARR_AIRPORTS: Record<string, { code: string; label: string }[]> = {
+  首爾: [
+    { code: "ICN", label: "仁川（ICN）── 多數國際航班" },
+    { code: "GMP", label: "金浦（GMP）── 廉航/離市區近" },
+  ],
+  東京: [
+    { code: "NRT", label: "成田（NRT）── 多數國際航班" },
+    { code: "HND", label: "羽田（HND）── 離市區近" },
+  ],
+};
+
 const VISA_NOTE: Record<string, string> = {
   首爾: "免簽 90 天，建議出發前確認 K-ETA 狀態。",
   釜山: "免簽 90 天，建議出發前確認 K-ETA 狀態。",
@@ -72,7 +83,7 @@ export default function DocxView() {
   const [exporting, setExporting] = useState(false);
 
   const [form, setForm] = useState({
-    destination: "首爾", depCity: "高雄",
+    destination: "首爾", depCity: "高雄", arrAirport: "ICN",
     depDate: "", retDate: "", people: "2",
     budget: "", style: "", mustVisit: "", memo: "",
   });
@@ -177,6 +188,7 @@ export default function DocxView() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           destination: form.destination,
+          arrAirport: form.arrAirport,
           depDate: form.depDate,
           retDate: form.retDate,
           people: form.people,
@@ -244,7 +256,11 @@ export default function DocxView() {
               <div className="grid gap-5 sm:grid-cols-2">
                 <label className="block">
                   <span className="mb-1.5 block text-xs font-light tracking-widest text-[#6F675F]">目的地</span>
-                  <select value={form.destination} onChange={(e) => setForm((p) => ({ ...p, destination: e.target.value }))} className={inputClass}>
+                  <select value={form.destination} onChange={(e) => {
+                    const dest = e.target.value;
+                    const airports = ARR_AIRPORTS[dest];
+                    setForm((p) => ({ ...p, destination: dest, arrAirport: airports ? airports[0].code : "" }));
+                  }} className={inputClass}>
                     {DESTINATIONS.map((d) => <option key={d}>{d}</option>)}
                   </select>
                 </label>
@@ -254,6 +270,16 @@ export default function DocxView() {
                     {DEP_CITIES.map((d) => <option key={d}>{d}</option>)}
                   </select>
                 </label>
+                {ARR_AIRPORTS[form.destination] && (
+                  <label className="block sm:col-span-2">
+                    <span className="mb-1.5 block text-xs font-light tracking-widest text-[#6F675F]">抵達機場</span>
+                    <select value={form.arrAirport} onChange={(e) => setForm((p) => ({ ...p, arrAirport: e.target.value }))} className={inputClass}>
+                      {ARR_AIRPORTS[form.destination].map(({ code, label }) => (
+                        <option key={code} value={code}>{label}</option>
+                      ))}
+                    </select>
+                  </label>
+                )}
                 <label className="block">
                   <span className="mb-1.5 block text-xs font-light tracking-widest text-[#6F675F]">出發日期</span>
                   <input type="date" value={form.depDate} onChange={(e) => setForm((p) => ({ ...p, depDate: e.target.value }))} className={inputClass} />

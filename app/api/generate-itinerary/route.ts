@@ -17,7 +17,7 @@ async function callGemini(key: string, model: string, prompt: string): Promise<s
 }
 
 export async function POST(req: NextRequest) {
-  const { destination, depDate, retDate, people, style, mustVisit } = await req.json();
+  const { destination, arrAirport, depDate, retDate, people, style, mustVisit } = await req.json();
 
   const key = process.env.GEMINI_API_KEY;
   if (!key) return NextResponse.json({ error: "GEMINI_API_KEY not set" }, { status: 500 });
@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
   const prompt = `你是台灣人出國行程規劃師。請為以下旅程生成每日建議行程，以 JSON 陣列回傳，不要有其他文字。
 ${mustVisitBlock}
 旅程資訊：
-- 目的地：${destination}
+- 目的地：${destination}${arrAirport ? `（抵達機場：${arrAirport}）` : ""}
 - 出發日期：${depDate}
 - 回程日期：${retDate}
 - 人數：${people}人

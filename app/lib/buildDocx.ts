@@ -17,6 +17,7 @@ export type DayNote = {
 export type DocxFormData = {
   destination: string;
   depCity: string;
+  arrAirport?: string;
   depDate: string;
   retDate: string;
   people: string;
@@ -226,6 +227,7 @@ function buildCover(form: DocxFormData, dateRange: string): Table {
   const infoRows: Paragraph[] = [
     cp(""),
     cp(`✈️  出發城市　${form.depCity}`, { color: C.muted }),
+    ...(form.arrAirport ? [cp(`🛬  抵達機場　${form.arrAirport}`, { color: C.muted })] : []),
     cp(`👤  出行人數　${form.people} 人`, { color: C.muted }),
     ...(form.budget ? [cp(`💰  旅遊預算　${form.budget}`, { color: C.muted })] : []),
     ...(form.style  ? [cp(`🎯  旅遊風格　${form.style}`,  { color: C.muted })] : []),
