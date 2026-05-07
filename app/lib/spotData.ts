@@ -426,6 +426,24 @@ export const CITY_SPOTS: Record<string, Spot[]> = {
     { id: "cts-15", name: "Niseko 滑雪場",      category: "體驗", lat: 42.8600, lng: 140.6860, duration: "全天",  tip: "世界頂級粉雪，11月至4月開放，Grand Hirafu纜車數量最多最適合新手" },
   ],
 
+  FUK: [
+    { id: "fuk-1",  name: "天神地下街",           category: "購物", lat: 33.5902, lng: 130.3975, duration: "2hr",   tip: "昭和摩登風格地下商店街，雨天首選，連結天神站與西鐵福岡站" },
+    { id: "fuk-2",  name: "博多拉麵街",           category: "美食", lat: 33.5898, lng: 130.4207, duration: "1.5hr", tip: "博多站地下「博多めん街道」8間豚骨拉麵名店，深夜也開" },
+    { id: "fuk-3",  name: "中洲屋台街",           category: "美食", lat: 33.5958, lng: 130.4064, duration: "2hr",   tip: "那珂川河畔屋台群，豚骨拉麵・もつ鍋・焼鳥，越夜越熱鬧，19:00後開始" },
+    { id: "fuk-4",  name: "太宰府天滿宮",         category: "景點", lat: 33.5213, lng: 130.5330, duration: "2hr",   tip: "供奉學問神菅原道真，梅園2月盛開，從西鐵二日市換車20分" },
+    { id: "fuk-5",  name: "福岡城跡・舞鶴公園",  category: "景點", lat: 33.5861, lng: 130.3796, duration: "1.5hr", tip: "江戶時代福岡藩主居城，春天2,000棵櫻花盛開，石垣保存完整" },
+    { id: "fuk-6",  name: "海之中道海濱公園",     category: "景點", lat: 33.6620, lng: 130.4240, duration: "半天",  tip: "博多灣半島公園，水仙（1月）・玫瑰（5月）・波斯菊（10月）四季花海" },
+    { id: "fuk-7",  name: "唐戶市場（下關近郊）", category: "美食", lat: 33.9476, lng: 130.9400, duration: "半天",  tip: "週末早市（8-15時）河豚・鯨魚生魚片超新鮮，JR新下關30分" },
+    { id: "fuk-8",  name: "糸島海岸",             category: "景點", lat: 33.5559, lng: 130.1859, duration: "半天",  tip: "福岡版白沙灘，雙子岩（夫婦岩）打卡，周邊牧場直送牛奶冰淇淋必吃" },
+    { id: "fuk-9",  name: "博多祇園山笠（7月）", category: "體驗", lat: 33.5936, lng: 130.4159, duration: "半天",  tip: "752年歷史的福岡三大祭典，7/15清晨奉納山笠衝刺是最大高潮" },
+    { id: "fuk-10", name: "Canal City 博多",      category: "購物", lat: 33.5896, lng: 130.4147, duration: "2hr",   tip: "運河型購物中心，H&M・UNIQLO・主題餐廳，定時噴水秀免費觀賞" },
+    { id: "fuk-11", name: "福岡塔",               category: "景點", lat: 33.5959, lng: 130.3524, duration: "1hr",   tip: "海濱地帶234m電波塔，夜景涵蓋博多灣，戀人心型燈飾是招牌" },
+    { id: "fuk-12", name: "住吉神社",             category: "景點", lat: 33.5870, lng: 130.4166, duration: "0.5hr", tip: "全國住吉神社總本社之一，博多站步行7分，厄除・航海守護聖地" },
+    { id: "fuk-13", name: "柳橋連合市場",         category: "美食", lat: 33.5883, lng: 130.4011, duration: "1hr",   tip: "博多最老的生鮮市場「博多の台所」，明太子・一夜干整排任選，早市最熱鬧" },
+    { id: "fuk-14", name: "大濠公園",             category: "景點", lat: 33.5862, lng: 130.3761, duration: "1hr",   tip: "福岡最大市區公園，周長2km的池畔慢跑路線，龍船祭典每年5月舉辦" },
+    { id: "fuk-15", name: "博多港・百道濱",       category: "景點", lat: 33.6008, lng: 130.3476, duration: "1.5hr", tip: "鷹島渡輪出發地，百道濱沙灘夕陽配福岡塔是福岡最美黃昏視角" },
+  ],
+
   CJU: [
     { id: "cju-1",  name: "城山日出峰",         category: "景點", lat: 33.4582, lng: 126.9425, duration: "2hr",   tip: "UNESCO世界遺產，清晨5點日出人潮最多，爬頂約20分鐘，門票₩5,000" },
     { id: "cju-2",  name: "漢拿山白鹿潭",       category: "體驗", lat: 33.3617, lng: 126.5292, duration: "全天",  tip: "韓國最高峰1,950m，白鹿潭路線來回10hr，需早上6點前出發" },
@@ -450,12 +468,12 @@ const CODE_TO_CITY: Record<string, string> = {
   BKK: "曼谷", CNX: "清邁", HKT: "普吉島", KBV: "甲米", USM: "蘇梅島", PAT: "芭達雅", CEI: "清萊",
   SIN: "新加坡", HKG: "香港", OKA: "沖繩", SGN: "胡志明市", PUS: "釜山",
   DAD: "峴港", HAN: "河內", HOI: "會安", PQC: "富國島",
-  CTS: "札幌", CJU: "濟州島",
+  CTS: "札幌", FUK: "福岡", CJU: "濟州島",
 };
 
 export const COUNTRY_CITIES: Record<string, string[]> = {
   korea:     ["SEL", "PUS", "CJU"],
-  japan:     ["TYO", "OSA", "KYO", "KBE", "OKA", "CTS"],
+  japan:     ["TYO", "OSA", "KYO", "KBE", "FUK", "OKA", "CTS"],
   thailand:  ["BKK", "CNX", "HKT", "KBV", "USM", "PAT", "CEI"],
   singapore: ["SIN"],
   hongkong:  ["HKG"],
