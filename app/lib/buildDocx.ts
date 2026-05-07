@@ -321,7 +321,7 @@ function buildCover(form: DocxFormData, dateRange: string): Table {
 
   return new Table({
     width: { size: 100, type: WidthType.PERCENTAGE },
-    borders: { ...NO_BORDER, insideH: NO_BORDER.top, insideV: NO_BORDER.top },
+    borders: NO_BORDER,
     rows: [
       coverRow([
         cp("TRAVEL PLAN", { size: 18, color: "7A6A5A", before: 600, after: 80 }),
