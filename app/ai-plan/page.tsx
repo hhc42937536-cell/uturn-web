@@ -183,45 +183,45 @@ export default function AiPlanPage() {
 
         {/* 行程結果 */}
         {itinerary && (
-          <div className="mt-8 space-y-4">
+          <div className="mt-8 space-y-6">
             <h3 className="text-base font-light text-[#4B4037]">
               {destination} · {itinerary.length} 天行程
             </h3>
             {itinerary.map((day, i) => {
               const color = DAY_COLORS[i % DAY_COLORS.length];
               return (
-                <div key={i} className="overflow-hidden rounded-2xl border border-[#E8E0D5] bg-white shadow-sm">
+                <div key={i} className="overflow-hidden rounded-3xl border border-[#E8E0D5] bg-white shadow-sm">
                   {/* Day header */}
-                  <div className="flex items-center gap-3 px-5 py-3" style={{ background: color }}>
-                    <span className="flex h-7 w-7 items-center justify-center rounded-full bg-white/20 text-sm font-semibold text-white">
+                  <div className="flex items-center gap-3 px-6 py-4" style={{ background: color }}>
+                    <span className="flex h-8 w-8 items-center justify-center rounded-full bg-white/25 text-sm font-bold text-white">
                       {i + 1}
                     </span>
-                    <span className="text-sm font-light tracking-wide text-white">Day {i + 1}</span>
+                    <span className="text-base font-light tracking-widest text-white">Day {i + 1}</span>
                   </div>
 
-                  {/* Day content */}
-                  <div className="divide-y divide-[#F0EBE4] px-5">
-                    <div className="py-3.5">
-                      <p className="mb-1 text-[10px] font-semibold uppercase tracking-widest text-[#8FA39A]">上午</p>
-                      <p className="text-sm leading-relaxed text-[#4B4037]">{day.morning}</p>
-                    </div>
-                    <div className="py-3.5">
-                      <p className="mb-1 text-[10px] font-semibold uppercase tracking-widest text-[#8FA39A]">下午</p>
-                      <p className="text-sm leading-relaxed text-[#4B4037]">{day.afternoon}</p>
-                    </div>
-                    <div className="py-3.5">
-                      <p className="mb-1 text-[10px] font-semibold uppercase tracking-widest text-[#8FA39A]">晚上</p>
-                      <p className="text-sm leading-relaxed text-[#4B4037]">{day.evening}</p>
-                    </div>
-                    <div className="flex gap-6 py-3.5">
-                      <div className="flex-1">
-                        <p className="mb-1 text-[10px] font-semibold uppercase tracking-widest text-[#C8825A]">必吃</p>
-                        <p className="text-sm leading-relaxed text-[#4B4037]">{day.food}</p>
+                  {/* 時段 */}
+                  <div className="divide-y divide-[#F5F0EB] px-6">
+                    {[
+                      { label: "☀️ 上午", text: day.morning },
+                      { label: "🌤 下午", text: day.afternoon },
+                      { label: "🌙 晚上", text: day.evening },
+                    ].map(({ label, text }) => (
+                      <div key={label} className="py-5">
+                        <p className="mb-2 text-xs font-semibold text-[#8FA39A]">{label}</p>
+                        <p className="text-sm leading-7 text-[#4B4037]">{text}</p>
                       </div>
-                      <div className="flex-1">
-                        <p className="mb-1 text-[10px] font-semibold uppercase tracking-widest text-[#5A8AA8]">小提示</p>
-                        <p className="text-sm leading-relaxed text-[#6F675F]">{day.note}</p>
-                      </div>
+                    ))}
+                  </div>
+
+                  {/* 必吃 + 小提示 */}
+                  <div className="mx-6 mb-5 mt-1 grid grid-cols-2 gap-3">
+                    <div className="rounded-2xl bg-[#FBF3EE] px-4 py-3.5">
+                      <p className="mb-1.5 text-xs font-semibold text-[#C8825A]">🍜 必吃</p>
+                      <p className="text-sm leading-6 text-[#4B4037]">{day.food}</p>
+                    </div>
+                    <div className="rounded-2xl bg-[#EEF4FB] px-4 py-3.5">
+                      <p className="mb-1.5 text-xs font-semibold text-[#5A8AA8]">💡 小提示</p>
+                      <p className="text-sm leading-6 text-[#6F675F]">{day.note}</p>
                     </div>
                   </div>
                 </div>
