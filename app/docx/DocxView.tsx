@@ -138,11 +138,13 @@ export default function DocxView() {
           setForm({
             destination: dest,
             depCity: "高雄",
+            arrAirport: data.arr_airport || "",
             depDate,
             retDate,
             people: String(data.people ?? 2),
             budget: String(data.budget ?? ""),
             style: data.style || "",
+            mustVisit: data.must_visit || "",
             memo: "",
           });
           // llm_itinerary 有資料 → 直接帶入；沒有 → 自動用 Claude 生成
