@@ -188,11 +188,13 @@ export default function DocxView() {
     const filled = {
       destination: dest,
       depCity: searchParams.get("depCity") || "高雄",
+      arrAirport: searchParams.get("arrAirport") || "",
       depDate,
       retDate,
       people: searchParams.get("people") || "2",
       budget: searchParams.get("budget") || "",
       style: searchParams.get("style") || "",
+      mustVisit: searchParams.get("mustVisit") || "",
       memo: searchParams.get("memo") || "",
     };
     setForm(filled);
