@@ -112,6 +112,7 @@ export default function DocxView() {
     budget: "", style: "", mustVisit: "", memo: "",
   });
 
+  const [budgetBreakdown, setBudgetBreakdown] = useState<Record<string, number> | null>(null);
   const dayCount = getDayCount(form.depDate, form.retDate);
   const [days, setDays] = useState<DayNote[]>([]);
   const [generating, setGenerating] = useState(false);
@@ -147,6 +148,9 @@ export default function DocxView() {
             mustVisit: data.must_visit || "",
             memo: "",
           });
+          if (data.budget_breakdown && data.budget_breakdown.total) {
+            setBudgetBreakdown(data.budget_breakdown);
+          }
           // llm_itinerary 有資料 → 直接帶入；沒有 → 自動用 Claude 生成
           if (Array.isArray(data.llm_itinerary) && data.llm_itinerary.length > 0) {
             const numDays = getDayCount(depDate, retDate);
@@ -482,6 +486,39 @@ export default function DocxView() {
                     </div>
                   </div>
                 </section>
+
+                {/* Budget Breakdown */}
+                {budgetBreakdown && budgetBreakdown.total > 0 && (
+                  <section className="mb-10">
+                    <h2 className="mb-4 text-[10px] font-light uppercase tracking-[0.5em] text-[#8FA39A]">預估旅遊支出</h2>
+                    <div className="rounded-2xl border border-[#D8D2C7] bg-white p-5">
+                      <p className="mb-3 text-xs font-light text-[#8A7F73]">
+                        {form.destination} · {budgetBreakdown.days}天{budgetBreakdown.nights}夜 · {budgetBreakdown.adults}人
+                      </p>
+                      <div className="space-y-2">
+                        {[
+                          { label: `✈️ 機票（含稅 · ${budgetBreakdown.adults}人）`, val: budgetBreakdown.flight },
+                          { label: `🏨 住宿（${budgetBreakdown.nights}晚 · ${budgetBreakdown.adults}人）`, val: budgetBreakdown.hotel },
+                          { label: `🍜 餐飲（${budgetBreakdown.days}天 · ${budgetBreakdown.adults}人）`, val: budgetBreakdown.food },
+                          { label: `🚇 當地交通（${budgetBreakdown.adults}人）`, val: budgetBreakdown.transport },
+                          { label: `🎡 景點活動（${budgetBreakdown.adults}人）`, val: budgetBreakdown.activity },
+                        ].map(({ label, val }) => (
+                          <div key={label} className="flex justify-between text-sm font-light text-[#5C5248]">
+                            <span>{label}</span>
+                            <span>NT$ {(val ?? 0).toLocaleString()}</span>
+                          </div>
+                        ))}
+                        <div className="mt-3 border-t border-[#E8E2D8] pt-3 flex justify-between text-sm font-semibold text-[#E53935]">
+                          <span>💰 預估總計</span>
+                          <span>NT$ {(budgetBreakdown.total ?? 0).toLocaleString()}</span>
+                        </div>
+                        <p className="mt-2 text-[10px] font-light text-[#A79C91]">
+                          每人每天非機票花費約 NT$ {(budgetBreakdown.daily_non_flight ?? 0).toLocaleString()}｜以上為參考中間值，實際依旅遊方式、住宿等級而異。建議準備總額 × 1.2 作為實際預算。
+                        </p>
+                      </div>
+                    </div>
+                  </section>
+                )}
 
                 {/* Day Plans */}
                 <section className="mb-10">
