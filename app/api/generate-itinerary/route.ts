@@ -17,13 +17,17 @@ async function callGemini(key: string, model: string, prompt: string): Promise<s
 }
 
 export async function POST(req: NextRequest) {
-  const { destination, depDate, retDate, people, style } = await req.json();
+  const { destination, depDate, retDate, people, style, mustVisit } = await req.json();
 
   const key = process.env.GEMINI_API_KEY;
   if (!key) return NextResponse.json({ error: "GEMINI_API_KEY not set" }, { status: 500 });
 
   const diff = new Date(retDate).getTime() - new Date(depDate).getTime();
   const days = Math.max(2, Math.round(diff / 86400000) + 1);
+
+  const mustVisitLine = mustVisit?.trim()
+    ? `- 指定景點（必須安排進行程）：${mustVisit.trim()}`
+    : "";
 
   const prompt = `你是台灣人出國行程規劃師。請為以下旅程生成每日建議行程，以 JSON 陣列回傳，不要有其他文字。
 
@@ -33,7 +37,7 @@ export async function POST(req: NextRequest) {
 - 回程日期：${retDate}
 - 人數：${people}人
 - 旅遊風格：${style || "綜合"}
-- 天數：${days} 天
+- 天數：${days} 天${mustVisitLine ? `\n${mustVisitLine}` : ""}
 
 JSON 格式（每個元素對應一天，共 ${days} 個）：
 [

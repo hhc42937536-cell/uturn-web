@@ -36,6 +36,7 @@ export default function AiPlanPage() {
   const [retDate, setRetDate] = useState("");
   const [people, setPeople] = useState(2);
   const [style, setStyle] = useState("綜合");
+  const [mustVisit, setMustVisit] = useState("");
   const [loading, setLoading] = useState(false);
   const [itinerary, setItinerary] = useState<DayPlan[] | null>(null);
   const [error, setError] = useState("");
@@ -58,7 +59,7 @@ export default function AiPlanPage() {
       const res = await fetch("/api/generate-itinerary", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ destination, depDate, retDate, people, style }),
+        body: JSON.stringify({ destination, depDate, retDate, people, style, mustVisit }),
       });
       const data = await res.json();
       if (data.error) throw new Error(data.error);
@@ -172,6 +173,20 @@ export default function AiPlanPage() {
                   </button>
                 ))}
               </div>
+            </div>
+
+            {/* 指定景點 */}
+            <div>
+              <label className="mb-1.5 block text-xs font-medium text-[#8A7F73]">
+                📍 指定景點 <span className="font-light text-[#B0A89E]">（選填，AI 會幫你插入行程）</span>
+              </label>
+              <textarea
+                rows={2}
+                placeholder="例：建大貨櫃屋、弘大 MUJI、明洞烤肉店…"
+                value={mustVisit}
+                onChange={(e) => setMustVisit(e.target.value)}
+                className="w-full resize-none rounded-xl border border-[#D8D2C7] bg-[#FAF8F4] px-3 py-2.5 text-sm leading-6 text-[#4B4037] placeholder:text-[#C5BEB6] outline-none focus:border-[#A86F5A]"
+              />
             </div>
 
             {error && <p className="text-sm text-red-500">{error}</p>}
