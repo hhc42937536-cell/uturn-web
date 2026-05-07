@@ -23,6 +23,7 @@ export type DocxFormData = {
   people: string;
   budget: string;
   style: string;
+  mustVisit?: string;
   memo: string;
 };
 
