@@ -35,6 +35,10 @@ export const CITY_SPOTS: Record<string, Spot[]> = {
     { id: "sel-22", name: "汝矣島公園",         category: "景點", lat: 37.5233, lng: 126.9323, duration: "1.5hr", tip: "春天櫻花盛開，韓國最美花見地點之一" },
     { id: "sel-23", name: "建大커먼그라운드",   category: "購物", lat: 37.5399, lng: 127.0710, duration: "2hr",   tip: "貨櫃屋商場，邊佑錫《戀愛大腦》拍攝地" },
     { id: "sel-24", name: "光化門廣場",         category: "景點", lat: 37.5722, lng: 126.9769, duration: "1hr",   tip: "世宗大王與李舜臣將軍銅像，夜晚燈光優美" },
+    { id: "sel-25", name: "愛寶樂園",           category: "體驗", lat: 37.2941, lng: 127.2025, duration: "全天",  tip: "韓國最大主題樂園，T Express木製雲霄飛車是必搭；10-11月玫瑰花節、冬季雪景是IG熱點" },
+    { id: "sel-26", name: "首爾樂天世界",       category: "體驗", lat: 37.5111, lng: 127.0984, duration: "全天",  tip: "全球最大室內主題樂園，石村湖畔外部區域免費；煙火表演每週末，與石村湖夜景搭配最完美" },
+    { id: "sel-27", name: "水原華城",           category: "景點", lat: 37.2858, lng: 127.0137, duration: "3hr",   tip: "UNESCO世界遺產，朝鮮時代城牆完整保存；從首爾搭地鐵1號線約50分，城牆一圈步行2小時" },
+    { id: "sel-28", name: "南怡島",             category: "景點", lat: 37.7924, lng: 127.5192, duration: "半天",  tip: "《冬季戀歌》拍攝地，秋楓季整島染紅；從加平站搭巴士+渡輪，渡輪WT₩16,000來回" },
   ],
 
   TYO: [
@@ -62,6 +66,13 @@ export const CITY_SPOTS: Record<string, Spot[]> = {
     { id: "tyo-22", name: "目黑自然教育園",     category: "景點", lat: 35.6375, lng: 139.7162, duration: "1hr",   tip: "鬧中取靜的自然保護區，免費入場" },
     { id: "tyo-23", name: "築地市場本願寺",     category: "景點", lat: 35.6659, lng: 139.7710, duration: "0.5hr", tip: "獨特印度建築風格的佛寺，免費參觀" },
     { id: "tyo-24", name: "淺草花屋敷",         category: "體驗", lat: 35.7156, lng: 139.7978, duration: "2hr",   tip: "日本最古老遊樂園，懷舊氛圍獨特" },
+    { id: "tyo-25", name: "東京迪士尼樂園",     category: "體驗", lat: 35.6329, lng: 139.8804, duration: "全天",  tip: "世界最受歡迎迪士尼之一；Fantasyland 夜間遊行最夢幻，建議平日購 Premier Access 跳隊" },
+    { id: "tyo-26", name: "東京迪士尼海洋",     category: "體驗", lat: 35.6267, lng: 139.8850, duration: "全天",  tip: "全球唯一以海洋為主題的迪士尼；《幻想泉源》新園區為必玩，強烈建議提前搶 Disney Premier Access" },
+    { id: "tyo-27", name: "東京鐵塔",           category: "景點", lat: 35.6586, lng: 139.7454, duration: "1.5hr", tip: "333m，紅白相間地標；夜間點燈、從芝公園仰拍是最佳角度，《東京愛情故事》等韓劇多次出現" },
+    { id: "tyo-28", name: "明治神宮",           category: "景點", lat: 35.6762, lng: 139.6993, duration: "1.5hr", tip: "原宿後方70公頃森林，明治天皇祭祀地；初詣（元旦）全日本最多參拜者，免費入場" },
+    { id: "tyo-29", name: "鎌倉（近郊）",       category: "景點", lat: 35.3192, lng: 139.5467, duration: "全天",  tip: "高德院大佛（11.4m）+ 錢洗弁財天・小町通老街；從新宿搭電車約60分，江之島電鐵一日券值得買" },
+    { id: "tyo-30", name: "箱根（富士山景）",   category: "體驗", lat: 35.2329, lng: 139.1069, duration: "全天",  tip: "大涌谷黑玉子、蘆之湖遊船、富士山遠眺；推薦「箱根周遊券」含纜車+遊船+巴士全包" },
+    { id: "tyo-31", name: "teamLab 無界 麻布台", category: "體驗", lat: 35.6556, lng: 139.7416, duration: "2.5hr", tip: "2024年新開幕，全新沉浸式作品與Planets不同；需提前搶票，麻布台Hills商場內" },
   ],
 
   OSA: [
@@ -85,6 +96,9 @@ export const CITY_SPOTS: Record<string, Spot[]> = {
     { id: "osa-18", name: "日本橋電電城",       category: "購物", lat: 34.6633, lng: 135.5064, duration: "2hr",   tip: "大阪版秋葉原，電器・動漫・女僕咖啡廳" },
     { id: "osa-19", name: "四天王寺",           category: "景點", lat: 34.6549, lng: 135.5163, duration: "1.5hr", tip: "聖德太子創建，日本最古老官立寺院" },
     { id: "osa-20", name: "鶴見綠地公園",       category: "景點", lat: 34.6929, lng: 135.5731, duration: "1.5hr", tip: "1990年萬博紀念公園，鬱金香節5月最美" },
+    { id: "osa-21", name: "奈良公園（近郊）",   category: "景點", lat: 34.6851, lng: 135.8393, duration: "半天",  tip: "1,200隻自由漫步的鹿，東大寺大佛是日本最大；從大阪難波搭近鐵45分可達，鹿仙貝¥200" },
+    { id: "osa-22", name: "空庭溫泉",           category: "體驗", lat: 34.6772, lng: 135.4907, duration: "3hr",   tip: "大阪最大主題型溫泉，以古代大阪街道為設計；男女共用浴衣設施，夜晚更有氣氛" },
+    { id: "osa-23", name: "神戶港（近郊）",     category: "景點", lat: 34.6789, lng: 135.1990, duration: "半天",  tip: "摩耶山夜景被選為日本三大夜景；中華街（南京町）午餐必吃小籠包，從大阪搭JR30分" },
   ],
 
   BKK: [
@@ -108,6 +122,9 @@ export const CITY_SPOTS: Record<string, Spot[]> = {
     { id: "bkk-18", name: "Yaowarat Road 夜市", category: "美食", lat: 13.7395, lng: 100.5100, duration: "2hr",   tip: "耀華力路夜間路段，海鮮、燕窩攤比肩而立" },
     { id: "bkk-19", name: "Benjakitti 公園",    category: "景點", lat: 13.7232, lng: 100.5651, duration: "1hr",   tip: "湖心步道俯瞰曼谷天際線，早晨慢跑聖地" },
     { id: "bkk-20", name: "考山路",             category: "體驗", lat: 13.7592, lng: 100.4976, duration: "2hr",   tip: "背包客天堂，夜晚路邊酒吧、Pad Thai攤" },
+    { id: "bkk-21", name: "四面佛（愛侶灣神祠）",category: "景點", lat: 13.7445, lng: 100.5391, duration: "1hr",  tip: "四面分別代表事業、感情、健康、財富；需逆時針每面上香，BTS Chit Lom站旁，與Siam Paragon步行可達" },
+    { id: "bkk-22", name: "丹嫩莎朵水上市場", category: "體驗", lat: 13.5218, lng: 99.9601,  duration: "半天",  tip: "泰國最著名水上市場，搭船穿梭攤販間；距曼谷約80km，建議參加含接送的半日遊套裝，清早6點最熱鬧" },
+    { id: "bkk-23", name: "JODD FAIRS 夜市",  category: "體驗", lat: 13.7657, lng: 100.5525, duration: "2hr",   tip: "曼谷最紅新式夜市，美食攤精緻不雜亂；龍蝦泡麵、炙燒壽司是IG必拍，MRT Thailand Cultural Centre站" },
   ],
 
   CNX: [
@@ -219,6 +236,8 @@ export const CITY_SPOTS: Record<string, Spot[]> = {
     { id: "sin-18", name: "萊佛士購物廣場",     category: "購物", lat: 1.2844, lng: 103.8514, duration: "1.5hr", tip: "殖民風格建築，新加坡司令必點在萊佛士酒店旁" },
     { id: "sin-19", name: "新加坡動物園",       category: "體驗", lat: 1.4043, lng: 103.7930, duration: "3hr",   tip: "開放式設計無籠，夜間動物園另需購票" },
     { id: "sin-20", name: "阿拉伯街",           category: "體驗", lat: 1.3011, lng: 103.8587, duration: "1.5hr", tip: "中東風情餐廳、水煙吧、傳統布料店" },
+    { id: "sin-21", name: "ArtScience Museum", category: "景點", lat: 1.2863, lng: 103.8595, duration: "1.5hr", tip: "蓮花造型建築緊鄰MBS，科技藝術互動展覽；teamLab等巡迴展常駐，網路提前購票省排隊" },
+    { id: "sin-22", name: "Singapore Flyer",   category: "景點", lat: 1.2893, lng: 103.8631, duration: "1hr",   tip: "165m亞洲最高摩天輪，可遠眺印尼與馬來西亞；建議夕陽時段搭乘，艙內空調舒適，全程約30分" },
   ],
 
   HKG: [
@@ -242,6 +261,9 @@ export const CITY_SPOTS: Record<string, Spot[]> = {
     { id: "hkg-18", name: "上環文武廟",         category: "景點", lat: 22.2842, lng: 114.1493, duration: "0.5hr", tip: "150年歷史，電影常見香港廟宇場景" },
     { id: "hkg-19", name: "PMQ 元創坊",         category: "購物", lat: 22.2830, lng: 114.1527, duration: "1.5hr", tip: "警察宿舍改建，香港本地設計師品牌聚集地" },
     { id: "hkg-20", name: "深水埗布料街",       category: "購物", lat: 22.3310, lng: 114.1607, duration: "2hr",   tip: "布料・電子零件・港式老鋪，最道地香港生活" },
+    { id: "hkg-21", name: "香港迪士尼樂園",     category: "體驗", lat: 22.3130, lng: 114.0413, duration: "全天",  tip: "全球首座冰雪奇緣主題園區在此；規模較小，快速通關可一天玩完，從中環搭迪士尼線30分" },
+    { id: "hkg-22", name: "香港海洋公園",       category: "體驗", lat: 22.2484, lng: 114.1738, duration: "全天",  tip: "南丫島北端，海洋區+山頂遊樂設施二合一；大熊貓、海豚表演、雲霄飛車，親子玩一整天不夠" },
+    { id: "hkg-23", name: "天際100觀景台",       category: "景點", lat: 22.3038, lng: 114.1620, duration: "1hr",   tip: "環球貿易廣場100樓，維多利亞港360度全景；比太平山更貼近城市核心，夜景更震撼" },
   ],
 
   OKA: [
@@ -288,6 +310,10 @@ export const CITY_SPOTS: Record<string, Spot[]> = {
     { id: "pus-18", name: "海月亭",             category: "景點", lat: 35.1552, lng: 129.1181, duration: "1hr",   tip: "廣安里海邊懸崖上的美術館兼咖啡廳，海景極佳" },
     { id: "pus-19", name: "南川冬柏市場",       category: "美食", lat: 35.1553, lng: 129.1183, duration: "1hr",   tip: "廣安里附近傳統市場，釜山魚糕必買" },
     { id: "pus-20", name: "摩天輪 Sky Capsule", category: "體驗", lat: 35.1778, lng: 129.1224, duration: "1hr",   tip: "海雲台海邊透明膠囊列車，票需提前預約" },
+    { id: "pus-21", name: "釜山樂天世界",       category: "體驗", lat: 35.1750, lng: 129.1260, duration: "全天",  tip: "位於海雲台，韓國最大海濱遊樂園；摩天輪 + 雲霄飛車可眺望廣安大橋，與首爾樂天世界風格截然不同" },
+    { id: "pus-22", name: "海東龍宮寺",         category: "景點", lat: 35.1880, lng: 129.2226, duration: "1.5hr", tip: "懸崖上的千年佛寺，背景是一望無際的大海；韓國最上相的寺院，免費參觀，避開週末可享靜謐" },
+    { id: "pus-23", name: "草梁壁畫村",         category: "景點", lat: 35.1106, lng: 129.0370, duration: "1.5hr", tip: "168步階沿途壁畫彩繪，俯瞰釜山港全景；比甘川洞遊客少，本地人最愛的拍照秘境" },
+    { id: "pus-24", name: "慶州（近郊）",       category: "景點", lat: 35.8562, lng: 129.2247, duration: "全天",  tip: "新羅王朝千年古都，UNESCO世界遺產密集；불국사佛國寺 + 石굴암石窟庵是精髓，從釜山搭KTX只需23分" },
   ],
 
   SGN: [
