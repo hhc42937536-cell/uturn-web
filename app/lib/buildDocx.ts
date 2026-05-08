@@ -411,16 +411,18 @@ function buildCover(form: DocxFormData, dateRange: string): Table {
 
 // ── 每日行程卡片（Table 實作） ────────────────────────────
 
-const DAY_COLORS = ["4A3828", "2A4A6A", "2A5A3A", "5A2A5A", "3A5A2A", "5A4A2A", "2A2A5A"];
+// Day header 統一用奶茶色，跟網頁預覽一致
+const DAY_HEADER_BG = "F0E6DF";   // 淡奶茶
+const DAY_HEADER_TEXT = "3A2E26"; // 深棕
 
 function slotCell(icon: string, label: string, value: string, bg: string): TableRow {
   return new TableRow({
     children: [
-      // 左欄：icon + label
+      // 左欄：icon + label（白底）
       new TableCell({
-        width: { size: 18, type: WidthType.PERCENTAGE },
-        borders: NO_BORDER,
-        shading: { type: ShadingType.SOLID, fill: bg },
+        width: { size: 15, type: WidthType.PERCENTAGE },
+        borders: { ...NO_BORDER, right: { style: BorderStyle.SINGLE, size: 6, color: bg } },
+        shading: { type: ShadingType.SOLID, fill: "FAFAF8" },
         verticalAlign: VerticalAlign.TOP,
         children: [
           new Paragraph({
@@ -435,8 +437,8 @@ function slotCell(icon: string, label: string, value: string, bg: string): Table
       }),
       // 右欄：內容（白底，文字清晰）
       new TableCell({
-        width: { size: 82, type: WidthType.PERCENTAGE },
-        borders: { ...NO_BORDER, left: { style: BorderStyle.SINGLE, size: 6, color: bg } },
+        width: { size: 85, type: WidthType.PERCENTAGE },
+        borders: NO_BORDER,
         shading: { type: ShadingType.SOLID, fill: C.white },
         verticalAlign: VerticalAlign.TOP,
         children: [
@@ -458,19 +460,18 @@ function buildDayCard(day: DayNote, index: number, totalDays: number, depDate: s
     index === totalDays - 1 ? `Day ${index + 1}  ·  返程日` :
     `Day ${index + 1}`;
   const dateLabel = dateStr ? `${fmtDate(dateStr)}（${getWeekday(dateStr)}）` : "";
-  const headerColor = DAY_COLORS[index % DAY_COLORS.length];
 
   const headerRow = new TableRow({
     children: [
       new TableCell({
         columnSpan: 2,
-        borders: NO_BORDER,
-        shading: { type: ShadingType.SOLID, fill: headerColor },
+        borders: { ...NO_BORDER, bottom: { style: BorderStyle.SINGLE, size: 4, color: C.accent } },
+        shading: { type: ShadingType.SOLID, fill: DAY_HEADER_BG },
         children: [
           new Paragraph({
             children: [
-              new TextRun({ text: `  ${dayLabel}`, bold: true, size: 22, color: C.white, font: "微軟正黑體" }),
-              new TextRun({ text: `    ${dateLabel}`, size: 18, color: "DDDDDD", font: "微軟正黑體" }),
+              new TextRun({ text: `  ${dayLabel}`, bold: true, size: 22, color: DAY_HEADER_TEXT, font: "微軟正黑體" }),
+              new TextRun({ text: `    ${dateLabel}`, size: 18, color: C.gray, font: "微軟正黑體" }),
             ],
             spacing: { before: 80, after: 80 },
           }),
