@@ -425,14 +425,20 @@ export default function DocxView() {
           <>
             <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
               <h2 className="text-2xl font-light tracking-wide">預覽計畫書</h2>
-              <button onClick={handleExport} disabled={exporting}
-                className="rounded-full border border-[#A86F5A] bg-[#B98774]/15 px-8 py-3 text-sm font-light tracking-[0.15em] text-[#7D5548] transition hover:bg-[#B98774]/25 disabled:opacity-60">
-                {exporting ? "產生中…" : "📄 下載 .docx"}
-              </button>
+              <div className="flex gap-2">
+                <button onClick={() => window.print()}
+                  className="rounded-full border border-[#5A8AA8] bg-[#5A8AA8]/10 px-6 py-3 text-sm font-light tracking-[0.15em] text-[#4A7A98] transition hover:bg-[#5A8AA8]/20">
+                  🖨 匯出 PDF
+                </button>
+                <button onClick={handleExport} disabled={exporting}
+                  className="rounded-full border border-[#A86F5A] bg-[#B98774]/15 px-6 py-3 text-sm font-light tracking-[0.15em] text-[#7D5548] transition hover:bg-[#B98774]/25 disabled:opacity-60">
+                  {exporting ? "產生中…" : "📄 下載 .docx"}
+                </button>
+              </div>
             </div>
 
             {/* ── Printable Document ── */}
-            <div className="rounded-[2rem] border border-[#D8D2C7] bg-[#FBF8F1] overflow-hidden">
+            <div id="plan-print-content" className="rounded-[2rem] border border-[#D8D2C7] bg-[#FBF8F1] overflow-hidden">
 
               {/* Cover */}
               <div className="bg-[#3A2E26] px-10 py-16 text-center text-white">
