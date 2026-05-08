@@ -457,7 +457,7 @@ function PlanModal({
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2">
                             <span className="font-medium text-[#3A2E26]">{s.name}</span>
-                            <span className="rounded-full border px-2 py-0.5 text-[10px] border-[#D8D2C7] text-[#6F675F]">
+                            <span className="rounded-full border px-2 py-0.5 text-[10px] whitespace-nowrap border-[#D8D2C7] text-[#6F675F]">
                               {s.category}
                             </span>
                             <span className="text-[10px] text-[#A79C91]">⏱ {s.duration}</span>
