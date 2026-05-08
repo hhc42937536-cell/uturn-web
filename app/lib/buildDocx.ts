@@ -187,17 +187,18 @@ const C = {
   accent:   "A86F5A",
   accentLt: "F0E6DF",
   light:    "FDF6ED",
-  section:  "F7F3EC",
+  section:  "F5F1EA",
   gray:     "8A7F73",
   border:   "D8D2C7",
   text:     "4B4037",
   white:    "FFFFFF",
   muted:    "CCBBAA",
-  morning:  "FFF8F0",
-  afternoon:"F0F7FF",
-  evening:  "F5F0FA",
-  food:     "F0FBF0",
-  note:     "F7F3EC",
+  // 時段左欄底色（淡色，僅用在 icon/label 欄）
+  morning:  "FEF3E8",
+  afternoon:"EAF3FE",
+  evening:  "F0EAF8",
+  food:     "E8F5E8",
+  note:     "F5F1EA",
 };
 
 // ── 日期輔助 ─────────────────────────────────────────────
@@ -358,16 +359,16 @@ function slotCell(icon: string, label: string, value: string, bg: string): Table
           }),
         ],
       }),
-      // 右欄：內容（可換行）
+      // 右欄：內容（白底，文字清晰）
       new TableCell({
         width: { size: 82, type: WidthType.PERCENTAGE },
-        borders: { ...NO_BORDER, left: { style: BorderStyle.SINGLE, size: 2, color: C.border } },
+        borders: { ...NO_BORDER, left: { style: BorderStyle.SINGLE, size: 6, color: bg } },
         shading: { type: ShadingType.SOLID, fill: C.white },
         verticalAlign: VerticalAlign.TOP,
         children: [
           new Paragraph({
-            children: [new TextRun({ text: value || "—", size: 19, color: value ? C.text : "BBBBBB", font: "微軟正黑體" })],
-            spacing: { before: 100, after: 100 },
+            children: [new TextRun({ text: value || "—", size: 20, color: value ? C.text : "BBBBBB", font: "微軟正黑體" })],
+            spacing: { before: 80, after: 80 },
             indent: { left: convertInchesToTwip(0.15) },
           }),
         ],
@@ -439,7 +440,7 @@ function buildDayCard(day: DayNote, index: number, totalDays: number, depDate: s
     rows: [headerRow, ...slots],
   });
 
-  return [table, spacer(180)];
+  return [table, spacer(100)];
 }
 
 // ── 打包清單表格 ─────────────────────────────────────────
@@ -502,17 +503,17 @@ export async function buildAndDownloadDocx(form: DocxFormData, days: DayNote[]) 
   children.push(h2("🛂  簽證 & 海關資訊"));
   children.push(h3("簽證說明"));
   children.push(body(visa));
-  children.push(spacer(80));
+  children.push(spacer(40));
   children.push(h3("海關注意事項"));
   for (const item of customs) children.push(bullet(item));
-  children.push(spacer(80));
+  children.push(spacer(40));
   children.push(h3("緊急聯絡資訊"));
   for (const line of emergency) children.push(bullet(line));
   children.push(pageBreak());
 
   // ── 每日行程 ─────────────────────────────────────────
   children.push(h2("📅  每日行程"));
-  children.push(spacer(80));
+  children.push(spacer(40));
   for (let i = 0; i < days.length; i++) {
     children.push(...buildDayCard(days[i], i, days.length, form.depDate));
   }
@@ -557,7 +558,7 @@ export async function buildAndDownloadDocx(form: DocxFormData, days: DayNote[]) 
       {
         properties: {
           page: {
-            margin: { top: 1134, bottom: 1134, left: 1247, right: 1247 },
+            margin: { top: 720, bottom: 720, left: 800, right: 800 },
           },
         },
         children,
