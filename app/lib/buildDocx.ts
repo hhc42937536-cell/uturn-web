@@ -29,7 +29,7 @@ export type DocxFormData = {
 
 // ── 靜態資料 ─────────────────────────────────────────────
 
-const VISA_NOTE: Record<string, string> = {
+export const VISA_NOTE: Record<string, string> = {
   首爾: "免簽 90 天，入境前請確認 K-ETA 申請狀態（約 NT$100，72 小時前申請）",
   釜山: "免簽 90 天，入境前請確認 K-ETA 申請狀態",
   東京: "免簽 90 天，建議出發前透過 Visit Japan Web 預先登錄入境資料",
@@ -75,7 +75,7 @@ const VISA_NOTE: Record<string, string> = {
   帛琉: "落地簽 30 天（USD 50），入境時簽署帛琉誓約書（環保承諾）",
 };
 
-const EMERGENCY: Record<string, string[]> = {
+export const EMERGENCY: Record<string, string[]> = {
   首爾: ["台灣駐韓代表部（首爾）：+82-2-399-2780", "韓國警察報案：112", "韓國急救：119"],
   釜山: ["台灣駐韓代表部（首爾）：+82-2-399-2780", "韓國警察：112", "急救：119"],
   東京: ["台北駐日經濟文化代表處（東京）：+81-3-3280-7811", "日本警察：110", "急救救火：119"],

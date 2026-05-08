@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { buildAndDownloadDocx } from "@/app/lib/buildDocx";
+import { buildAndDownloadDocx, VISA_NOTE, EMERGENCY } from "@/app/lib/buildDocx";
 
 const DESTINATIONS = [
   // 日本
@@ -42,31 +42,6 @@ const ARR_AIRPORTS: Record<string, { code: string; label: string }[]> = {
   ],
 };
 
-const VISA_NOTE: Record<string, string> = {
-  首爾: "免簽 90 天，建議出發前確認 K-ETA 狀態。",
-  釜山: "免簽 90 天，建議出發前確認 K-ETA 狀態。",
-  東京: "免簽 90 天，可使用 Visit Japan Web 加速通關。",
-  大阪: "免簽 90 天，可使用 Visit Japan Web 加速通關。",
-  沖繩: "免簽 90 天，可使用 Visit Japan Web 加速通關。",
-  曼谷: "免簽 60 天，入境填寫 TM.6 表格。",
-  新加坡: "免簽 30 天，入境前 3 天填寫 SG Arrival Card。",
-  香港: "免簽 30 天。",
-  胡志明市: "免簽 45 天，亦可申請 E-Visa 最長 90 天。",
-  吉隆坡: "免簽 90 天，入境 KLIA/KLIA2 請確認航廈。",
-};
-
-const EMERGENCY: Record<string, string> = {
-  首爾: "台灣駐韓代表部：+82-2-399-2780",
-  釜山: "台灣駐韓代表部：+82-2-399-2780",
-  東京: "台北駐日經濟文化代表處：+81-3-3280-7811",
-  大阪: "台北駐大阪經濟文化辦事處：+81-6-6443-8481",
-  沖繩: "台北駐那霸辦事處：+81-98-862-7008",
-  曼谷: "台北經濟文化辦事處（曼谷）：+66-2-610-4000",
-  新加坡: "台北代表處：+65-6590-9600",
-  香港: "台灣旅遊交流辦事處：+852-2525-2515",
-  胡志明市: "台北經濟文化辦事處（胡志明市）：+84-28-3825-2525",
-  吉隆坡: "台北經濟文化辦事處（吉隆坡）：+60-3-2161-8684",
-};
 
 type DayNote = { morning: string; afternoon: string; evening: string; food: string; note: string };
 
@@ -493,7 +468,7 @@ export default function DocxView() {
                     </div>
                     <div className="rounded-2xl border border-[#D8D2C7] bg-white px-5 py-4">
                       <div className="mb-1 text-[10px] font-light uppercase tracking-widest text-[#8FA39A]">📞 緊急聯絡</div>
-                      <p className="text-sm font-light leading-6 text-[#5C5248]">{EMERGENCY[form.destination] ?? "請查詢外交部領事事務局官網。"}</p>
+                      <p className="text-sm font-light leading-6 text-[#5C5248] whitespace-pre-line">{(EMERGENCY[form.destination] ?? ["請查詢外交部領事事務局官網。"]).join("\n")}</p>
                     </div>
                   </div>
                 </section>
