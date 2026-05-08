@@ -181,6 +181,80 @@ function getPackingList(destination: string): string[][] {
   return PACKING["東南亞"];
 }
 
+// ── 預算估算 ─────────────────────────────────────────────
+
+const _DAILY_COST: Record<string, { hotel: number; food: number; transport: number; activity: number }> = {
+  // 日本
+  東京: { hotel: 2800, food: 1400, transport: 900, activity: 1200 },
+  大阪: { hotel: 2400, food: 1200, transport: 700, activity: 1000 },
+  京都: { hotel: 2400, food: 1200, transport: 700, activity: 1000 },
+  神戶: { hotel: 2000, food: 1000, transport: 600, activity: 800 },
+  福岡: { hotel: 2000, food: 1000, transport: 600, activity: 800 },
+  沖繩: { hotel: 2200, food: 1000, transport: 500, activity: 900 },
+  札幌: { hotel: 2200, food: 1100, transport: 700, activity: 900 },
+  名古屋: { hotel: 2000, food: 1000, transport: 700, activity: 800 },
+  // 韓國
+  首爾: { hotel: 2000, food: 900,  transport: 500, activity: 800 },
+  釜山: { hotel: 1600, food: 800,  transport: 400, activity: 700 },
+  濟州: { hotel: 1800, food: 800,  transport: 500, activity: 700 },
+  // 東南亞
+  曼谷: { hotel: 1200, food: 600,  transport: 300, activity: 600 },
+  清邁: { hotel: 900,  food: 500,  transport: 250, activity: 500 },
+  普吉島: { hotel: 1500, food: 700,  transport: 300, activity: 700 },
+  新加坡: { hotel: 3500, food: 1000, transport: 400, activity: 900 },
+  吉隆坡: { hotel: 1000, food: 500,  transport: 200, activity: 500 },
+  胡志明市: { hotel: 900,  food: 450,  transport: 200, activity: 500 },
+  河內: { hotel: 800,  food: 400,  transport: 180, activity: 400 },
+  峴港: { hotel: 900,  food: 450,  transport: 200, activity: 400 },
+  會安: { hotel: 850,  food: 420,  transport: 200, activity: 400 },
+  富國島: { hotel: 1200, food: 550,  transport: 300, activity: 600 },
+  峇里島: { hotel: 1500, food: 700,  transport: 400, activity: 800 },
+  雅加達: { hotel: 1200, food: 600,  transport: 300, activity: 600 },
+  馬尼拉: { hotel: 1000, food: 500,  transport: 300, activity: 500 },
+  宿霧: { hotel: 1100, food: 500,  transport: 300, activity: 600 },
+  // 港澳
+  香港: { hotel: 2500, food: 1000, transport: 300, activity: 800 },
+  澳門: { hotel: 2000, food: 800,  transport: 200, activity: 700 },
+  // 歐洲
+  倫敦: { hotel: 6000, food: 2500, transport: 1200, activity: 1500 },
+  巴黎: { hotel: 5500, food: 2200, transport: 1000, activity: 1500 },
+  羅馬: { hotel: 4500, food: 1800, transport: 800,  activity: 1200 },
+  巴塞隆納: { hotel: 4000, food: 1600, transport: 700,  activity: 1000 },
+  // 美洲
+  紐約: { hotel: 7000, food: 3000, transport: 1200, activity: 1500 },
+  洛杉磯: { hotel: 6000, food: 2500, transport: 1500, activity: 1200 },
+  溫哥華: { hotel: 4500, food: 2000, transport: 800,  activity: 1000 },
+  // 其他
+  杜拜: { hotel: 4000, food: 1500, transport: 600,  activity: 1000 },
+  關島: { hotel: 2800, food: 1100, transport: 600,  activity: 1000 },
+  帛琉: { hotel: 3000, food: 1200, transport: 800,  activity: 1500 },
+  雪梨: { hotel: 4500, food: 2000, transport: 900,  activity: 1200 },
+};
+
+const _DEFAULT_COST = { hotel: 2000, food: 900, transport: 500, activity: 800 };
+
+export type BudgetBreakdown = {
+  flight: number; hotel: number; food: number; transport: number; activity: number;
+  total: number; nights: number; days: number; adults: number; per_person: number;
+};
+
+export function estimateBudget(
+  destination: string,
+  days: number,
+  adults: number,
+  flightPerPerson = 0,
+): BudgetBreakdown {
+  const cost = _DAILY_COST[destination] ?? _DEFAULT_COST;
+  const nights = Math.max(days - 1, 1);
+  const flight    = flightPerPerson * adults;
+  const hotel     = cost.hotel     * nights * adults;
+  const food      = cost.food      * days   * adults;
+  const transport = cost.transport * days   * adults;
+  const activity  = cost.activity  * days   * adults;
+  const total     = flight + hotel + food + transport + activity;
+  return { flight, hotel, food, transport, activity, total, nights, days, adults, per_person: Math.round(total / (adults || 1)) };
+}
+
 // ── 顏色常數 ─────────────────────────────────────────────
 const C = {
   primary:  "3A2E26",

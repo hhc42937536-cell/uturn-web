@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { buildAndDownloadDocx, VISA_NOTE, EMERGENCY, CUSTOMS } from "@/app/lib/buildDocx";
+import { buildAndDownloadDocx, VISA_NOTE, EMERGENCY, CUSTOMS, estimateBudget, BudgetBreakdown } from "@/app/lib/buildDocx";
 
 const DESTINATIONS = [
   // 日本
@@ -87,8 +87,20 @@ export default function DocxView() {
     budget: "", style: "", mustVisit: "", memo: "",
   });
 
-  const [budgetBreakdown, setBudgetBreakdown] = useState<Record<string, number> | null>(null);
+  const [budgetBreakdownOverride, setBudgetBreakdownOverride] = useState<Record<string, number> | null>(null);
   const dayCount = getDayCount(form.depDate, form.retDate);
+
+  // 優先用 LINE Bot 帶入的值，否則用前端估算
+  const budgetBreakdown: BudgetBreakdown | null = (() => {
+    if (budgetBreakdownOverride && budgetBreakdownOverride.total > 0) {
+      return budgetBreakdownOverride as unknown as BudgetBreakdown;
+    }
+    if (form.destination && form.depDate && form.retDate) {
+      const adults = parseInt(form.people) || 1;
+      return estimateBudget(form.destination, dayCount, adults);
+    }
+    return null;
+  })();
   const [days, setDays] = useState<DayNote[]>([]);
   const [generating, setGenerating] = useState(false);
 
@@ -124,7 +136,7 @@ export default function DocxView() {
             memo: "",
           });
           if (data.budget_breakdown && data.budget_breakdown.total) {
-            setBudgetBreakdown(data.budget_breakdown);
+            setBudgetBreakdownOverride(data.budget_breakdown);
           }
           // llm_itinerary 有資料 → 直接帶入；沒有 → 自動用 Claude 生成
           if (Array.isArray(data.llm_itinerary) && data.llm_itinerary.length > 0) {
@@ -486,7 +498,7 @@ export default function DocxView() {
                 </section>
 
                 {/* Budget Breakdown */}
-                {budgetBreakdown && budgetBreakdown.total > 0 && (
+                {budgetBreakdown && budgetBreakdown.hotel > 0 && (
                   <section className="mb-10">
                     <h2 className="mb-4 text-[10px] font-light uppercase tracking-[0.5em] text-[#8FA39A]">整趟旅程預估費用</h2>
                     <div className="rounded-2xl border border-[#D8D2C7] bg-white p-5">
@@ -495,15 +507,15 @@ export default function DocxView() {
                       </p>
                       <div className="space-y-2">
                         {[
-                          { label: `✈️ 機票（含稅 · ${budgetBreakdown.adults}人）`, val: budgetBreakdown.flight },
+                          { label: `✈️ 機票（含稅 · ${budgetBreakdown.adults}人）`, val: budgetBreakdown.flight, dash: budgetBreakdown.flight === 0 },
                           { label: `🏨 住宿（${budgetBreakdown.nights}晚 · ${budgetBreakdown.adults}人）`, val: budgetBreakdown.hotel },
                           { label: `🍜 餐飲（${budgetBreakdown.days}天 · ${budgetBreakdown.adults}人）`, val: budgetBreakdown.food },
                           { label: `🚇 當地交通（${budgetBreakdown.adults}人）`, val: budgetBreakdown.transport },
                           { label: `🎡 景點活動（${budgetBreakdown.adults}人）`, val: budgetBreakdown.activity },
-                        ].map(({ label, val }) => (
+                        ].map(({ label, val, dash }) => (
                           <div key={label} className="flex justify-between text-sm font-light text-[#5C5248]">
                             <span>{label}</span>
-                            <span>NT$ {(val ?? 0).toLocaleString()}</span>
+                            <span className={dash ? "text-[#B0A89E]" : ""}>{dash ? "未計入" : `NT$ ${(val ?? 0).toLocaleString()}`}</span>
                           </div>
                         ))}
                         <div className="mt-3 border-t border-[#E8E2D8] pt-3 flex justify-between text-sm font-semibold text-[#E53935]">
