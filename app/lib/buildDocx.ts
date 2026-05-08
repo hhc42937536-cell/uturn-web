@@ -262,9 +262,9 @@ const C = {
   accentLt: "F0E6DF",
   light:    "FDF6ED",
   section:  "F5F1EA",
-  gray:     "8A7F73",
+  gray:     "444444",   // 深灰，label 清晰
   border:   "D8D2C7",
-  text:     "4B4037",
+  text:     "1A1A1A",   // 接近純黑，正文清晰
   white:    "FFFFFF",
   muted:    "CCBBAA",
   // 時段左欄底色（淡色，僅用在 icon/label 欄）
@@ -426,10 +426,10 @@ function slotCell(icon: string, label: string, value: string, bg: string): Table
           new Paragraph({
             children: [
               new TextRun({ text: icon, size: 22, font: "微軟正黑體" }),
-              new TextRun({ text: `\n${label}`, size: 16, bold: true, color: C.gray, font: "微軟正黑體" }),
+              new TextRun({ text: `\n${label}`, size: 17, bold: true, color: C.gray, font: "微軟正黑體" }),
             ],
-            spacing: { before: 100, after: 100 },
-            indent: { left: convertInchesToTwip(0.15) },
+            spacing: { before: 50, after: 50 },
+            indent: { left: convertInchesToTwip(0.1) },
           }),
         ],
       }),
@@ -441,9 +441,9 @@ function slotCell(icon: string, label: string, value: string, bg: string): Table
         verticalAlign: VerticalAlign.TOP,
         children: [
           new Paragraph({
-            children: [new TextRun({ text: value || "—", size: 20, color: value ? C.text : "BBBBBB", font: "微軟正黑體" })],
-            spacing: { before: 80, after: 80 },
-            indent: { left: convertInchesToTwip(0.15) },
+            children: [new TextRun({ text: value || "—", size: 20, color: value ? C.text : "AAAAAA", font: "微軟正黑體" })],
+            spacing: { before: 50, after: 50 },
+            indent: { left: convertInchesToTwip(0.12) },
           }),
         ],
       }),
@@ -470,9 +470,9 @@ function buildDayCard(day: DayNote, index: number, totalDays: number, depDate: s
           new Paragraph({
             children: [
               new TextRun({ text: `  ${dayLabel}`, bold: true, size: 22, color: C.white, font: "微軟正黑體" }),
-              new TextRun({ text: `    ${dateLabel}`, size: 18, color: "CCCCCC", font: "微軟正黑體" }),
+              new TextRun({ text: `    ${dateLabel}`, size: 18, color: "DDDDDD", font: "微軟正黑體" }),
             ],
-            spacing: { before: 120, after: 120 },
+            spacing: { before: 80, after: 80 },
           }),
         ],
       }),
@@ -514,7 +514,7 @@ function buildDayCard(day: DayNote, index: number, totalDays: number, depDate: s
     rows: [headerRow, ...slots],
   });
 
-  return [table, spacer(100)];
+  return [table, spacer(60)];
 }
 
 // ── 打包清單表格 ─────────────────────────────────────────
