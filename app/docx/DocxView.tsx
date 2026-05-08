@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { buildAndDownloadDocx, VISA_NOTE, EMERGENCY } from "@/app/lib/buildDocx";
+import { buildAndDownloadDocx, VISA_NOTE, EMERGENCY, CUSTOMS } from "@/app/lib/buildDocx";
 
 const DESTINATIONS = [
   // 日本
@@ -439,7 +439,7 @@ export default function DocxView() {
                   <h2 className="mb-4 text-[10px] font-light uppercase tracking-[0.5em] text-[#8FA39A]">目錄</h2>
                   <div className="space-y-1.5">
                     <div className="flex justify-between border-b border-[#E8E2D8] pb-1.5 text-sm font-light text-[#6F675F]">
-                      <span>簽證＆緊急資訊</span><span>▸</span>
+                      <span>🛂 簽證 &amp; 海關規定</span><span>▸</span>
                     </div>
                     {days.map((_, i) => {
                       const label = i === 0 ? "Day 1 · 抵達" : i === days.length - 1 ? `Day ${i + 1} · 返程` : `Day ${i + 1}`;
@@ -458,17 +458,29 @@ export default function DocxView() {
                   </div>
                 </section>
 
-                {/* Visa & Emergency */}
+                {/* Visa, Customs & Emergency */}
                 <section className="mb-10">
-                  <h2 className="mb-4 text-[10px] font-light uppercase tracking-[0.5em] text-[#8FA39A]">簽證＆緊急資訊</h2>
-                  <div className="grid gap-3 sm:grid-cols-2">
+                  <h2 className="mb-4 text-[10px] font-light uppercase tracking-[0.5em] text-[#8FA39A]">🛂 簽證 &amp; 海關規定</h2>
+                  <div className="space-y-3">
                     <div className="rounded-2xl border border-[#C4A882]/50 bg-[#FDF6ED] px-5 py-4">
-                      <div className="mb-1 text-[10px] font-light uppercase tracking-widest text-[#8FA39A]">🛂 簽證說明</div>
+                      <div className="mb-1 text-[10px] font-light uppercase tracking-widest text-[#8FA39A]">簽證說明</div>
                       <p className="text-sm font-light leading-6 text-[#5C5248]">{VISA_NOTE[form.destination] ?? "請出發前確認最新簽證規定。"}</p>
                     </div>
                     <div className="rounded-2xl border border-[#D8D2C7] bg-white px-5 py-4">
+                      <div className="mb-1 text-[10px] font-light uppercase tracking-widest text-[#8FA39A]">海關注意事項</div>
+                      <ul className="space-y-1">
+                        {(CUSTOMS[form.destination] ?? ["請至目的地海關官網確認最新規定。"]).map((item, i) => (
+                          <li key={i} className="text-sm font-light leading-6 text-[#5C5248]">• {item}</li>
+                        ))}
+                      </ul>
+                    </div>
+                    <div className="rounded-2xl border border-[#D8D2C7] bg-white px-5 py-4">
                       <div className="mb-1 text-[10px] font-light uppercase tracking-widest text-[#8FA39A]">📞 緊急聯絡</div>
-                      <p className="text-sm font-light leading-6 text-[#5C5248] whitespace-pre-line">{(EMERGENCY[form.destination] ?? ["請查詢外交部領事事務局官網。"]).join("\n")}</p>
+                      <ul className="space-y-1">
+                        {(EMERGENCY[form.destination] ?? ["請查詢外交部領事事務局官網。"]).map((item, i) => (
+                          <li key={i} className="text-sm font-light leading-6 text-[#5C5248]">{item}</li>
+                        ))}
+                      </ul>
                     </div>
                   </div>
                 </section>

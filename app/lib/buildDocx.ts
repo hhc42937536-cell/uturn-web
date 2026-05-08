@@ -112,7 +112,7 @@ export const EMERGENCY: Record<string, string[]> = {
   帛琉: ["美國在台協會（台北）：+886-2-2162-2000（緊急）", "帛琉警察：488-2526", "急救：488-1411"],
 };
 
-const CUSTOMS: Record<string, string[]> = {
+export const CUSTOMS: Record<string, string[]> = {
   首爾: ["超過 USD 10,000 現金須申報", "禁止攜帶肉品及蔬果入境", "酒類免稅限 1 公升，菸草免稅限 200 支"],
   釜山: ["超過 USD 10,000 現金須申報", "禁止攜帶肉品及蔬果入境"],
   東京: ["超過 JPY 1,000,000 現金須申報", "禁帶未熟果蔬、肉品（含香腸）", "進口藥品需提前申請"],
