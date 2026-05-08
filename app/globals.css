@@ -19,6 +19,29 @@ html {
     left: 0;
     width: 100%;
     background: #FFFDF8;
+    border: none !important;
+    border-radius: 0 !important;
+  }
+
+  /* 封面獨佔一頁 */
+  #plan-print-cover {
+    break-after: page;
+    min-height: 60vh;
+  }
+
+  /* 各 section 不斷頁 */
+  #plan-print-content section {
+    break-inside: avoid;
+  }
+
+  /* 每日行程卡片不斷頁 */
+  .print-day-card {
+    break-inside: avoid;
+  }
+
+  /* 簽證卡片、費用卡片不斷頁 */
+  #plan-print-content .rounded-2xl {
+    break-inside: avoid;
   }
 }
 

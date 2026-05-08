@@ -441,7 +441,7 @@ export default function DocxView() {
             <div id="plan-print-content" className="rounded-[2rem] border border-[#D8D2C7] bg-[#FBF8F1] overflow-hidden">
 
               {/* Cover */}
-              <div className="bg-[#3A2E26] px-10 py-16 text-center text-white">
+              <div id="plan-print-cover" className="bg-[#3A2E26] px-10 py-16 text-center text-white">
                 <p className="mb-3 text-xs font-light uppercase tracking-[0.5em] text-white/50">Travel Plan · 旅遊計畫書</p>
                 <h1 className="mb-2 text-5xl font-light tracking-wide">{form.destination}</h1>
                 <p className="mb-6 text-lg font-light tracking-widest text-white/70">
@@ -549,7 +549,7 @@ export default function DocxView() {
                       const dateStr = addDays(form.depDate, i);
                       const label = i === 0 ? "Day 1 · 抵達日" : i === days.length - 1 ? `Day ${i + 1} · 返程日` : `Day ${i + 1}`;
                       return (
-                        <div key={i} className="rounded-2xl border border-[#D8D2C7] bg-white p-6">
+                        <div key={i} className="print-day-card rounded-2xl border border-[#D8D2C7] bg-white p-6">
                           <div className="mb-4 flex items-center gap-3">
                             <span className="rounded-full bg-[#A86F5A]/15 px-3 py-0.5 text-xs font-light tracking-widest text-[#7D5548]">{label}</span>
                             <span className="text-sm font-light text-[#8A7F73]">{fmtDate(dateStr)}{getWeekday(dateStr)}</span>
