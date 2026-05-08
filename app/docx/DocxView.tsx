@@ -385,27 +385,27 @@ export default function DocxView() {
                     <div className="grid gap-3 sm:grid-cols-2">
                       <label className="block">
                         <span className="mb-1 block text-[11px] font-light tracking-widest text-[#8FA39A]">🌅 上午</span>
-                        <textarea rows={2} value={day.morning} onChange={(e) => updateDay(i, "morning", e.target.value)}
+                        <textarea rows={4} value={day.morning} onChange={(e) => updateDay(i, "morning", e.target.value)}
                           placeholder="景點、活動…" className={ta} />
                       </label>
                       <label className="block">
                         <span className="mb-1 block text-[11px] font-light tracking-widest text-[#8FA39A]">☀️ 下午</span>
-                        <textarea rows={2} value={day.afternoon} onChange={(e) => updateDay(i, "afternoon", e.target.value)}
+                        <textarea rows={4} value={day.afternoon} onChange={(e) => updateDay(i, "afternoon", e.target.value)}
                           placeholder="景點、購物…" className={ta} />
                       </label>
                       <label className="block">
                         <span className="mb-1 block text-[11px] font-light tracking-widest text-[#8FA39A]">🌙 晚上</span>
-                        <textarea rows={2} value={day.evening} onChange={(e) => updateDay(i, "evening", e.target.value)}
+                        <textarea rows={4} value={day.evening} onChange={(e) => updateDay(i, "evening", e.target.value)}
                           placeholder="夜市、酒吧、夜景…" className={ta} />
                       </label>
                       <label className="block">
                         <span className="mb-1 block text-[11px] font-light tracking-widest text-[#8FA39A]">🍜 美食</span>
-                        <textarea rows={2} value={day.food} onChange={(e) => updateDay(i, "food", e.target.value)}
+                        <textarea rows={4} value={day.food} onChange={(e) => updateDay(i, "food", e.target.value)}
                           placeholder="今日餐廳、必吃清單…" className={ta} />
                       </label>
                       <label className="block sm:col-span-2">
                         <span className="mb-1 block text-[11px] font-light tracking-widest text-[#8FA39A]">📝 備註</span>
-                        <textarea rows={1} value={day.note} onChange={(e) => updateDay(i, "note", e.target.value)}
+                        <textarea rows={2} value={day.note} onChange={(e) => updateDay(i, "note", e.target.value)}
                           placeholder="交通方式、訂位提醒…" className={ta} />
                       </label>
                     </div>
