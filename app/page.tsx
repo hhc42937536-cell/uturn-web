@@ -75,20 +75,20 @@ export default function HomePage() {
           <div className="mt-10 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
             <button
               onClick={() => router.push("/docx")}
-              className="rounded-full bg-[#A86F5A] px-10 py-4 text-base font-light tracking-[0.2em] text-white transition hover:bg-[#96604D]"
+              className="rounded-full bg-[#A86F5A] px-12 py-5 text-lg font-light tracking-[0.2em] text-white shadow-md transition hover:bg-[#96604D] hover:shadow-lg"
             >
-              📄 自己手動製作計畫書
+              立即製作計畫書 →
             </button>
             <a
               href="https://line.me/R/ti/p/@031ywxwq"
               target="_blank"
               rel="noopener noreferrer"
-              className="rounded-full border-2 border-[#06C755] bg-[#06C755]/10 px-10 py-4 text-base font-light tracking-[0.2em] text-[#06C755] transition hover:bg-[#06C755]/20"
+              className="rounded-full border-2 border-[#06C755] bg-[#06C755]/10 px-10 py-5 text-base font-light tracking-[0.2em] text-[#06C755] transition hover:bg-[#06C755]/20"
             >
-              🤖 讓 LINE Bot 幫我規劃
+              🤖 LINE Bot 幫我規劃
             </a>
           </div>
-          <p className="mt-4 text-sm font-light text-[#A79C91]">免費・不用登入・LINE Bot 規劃後自動帶入</p>
+          <p className="mt-4 text-sm font-light text-[#A79C91]">免費 · 不用登入 · 30 秒開始</p>
         </div>
       </section>
 
@@ -121,6 +121,14 @@ export default function HomePage() {
                 <p className="text-sm font-light leading-7 text-[#6F675F]">{s.desc}</p>
               </div>
             ))}
+          </div>
+          <div className="mt-12 text-center">
+            <button
+              onClick={() => router.push("/docx")}
+              className="rounded-full bg-[#A86F5A] px-12 py-5 text-base font-light tracking-[0.2em] text-white shadow-md transition hover:bg-[#96604D]"
+            >
+              立即製作計畫書 →
+            </button>
           </div>
         </div>
       </section>
