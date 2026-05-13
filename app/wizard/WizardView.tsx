@@ -1,7 +1,9 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { VISA_NOTE, estimateBudget } from "@/app/lib/buildDocx";
+import { HOTEL_ESTIMATES, HOTEL_PICKS, agodaUrl, bookingUrl } from "@/app/lib/hotelData";
 
 // ── 目的地資料 ─────────────────────────────────────────────
 const DESTINATIONS = [
@@ -529,7 +531,6 @@ export default function WizardView() {
   // ── Step 5 ─────────────────────────────────────────────
   const Step5 = () => {
     function goToDocx() {
-      // 儲存到 sessionStorage，DocxView 會讀取
       sessionStorage.setItem("uturn_wizard_draft", JSON.stringify({
         destination: state.destination,
         depCity: state.depCity,
@@ -550,49 +551,102 @@ export default function WizardView() {
       (d) => d.morning || d.afternoon || d.evening
     );
 
+    const visa = VISA_NOTE[state.destination];
+    const hotel = HOTEL_ESTIMATES[state.destination];
+    const picks = HOTEL_PICKS[state.destination];
+    const budget = dayCount > 0
+      ? estimateBudget(state.destination, dayCount, state.people)
+      : null;
+
     return (
       <div>
         <h2 className="text-2xl font-light tracking-wide mb-2 text-center">🎉 規劃完成！</h2>
         <p className="text-sm font-light text-[#8A7F73] text-center mb-8">
-          AI 已為你規劃好行程，接下來進入計畫書編輯，確認後下載 Word 或 PDF
+          AI 已規劃好行程，以下是行前必知資訊
         </p>
 
-        {/* 行程預覽 */}
+        {/* ── 行程預覽 ── */}
         {hasItinerary && (
-          <div className="space-y-3 mb-8 max-h-96 overflow-y-auto pr-1">
-            {state.itinerary.map((day, i) => (
-              <div key={i} className="rounded-2xl border border-[#D8D2C7] bg-[#FBF8F1] px-5 py-4">
-                <div className="text-xs font-light uppercase tracking-widest text-[#A86F5A] mb-2">
-                  DAY {i + 1}
+          <div className="mb-6">
+            <p className="text-xs font-light uppercase tracking-widest text-[#8A7F73] mb-3">行程概覽</p>
+            <div className="space-y-2 max-h-72 overflow-y-auto pr-1">
+              {state.itinerary.map((day, i) => (
+                <div key={i} className="rounded-2xl border border-[#D8D2C7] bg-[#FBF8F1] px-5 py-3">
+                  <span className="text-xs font-light text-[#A86F5A] mr-3">DAY {i + 1}</span>
+                  <span className="text-sm font-light text-[#4B4037]">
+                    {day.morning?.split("，")[0] || day.afternoon?.split("，")[0] || "–"}
+                  </span>
                 </div>
-                {day.morning && (
-                  <div className="text-sm font-light text-[#4B4037] mb-1">
-                    <span className="text-[#8A7F73]">上午　</span>{day.morning}
-                  </div>
-                )}
-                {day.afternoon && (
-                  <div className="text-sm font-light text-[#4B4037] mb-1">
-                    <span className="text-[#8A7F73]">下午　</span>{day.afternoon}
-                  </div>
-                )}
-                {day.evening && (
-                  <div className="text-sm font-light text-[#4B4037] mb-1">
-                    <span className="text-[#8A7F73]">晚上　</span>{day.evening}
-                  </div>
-                )}
-                {day.food && (
-                  <div className="text-sm font-light text-[#6F675F] mt-2">
-                    🍽 {day.food}
-                  </div>
-                )}
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         )}
 
-        {!hasItinerary && (
-          <div className="rounded-2xl border border-[#D8D2C7] bg-[#FBF8F1] p-6 mb-8 text-center text-sm font-light text-[#8A7F73]">
-            行程將在計畫書中手動填入
+        {/* ── 簽證 ── */}
+        {visa && (
+          <div className="mb-4 rounded-[2rem] border border-[#D8D2C7] bg-[#FBF8F1] p-5">
+            <p className="text-xs font-light uppercase tracking-widest text-[#8A7F73] mb-2">🛂 簽證須知</p>
+            <p className="text-sm font-light leading-7 text-[#4B4037]">{visa}</p>
+          </div>
+        )}
+
+        {/* ── 住宿 ── */}
+        {hotel && (
+          <div className="mb-4 rounded-[2rem] border border-[#D8D2C7] bg-[#FBF8F1] p-5">
+            <p className="text-xs font-light uppercase tracking-widest text-[#8A7F73] mb-3">🏨 住宿參考</p>
+            <div className="flex justify-between text-sm font-light mb-1">
+              <span className="text-[#8A7F73]">每晚參考價</span>
+              <span className="text-[#4B4037]">TWD {hotel.priceRange}</span>
+            </div>
+            <div className="flex justify-between text-sm font-light mb-3">
+              <span className="text-[#8A7F73]">推薦住宿區</span>
+              <span className="text-right text-[#4B4037] max-w-[60%]">{hotel.area}</span>
+            </div>
+            {picks && (
+              <div className="space-y-2 mb-3">
+                {picks.slice(0, 2).map((p) => (
+                  <a key={p.name}
+                    href={agodaUrl(p.agodaKeyword, state.depDate, state.retDate)}
+                    target="_blank" rel="noopener noreferrer"
+                    className="block rounded-xl border border-[#E0D9D2] bg-white px-4 py-2 hover:border-[#A86F5A] transition">
+                    <p className="text-sm font-light text-[#4B4037]">{p.name}</p>
+                    <p className="text-xs font-light text-[#8A7F73]">{p.location}</p>
+                  </a>
+                ))}
+              </div>
+            )}
+            <a href={bookingUrl(state.destination, state.depDate, state.retDate)}
+              target="_blank" rel="noopener noreferrer"
+              className="text-xs font-light text-[#A86F5A] hover:underline">
+              Booking.com 查看更多 →
+            </a>
+          </div>
+        )}
+
+        {/* ── 預算估算 ── */}
+        {budget && (
+          <div className="mb-6 rounded-[2rem] border border-[#D8D2C7] bg-[#FBF8F1] p-5">
+            <p className="text-xs font-light uppercase tracking-widest text-[#8A7F73] mb-3">💰 預算估算（{state.people} 人 · {dayCount} 天）</p>
+            <div className="space-y-1">
+              {[
+                { label: "住宿", val: budget.hotel },
+                { label: "餐飲", val: budget.food },
+                { label: "交通", val: budget.transport },
+                { label: "活動", val: budget.activity },
+              ].map(({ label, val }) => (
+                <div key={label} className="flex justify-between text-sm font-light">
+                  <span className="text-[#8A7F73]">{label}</span>
+                  <span className="text-[#4B4037]">NT$ {val.toLocaleString()}</span>
+                </div>
+              ))}
+              <div className="border-t border-[#D8D2C7] mt-2 pt-2 flex justify-between text-sm font-light">
+                <span className="text-[#4B4037]">合計（不含機票）</span>
+                <span className="font-medium text-[#A86F5A]">NT$ {(budget.total - budget.flight).toLocaleString()}</span>
+              </div>
+              <p className="text-xs font-light text-[#A79C91] mt-1">
+                每人約 NT$ {Math.round((budget.total - budget.flight) / state.people).toLocaleString()}
+              </p>
+            </div>
           </div>
         )}
 

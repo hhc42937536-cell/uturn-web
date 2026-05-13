@@ -25,14 +25,14 @@ const WEB_ONLY = [
 ];
 
 const MORE_FEATURES = [
+  { icon: "🏨", title: "住宿推薦", desc: "精選各城市飯店，推薦住宿區域、每晚參考價，一鍵連到 Agoda / Booking 比價。", href: "/hotels" },
+  { icon: "✈️", title: "機票搜尋", desc: "Skyscanner、Google Flights 快速開啟，出發城市、目的地、日期一次帶入。", href: "/flights" },
+  { icon: "🧰", title: "旅行工具箱", desc: "匯率換算、預算計算、行李清單、天氣預報、當地時間。", href: "/tools" },
+  { icon: "🗓️", title: "旅遊旺季月曆", desc: "一眼看懂各城市最佳出遊月份，避開人潮和雨季。", href: "/seasons" },
   { icon: "🔥", title: "現在最夯", desc: "整合 Dcard、KKday、Cosme 排行，這個月必買必玩。", href: "/trending" },
   { icon: "⭐", title: "追星行程", desc: "查演唱會、見面會，搭配聖地巡禮，規劃專屬追星旅程。", href: "/idol" },
-  { icon: "📚", title: "我的計畫庫", desc: "所有規劃過的行程自動儲存，可命名、比較版本、一鍵重開。", href: "/saved" },
-  { icon: "🎒", title: "打包比價試算", desc: "機票＋住宿＋票券，勾選活動，試算整趟旅行總花費。", href: "/bundle" },
   { icon: "📍", title: "附近景點", desc: "出國後開啟定位，立即找出周圍最值得去的景點與美食。", href: "/nearby" },
   { icon: "🌏", title: "社群行程牆", desc: "看台灣旅客分享的行程，一鍵複製當自己的。", href: "/explore" },
-  { icon: "🧰", title: "旅行工具箱", desc: "匯率換算、預算計算、行李清單、天氣預報。", href: "/tools" },
-  { icon: "🗓️", title: "旅遊旺季月曆", desc: "一眼看懂各城市最佳出遊月份，避開人潮和雨季。", href: "/seasons" },
   { icon: "🧠", title: "深度在地知識庫", desc: "票務時機、人潮規律、隱藏景點——去過的人才知道的細節。", href: "/tips" },
 ];
 
