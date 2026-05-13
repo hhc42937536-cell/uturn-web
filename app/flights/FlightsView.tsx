@@ -92,8 +92,25 @@ const QUICK_DESTS: QuickDest[] = [
     direct: ["TPE", "KHH"] },
 ];
 
-const EXPLORE_URL =
-  "https://www.google.com/travel/explore?tfs=CBwQAxocagwIAhIIL20vMDRibnhyDAgEEggvbS8wMmo3MRocagwIBBIIL20vMDJqNzFyDAgCEggvbS8wNGJueEABSAFwAoIBCwj___________8BmAEBsgEEGAEgAQ&tfu=GgA&hl=zh-TW";
+// Google Travel Explore（依出發城市）
+const GOOGLE_EXPLORE: Record<string, string> = {
+  TPE: "https://www.google.com/travel/explore?tfs=CBwQAxoRagcIARIDVFBFcgYIARICVFBFQAFIAXACggELCP___________wGYAQGyAQQYASAB&hl=zh-TW",
+  KHH: "https://www.google.com/travel/explore?tfs=CBwQAxoRagcIARIDVFBFcgYIARICVFBFQAFIAXACggELCP___________wGYAQGyAQQYASAB&hl=zh-TW",
+  RMQ: "https://www.google.com/travel/explore?tfs=CBwQAxoRagcIARIDVFBFcgYIARICVFBFQAFIAXACggELCP___________wGYAQGyAQQYASAB&hl=zh-TW",
+  TNN: "https://www.google.com/travel/explore?tfs=CBwQAxoRagcIARIDVFBFcgYIARICVFBFQAFIAXACggELCP___________wGYAQGyAQQYASAB&hl=zh-TW",
+};
+
+// Skyscanner Everywhere 搜尋（依出發城市 + 月份）
+function skyscannerExplore(origin: string, yyyymm: string) {
+  return `https://www.skyscanner.com.tw/transport/flights/${origin.toLowerCase()}/anywhere/${yyyymm}/?adults=1&currency=TWD&locale=zh-TW`;
+}
+
+const MONTHS = [
+  { label: "6 月", value: "202606" }, { label: "7 月", value: "202607" },
+  { label: "8 月", value: "202608" }, { label: "9 月", value: "202609" },
+  { label: "10 月", value: "202610" }, { label: "11 月", value: "202611" },
+  { label: "12 月", value: "202612" }, { label: "1 月", value: "202701" },
+];
 
 type Result = { sky: string; gf: string; origin: string; dest: string; depart: string; ret: string };
 
@@ -103,6 +120,8 @@ export default function FlightsView() {
   const [result, setResult] = useState<Result | null>(null);
   const [quickOrigin, setQuickOrigin] = useState("TPE");
   const [quickDays, setQuickDays] = useState<number | null>(null);
+  const [exploreOrigin, setExploreOrigin] = useState("TPE");
+  const [exploreMonth, setExploreMonth] = useState("202606");
 
   const update = (k: keyof typeof form, v: string) => setForm((p) => ({ ...p, [k]: v }));
 
@@ -304,20 +323,75 @@ export default function FlightsView() {
           </p>
         </div>
 
-        {/* Explore */}
-        <div className="mb-10 rounded-[2rem] border border-[#C4A882]/50 bg-[#FDF6ED] p-6 md:p-8">
-          <div className="mb-1 text-[10px] font-light uppercase tracking-widest text-[#8FA39A]">彈性出發？試試探索模式</div>
-          <p className="mb-4 text-sm font-light leading-7 text-[#5C5248]">
-            還沒決定目的地？Google 旅遊探索地圖一眼看出哪個城市最便宜，點一下直接搜尋。
-          </p>
-          <a
-            href={EXPLORE_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-block rounded-full border border-[#A86F5A] bg-[#B98774]/15 px-8 py-3 text-sm font-light tracking-[0.15em] text-[#7D5548] transition hover:bg-[#B98774]/25"
-          >
-            🌏 探索全球便宜機票
-          </a>
+        {/* ── 探索最便宜目的地 ── */}
+        <div className="mb-10 rounded-[2rem] border-2 border-[#C4A882]/40 bg-[#FDF6ED] p-6 md:p-8">
+          <div className="flex items-center gap-3 mb-5">
+            <span className="text-2xl">🌏</span>
+            <div>
+              <h2 className="text-lg font-light tracking-wide">探索最便宜目的地</h2>
+              <p className="text-xs font-light text-[#8A7F73]">還沒決定去哪？讓系統幫你找</p>
+            </div>
+          </div>
+
+          {/* 出發城市選擇 */}
+          <div className="mb-4">
+            <p className="text-xs font-light text-[#8A7F73] mb-2">從哪裡出發？</p>
+            <div className="flex flex-wrap gap-2">
+              {[
+                { code: "TPE", label: "台北（桃園）" },
+                { code: "KHH", label: "高雄" },
+                { code: "RMQ", label: "台中" },
+                { code: "TNN", label: "台南" },
+              ].map(({ code, label }) => (
+                <button key={code}
+                  onClick={() => setExploreOrigin(code)}
+                  className={`rounded-full border px-4 py-1.5 text-sm font-light transition
+                    ${exploreOrigin === code
+                      ? "border-[#A86F5A] bg-[#A86F5A]/10 text-[#A86F5A]"
+                      : "border-[#D8D2C7] bg-white text-[#4B4037] hover:border-[#A86F5A]"}`}>
+                  {label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* 月份選擇 */}
+          <div className="mb-6">
+            <p className="text-xs font-light text-[#8A7F73] mb-2">哪個月份出發？</p>
+            <div className="flex flex-wrap gap-2">
+              {MONTHS.map(({ label, value }) => (
+                <button key={value}
+                  onClick={() => setExploreMonth(value)}
+                  className={`rounded-full border px-3 py-1.5 text-sm font-light transition
+                    ${exploreMonth === value
+                      ? "border-[#A86F5A] bg-[#A86F5A]/10 text-[#A86F5A]"
+                      : "border-[#D8D2C7] bg-white text-[#4B4037] hover:border-[#A86F5A]"}`}>
+                  {label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* 探索按鈕 */}
+          <div className="flex flex-wrap gap-3">
+            <a
+              href={skyscannerExplore(exploreOrigin, exploreMonth)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 rounded-full border border-[#A86F5A] bg-[#B98774]/15 px-7 py-3 text-sm font-light tracking-[0.15em] text-[#7D5548] transition hover:bg-[#B98774]/25"
+            >
+              🔍 Skyscanner 全球任意飛
+            </a>
+            <a
+              href={GOOGLE_EXPLORE[exploreOrigin] ?? GOOGLE_EXPLORE["TPE"]}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 rounded-full border border-[#D8D2C7] bg-white px-7 py-3 text-sm font-light tracking-[0.15em] text-[#6F675F] transition hover:border-[#A86F5A]"
+            >
+              🗺 Google 旅遊探索地圖
+            </a>
+          </div>
+          <p className="mt-3 text-xs font-light text-[#A79C91]">Skyscanner 會自動篩選出當月所有可達目的地的最低票價，Google Travel 以地圖方式呈現</p>
         </div>
 
         {/* CTA */}

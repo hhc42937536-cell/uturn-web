@@ -66,6 +66,7 @@ const CORE_FEATURES = [
 ];
 
 const MORE_FEATURES = [
+  { icon: "📋", title: "行前必知懶人包", desc: "簽證、海關禁品、插座電壓、換匯技巧、打包清單、緊急電話——出發前一站搞定。", href: "/pretrip" },
   { icon: "🚇", title: "當地交通攻略", desc: "東京/首爾/曼谷等8城市：交通卡怎麼買、地鐵怎麼搭、哪個App最好用。", href: "/transport" },
   { icon: "⭐", title: "追星行程", desc: "BTS、BLACKPINK、Snow Man 等30+藝人：聖地巡禮、演唱會搶票眉角。", href: "/idol" },
   { icon: "🗓️", title: "旅遊旺季月曆", desc: "一眼看懂各城市最佳出遊月份，避開人潮和雨季。", href: "/seasons" },
