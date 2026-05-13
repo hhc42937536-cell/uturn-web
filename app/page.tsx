@@ -76,6 +76,7 @@ const MORE_FEATURES = [
   { icon: "🔥", title: "現在最夯", desc: "整合 Dcard、KKday、Cosme 排行，這個月必買必玩。", href: "/trending" },
   { icon: "🧠", title: "深度在地知識庫", desc: "票務時機、人潮規律、隱藏景點——去過的人才知道的細節。", href: "/tips" },
   { icon: "📍", title: "附近景點", desc: "出國後開啟定位，立即找出周圍最值得去的景點與美食。", href: "/nearby" },
+  { icon: "🔔", title: "機票價格追蹤", desc: "追蹤想飛的航線，儲存當時參考票價，隨時回來比對是否調降。", href: "/tracking" },
   { icon: "🌏", title: "社群行程牆", desc: "看台灣旅客分享的行程，一鍵複製當自己的。", href: "/explore" },
 ];
 

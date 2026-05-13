@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { saveTrack, type FlightTrack } from "../tracking/TrackingView";
 
 const ORIGINS = [
   { code: "TPE", label: "台北（桃園 TPE）" },
@@ -122,6 +123,26 @@ export default function FlightsView() {
   const [quickDays, setQuickDays] = useState<number | null>(null);
   const [exploreOrigin, setExploreOrigin] = useState("TPE");
   const [exploreMonth, setExploreMonth] = useState("202606");
+  const [tracked, setTracked] = useState<Set<string>>(new Set());
+  const [trackMsg, setTrackMsg] = useState<string | null>(null);
+
+  const handleTrack = (t: Omit<FlightTrack, "id" | "savedAt" | "lastChecked">) => {
+    const track: FlightTrack = {
+      ...t,
+      id: crypto.randomUUID(),
+      savedAt: new Date().toISOString(),
+      lastChecked: new Date().toISOString(),
+    };
+    const ok = saveTrack(track);
+    const key = `${t.originCode}-${t.destCode}-${t.depDate}`;
+    if (ok) {
+      setTracked((prev) => new Set([...prev, key]));
+      setTrackMsg("✓ 已加入追蹤");
+    } else {
+      setTrackMsg("已在追蹤清單中");
+    }
+    setTimeout(() => setTrackMsg(null), 2000);
+  };
 
   const update = (k: keyof typeof form, v: string) => setForm((p) => ({ ...p, [k]: v }));
 
@@ -145,9 +166,16 @@ export default function FlightsView() {
         <div className="mx-auto flex max-w-4xl items-center justify-between px-6 py-5">
           <button onClick={() => router.push("/")} className="text-sm font-light text-[#6F675F] hover:text-[#A86F5A]">← 返回</button>
           <div className="text-xl font-light tracking-[0.18em]">✈️ 機票比價</div>
-          <div className="w-16" />
+          <button onClick={() => router.push("/tracking")} className="text-xs font-light text-[#8A7F73] hover:text-[#A86F5A] transition">🔔 追蹤清單</button>
         </div>
       </nav>
+
+      {/* Toast */}
+      {trackMsg && (
+        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 rounded-full border border-[#A86F5A] bg-[#FBF8F1] px-6 py-3 text-sm font-light text-[#A86F5A] shadow-md">
+          {trackMsg}
+        </div>
+      )}
 
       <div className="mx-auto max-w-4xl px-6 pb-20 pt-28">
         {/* Header */}
@@ -216,6 +244,27 @@ export default function FlightsView() {
               >
                 🛫 Google Flights 比價
               </a>
+              <button
+                onClick={() => {
+                  const destInfo = DESTINATIONS.find((d) => d.code === form.dest);
+                  handleTrack({
+                    type: "flight",
+                    originCode: form.origin,
+                    originLabel: ORIGINS.find((o) => o.code === form.origin)?.label.split("（")[0] ?? form.origin,
+                    destCode: form.dest,
+                    destLabel: destInfo?.label.split("（")[0] ?? form.dest,
+                    destFlag: destInfo?.flag ?? "✈️",
+                    depDate: form.depart,
+                    retDate: form.ret,
+                    priceRef: "（手動搜尋，請至 Skyscanner 確認）",
+                    skyscannerUrl: result!.sky,
+                    googleFlightsUrl: result!.gf,
+                  });
+                }}
+                className="flex items-center gap-2 rounded-full border border-[#D8D2C7] bg-white px-5 py-3 text-sm font-light text-[#8A7F73] transition hover:border-[#A86F5A] hover:text-[#A86F5A]"
+              >
+                🔔 追蹤票價
+              </button>
             </div>
           </div>
         )}
@@ -274,9 +323,14 @@ export default function FlightsView() {
                 const priceRange = dest.price[quickOrigin];
                 const isDirect = dest.direct.includes(quickOrigin);
                 const skyLink = skyscanner(quickOrigin, dest.code, "", "");
+                const gfLink = googleFlights(quickOrigin, dest.code, "", "");
+                const trackKey = `${quickOrigin}-${dest.code}-`;
+                const isTracked = tracked.has(trackKey);
+                const priceRef = `NT$ ${priceRange[0].toLocaleString()} ~ ${priceRange[1].toLocaleString()}`;
+                const originLabel = quickOrigin === "TPE" ? "台北" : quickOrigin === "KHH" ? "高雄" : quickOrigin === "RMQ" ? "台中" : "台南";
                 return (
-                  <a key={dest.code} href={skyLink} target="_blank" rel="noopener noreferrer"
-                    className="rounded-2xl border border-[#D8D2C7] bg-white p-5 hover:border-[#A86F5A] transition block">
+                  <div key={dest.code}
+                    className="rounded-2xl border border-[#D8D2C7] bg-white p-5 hover:border-[#A86F5A] transition">
                     <div className="flex items-start justify-between mb-2">
                       <div className="flex items-center gap-2">
                         <span className="text-2xl">{dest.flag}</span>
@@ -289,11 +343,37 @@ export default function FlightsView() {
                         {isDirect ? "直飛" : "轉機"}
                       </span>
                     </div>
-                    <p className="text-sm font-light text-[#A86F5A]">
-                      NT$ {priceRange[0].toLocaleString()} ~ {priceRange[1].toLocaleString()}
+                    <p className="text-sm font-light text-[#A86F5A] mb-3">
+                      {priceRef}
                     </p>
-                    <p className="text-[10px] font-light text-[#A79C91] mt-1">含稅參考・點擊查最新票價 →</p>
-                  </a>
+                    <div className="flex gap-2">
+                      <a href={skyLink} target="_blank" rel="noopener noreferrer"
+                        className="flex-1 rounded-full border border-[#A86F5A]/40 bg-[#A86F5A]/5 py-1.5 text-center text-xs font-light text-[#A86F5A] transition hover:bg-[#A86F5A]/15">
+                        查票價 →
+                      </a>
+                      <button
+                        onClick={() => handleTrack({
+                          type: "flight",
+                          originCode: quickOrigin,
+                          originLabel,
+                          destCode: dest.code,
+                          destLabel: dest.name,
+                          destFlag: dest.flag,
+                          depDate: "",
+                          retDate: "",
+                          priceRef,
+                          skyscannerUrl: skyLink,
+                          googleFlightsUrl: gfLink,
+                        })}
+                        className={`rounded-full border px-3 py-1.5 text-xs font-light transition
+                          ${isTracked
+                            ? "border-[#A86F5A] bg-[#A86F5A]/10 text-[#A86F5A]"
+                            : "border-[#D8D2C7] text-[#8A7F73] hover:border-[#A86F5A] hover:text-[#A86F5A]"}`}
+                      >
+                        {isTracked ? "✓" : "🔔"}
+                      </button>
+                    </div>
+                  </div>
                 );
               })}
           </div>
