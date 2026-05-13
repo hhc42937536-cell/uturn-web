@@ -27,6 +27,18 @@ const DESTINATIONS = [
   { name: "關島", flag: "🇬🇺" }, { name: "帛琉", flag: "🇵🇼" },
 ];
 
+// 城市名 → 預設抵達機場 IATA（用於機票搜尋連結）
+const CITY_TO_IATA: Record<string, string> = {
+  東京: "NRT", 大阪: "KIX", 沖繩: "OKA", 福岡: "FUK", 北海道: "CTS", 名古屋: "NGO",
+  首爾: "ICN", 釜山: "PUS", 濟州: "CJU",
+  曼谷: "BKK", 清邁: "CNX", 普吉島: "HKT",
+  新加坡: "SIN", 吉隆坡: "KUL", 蘭卡威: "LGK",
+  峇里島: "DPS", 胡志明市: "SGN", 河內: "HAN", 峴港: "DAD",
+  香港: "HKG", 澳門: "MFM", 上海: "PVG", 北京: "PEK",
+  馬尼拉: "MNL", 宿霧: "CEB", 杜拜: "DXB",
+  倫敦: "LHR", 巴黎: "CDG", 關島: "GUM", 帛琉: "ROR",
+};
+
 const ARR_AIRPORTS: Record<string, { code: string; label: string }[]> = {
   首爾: [
     { code: "ICN", label: "仁川（ICN）── 多數國際航班" },
@@ -301,11 +313,41 @@ export default function WizardView() {
         </div>
 
         {dayCount > 0 && (
-          <div className="rounded-2xl bg-[#A86F5A]/8 border border-[#A86F5A]/30 px-6 py-4 text-center mb-6">
+          <div className="rounded-2xl bg-[#A86F5A]/8 border border-[#A86F5A]/30 px-6 py-4 text-center mb-4">
             <span className="text-3xl font-light text-[#A86F5A]">{dayCount}</span>
             <span className="text-base font-light text-[#6F675F] ml-2">天行程</span>
           </div>
         )}
+
+        {/* 機票快速連結 */}
+        {state.depDate && state.retDate && state.destination && (() => {
+          const iata = state.arrAirport || CITY_TO_IATA[state.destination] || "";
+          const dep = state.depDate.replace(/-/g, "");
+          const ret = state.retDate.replace(/-/g, "");
+          const depOrig = state.depCity === "高雄" ? "KHH" : state.depCity === "台中" ? "RMQ" : state.depCity === "台南" ? "TNN" : "TPE";
+          if (!iata) return null;
+          return (
+            <div className="rounded-2xl border border-[#D8D2C7] bg-[#FBF8F1] px-5 py-4 mb-6">
+              <p className="text-xs font-light text-[#8A7F73] mb-3">✈️ 順便查一下機票（{state.depCity} → {state.destination}）</p>
+              <div className="flex gap-2">
+                <a
+                  href={`https://www.skyscanner.com.tw/transport/flights/${depOrig}/${iata}/${dep}/${ret}/?adultsv2=${state.people}&currency=TWD&locale=zh-TW`}
+                  target="_blank" rel="noopener noreferrer"
+                  className="flex-1 rounded-full border border-[#D8D2C7] py-2 text-center text-xs font-light text-[#4B4037] hover:border-[#A86F5A] hover:text-[#A86F5A] transition"
+                >
+                  Skyscanner →
+                </a>
+                <a
+                  href={`https://www.google.com/flights#flt=${depOrig}.${iata}.${state.depDate}*${iata}.${depOrig}.${state.retDate};c:TWD;e:1;sd:1;t:f`}
+                  target="_blank" rel="noopener noreferrer"
+                  className="flex-1 rounded-full border border-[#D8D2C7] py-2 text-center text-xs font-light text-[#4B4037] hover:border-[#A86F5A] hover:text-[#A86F5A] transition"
+                >
+                  Google Flights →
+                </a>
+              </div>
+            </div>
+          );
+        })()}
 
         <div className="flex gap-3">
           <button onClick={() => setStep(1)}
