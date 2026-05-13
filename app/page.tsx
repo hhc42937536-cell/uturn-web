@@ -74,7 +74,7 @@ export default function HomePage() {
           </p>
           <div className="mt-10 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
             <button
-              onClick={() => router.push("/docx")}
+              onClick={() => router.push("/wizard")}
               className="rounded-full bg-[#A86F5A] px-12 py-5 text-lg font-light tracking-[0.2em] text-white shadow-md transition hover:bg-[#96604D] hover:shadow-lg"
             >
               立即製作計畫書 →
@@ -124,7 +124,7 @@ export default function HomePage() {
           </div>
           <div className="mt-12 text-center">
             <button
-              onClick={() => router.push("/docx")}
+              onClick={() => router.push("/wizard")}
               className="rounded-full bg-[#A86F5A] px-12 py-5 text-base font-light tracking-[0.2em] text-white shadow-md transition hover:bg-[#96604D]"
             >
               立即製作計畫書 →
@@ -152,7 +152,7 @@ export default function HomePage() {
               <p className="text-xs font-light text-[#A79C91]">完成後 Bot 自動發送連結</p>
               <div className="text-3xl text-[#C4BCB4]">→</div>
             </div>
-            <div onClick={() => router.push("/docx")} className="group cursor-pointer rounded-[2rem] border-2 border-[#A86F5A]/40 bg-[#A86F5A]/5 p-8 text-center transition hover:border-[#A86F5A] hover:bg-[#A86F5A]/10">
+            <div onClick={() => router.push("/wizard")} className="group cursor-pointer rounded-[2rem] border-2 border-[#A86F5A]/40 bg-[#A86F5A]/5 p-8 text-center transition hover:border-[#A86F5A] hover:bg-[#A86F5A]/10">
               <div className="mb-4 text-4xl">📄</div>
               <h3 className="mb-2 text-base font-light tracking-wide">網頁下載 Word 計畫書</h3>
               <p className="text-sm font-light leading-7 text-[#6F675F]">資料自動帶入，確認後一鍵下載含封面、簽證、打包清單的正式文件</p>

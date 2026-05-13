@@ -105,6 +105,36 @@ export default function DocxView() {
   const [generating, setGenerating] = useState(false);
 
   useEffect(() => {
+    // ── Wizard 帶入的資料（優先層級最高） ──────────────────
+    const wizardRaw = sessionStorage.getItem("uturn_wizard_draft");
+    if (wizardRaw) {
+      sessionStorage.removeItem("uturn_wizard_draft");
+      try {
+        const d = JSON.parse(wizardRaw);
+        setForm({
+          destination: d.destination || "首爾",
+          depCity: d.depCity || "高雄",
+          arrAirport: d.arrAirport || "",
+          depDate: d.depDate || "",
+          retDate: d.retDate || "",
+          people: d.people || "2",
+          budget: d.budget || "",
+          style: d.style || "",
+          mustVisit: d.mustVisit || "",
+          memo: d.memo || "",
+        });
+        if (Array.isArray(d.itinerary) && d.itinerary.length > 0) {
+          setDays(d.itinerary);
+          setStep("edit");
+        } else if (d.depDate && d.retDate) {
+          const count = getDayCount(d.depDate, d.retDate);
+          setDays(Array.from({ length: count }, () => emptyDay()));
+          setStep("edit");
+        }
+        return;
+      } catch { /* fallthrough */ }
+    }
+
     const token = searchParams.get("token");
     if (token) {
       // LINE Bot 產生的計畫 token → 從 abroad-uturn 拿資料預填
