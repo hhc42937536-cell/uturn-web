@@ -272,6 +272,37 @@ export default function DocxView() {
     setExporting(true);
     try {
       await buildAndDownloadDocx(form, days);
+      // 下載完成後自動存入計畫庫
+      try {
+        const CITY_FLAG: Record<string, string> = {
+          東京:"🇯🇵",大阪:"🇯🇵",沖繩:"🇯🇵",福岡:"🇯🇵",北海道:"🇯🇵",名古屋:"🇯🇵",
+          首爾:"🇰🇷",釜山:"🇰🇷",濟州:"🇰🇷",
+          曼谷:"🇹🇭",清邁:"🇹🇭",普吉島:"🇹🇭",新加坡:"🇸🇬",
+          吉隆坡:"🇲🇾",蘭卡威:"🇲🇾",峇里島:"🇮🇩",
+          胡志明市:"🇻🇳",河內:"🇻🇳",峴港:"🇻🇳",
+          香港:"🇭🇰",澳門:"🇲🇴",上海:"🇨🇳",北京:"🇨🇳",
+          馬尼拉:"🇵🇭",宿霧:"🇵🇭",杜拜:"🇦🇪",
+          倫敦:"🇬🇧",巴黎:"🇫🇷",關島:"🇬🇺",帛琉:"🇵🇼",
+        };
+        const raw = localStorage.getItem("uturn_saved_trips");
+        const existing = raw ? JSON.parse(raw) : [];
+        const newTrip = {
+          id: `trip_${Date.now()}`,
+          version: 1,
+          savedAt: new Date().toISOString(),
+          city: form.destination,
+          flag: CITY_FLAG[form.destination] || "✈️",
+          depDate: form.depDate,
+          retDate: form.retDate,
+          people: form.people,
+          request: form.style || form.mustVisit || "",
+          label: `${form.destination} ${form.depDate}`,
+          days: days.slice(0, 5).map((d, i) =>
+            `Day ${i+1}：${d.morning?.split("，")[0] || d.afternoon?.split("，")[0] || "–"}`
+          ),
+        };
+        localStorage.setItem("uturn_saved_trips", JSON.stringify([newTrip, ...existing].slice(0, 20)));
+      } catch { /* 儲存失敗不影響下載 */ }
     } finally {
       setExporting(false);
     }

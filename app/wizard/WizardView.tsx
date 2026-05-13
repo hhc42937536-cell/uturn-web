@@ -572,6 +572,17 @@ export default function WizardView() {
 
   // ── Step 5 ─────────────────────────────────────────────
   const Step5 = () => {
+    const CITY_FLAG: Record<string, string> = {
+      東京:"🇯🇵",大阪:"🇯🇵",沖繩:"🇯🇵",福岡:"🇯🇵",北海道:"🇯🇵",名古屋:"🇯🇵",
+      首爾:"🇰🇷",釜山:"🇰🇷",濟州:"🇰🇷",
+      曼谷:"🇹🇭",清邁:"🇹🇭",普吉島:"🇹🇭",新加坡:"🇸🇬",
+      吉隆坡:"🇲🇾",蘭卡威:"🇲🇾",峇里島:"🇮🇩",
+      胡志明市:"🇻🇳",河內:"🇻🇳",峴港:"🇻🇳",
+      香港:"🇭🇰",澳門:"🇲🇴",上海:"🇨🇳",北京:"🇨🇳",
+      馬尼拉:"🇵🇭",宿霧:"🇵🇭",杜拜:"🇦🇪",
+      倫敦:"🇬🇧",巴黎:"🇫🇷",關島:"🇬🇺",帛琉:"🇵🇼",
+    };
+
     function goToDocx() {
       sessionStorage.setItem("uturn_wizard_draft", JSON.stringify({
         destination: state.destination,
@@ -586,6 +597,27 @@ export default function WizardView() {
         memo: "",
         itinerary: state.itinerary,
       }));
+      // 同步存草稿到計畫庫
+      try {
+        const raw = localStorage.getItem("uturn_saved_trips");
+        const existing = raw ? JSON.parse(raw) : [];
+        const draft = {
+          id: `draft_${Date.now()}`,
+          version: 1,
+          savedAt: new Date().toISOString(),
+          city: state.destination,
+          flag: CITY_FLAG[state.destination] || "✈️",
+          depDate: state.depDate,
+          retDate: state.retDate,
+          people: String(state.people),
+          request: state.style || state.mustVisit || "",
+          label: `${state.destination} ${state.depDate}（草稿）`,
+          days: state.itinerary.slice(0, 5).map((d, i) =>
+            `Day ${i+1}：${d.morning?.split("，")[0] || d.afternoon?.split("，")[0] || "–"}`
+          ),
+        };
+        localStorage.setItem("uturn_saved_trips", JSON.stringify([draft, ...existing].slice(0, 20)));
+      } catch { /* 儲存失敗不影響流程 */ }
       router.push("/docx");
     }
 
@@ -698,10 +730,16 @@ export default function WizardView() {
         >
           進入計畫書 →
         </button>
-        <button onClick={() => setStep(4)}
-          className="w-full rounded-full border border-[#D8D2C7] py-3 text-sm font-light text-[#6F675F] transition hover:border-[#A86F5A]">
-          ← 重新生成行程
-        </button>
+        <div className="flex gap-3">
+          <button onClick={() => setStep(4)}
+            className="flex-1 rounded-full border border-[#D8D2C7] py-3 text-sm font-light text-[#6F675F] transition hover:border-[#A86F5A]">
+            ← 重新生成
+          </button>
+          <button onClick={() => router.push("/saved")}
+            className="flex-1 rounded-full border border-[#D8D2C7] py-3 text-sm font-light text-[#6F675F] transition hover:border-[#A86F5A]">
+            📚 計畫庫
+          </button>
+        </div>
       </div>
     );
   };
