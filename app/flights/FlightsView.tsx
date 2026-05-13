@@ -50,6 +50,48 @@ function googleFlights(origin: string, dest: string, depart: string, ret: string
   return `https://www.google.com/flights#flt=${flt};c:TWD;e:1;sd:1;t:f`;
 }
 
+// 說走就走：各天數 × 出發城市 推薦目的地
+type QuickDest = {
+  code: string; name: string; flag: string;
+  days: number[];           // 適合天數
+  price: Record<string, [number, number]>; // 出發城市 → 價格區間
+  direct: string[];         // 有直飛的出發城市
+  travelTime: string;
+};
+
+const QUICK_DESTS: QuickDest[] = [
+  { code: "HKG", name: "香港", flag: "🇭🇰", days: [2, 3], travelTime: "1h 40m",
+    price: { TPE: [2500, 5000], KHH: [2800, 5500], RMQ: [3000, 6000], TNN: [3000, 6000] },
+    direct: ["TPE", "KHH"] },
+  { code: "OKA", name: "沖繩", flag: "🇯🇵", days: [3, 4], travelTime: "1h 30m",
+    price: { TPE: [3000, 6000], KHH: [2800, 5500], RMQ: [3500, 7000], TNN: [3200, 6500] },
+    direct: ["TPE", "KHH", "RMQ", "TNN"] },
+  { code: "ICN", name: "首爾", flag: "🇰🇷", days: [4, 5], travelTime: "2h 30m",
+    price: { TPE: [3500, 7500], KHH: [3800, 7000], RMQ: [4500, 8500], TNN: [3900, 7200] },
+    direct: ["TPE", "KHH", "TNN"] },
+  { code: "FUK", name: "福岡", flag: "🇯🇵", days: [3, 4], travelTime: "1h 50m",
+    price: { TPE: [3200, 7000], KHH: [3500, 7000], RMQ: [3500, 7000], TNN: [3500, 7000] },
+    direct: ["TPE", "KHH", "RMQ", "TNN"] },
+  { code: "KIX", name: "大阪", flag: "🇯🇵", days: [4, 5], travelTime: "2h 30m",
+    price: { TPE: [3800, 8500], KHH: [3800, 7000], RMQ: [3500, 7500], TNN: [4000, 7500] },
+    direct: ["TPE", "KHH", "RMQ"] },
+  { code: "NRT", name: "東京", flag: "🇯🇵", days: [5, 7], travelTime: "3h",
+    price: { TPE: [4000, 9000], KHH: [4500, 8500], RMQ: [5000, 9000], TNN: [4800, 8800] },
+    direct: ["TPE"] },
+  { code: "BKK", name: "曼谷", flag: "🇹🇭", days: [4, 5], travelTime: "3h 30m",
+    price: { TPE: [4500, 9000], KHH: [5000, 9500], RMQ: [5200, 10000], TNN: [5000, 9800] },
+    direct: ["TPE", "KHH"] },
+  { code: "SIN", name: "新加坡", flag: "🇸🇬", days: [5, 7], travelTime: "4h 30m",
+    price: { TPE: [5000, 11000], KHH: [5500, 12000], RMQ: [6000, 12000], TNN: [5800, 11500] },
+    direct: ["TPE", "KHH"] },
+  { code: "DPS", name: "峇里島", flag: "🇮🇩", days: [7], travelTime: "6h（含轉）",
+    price: { TPE: [7000, 14000], KHH: [7500, 15000], RMQ: [8000, 15000], TNN: [7800, 14500] },
+    direct: [] },
+  { code: "GUM", name: "關島", flag: "🇬🇺", days: [3, 4, 5], travelTime: "3h 30m",
+    price: { TPE: [5000, 10000], KHH: [5500, 11000], RMQ: [5500, 11000], TNN: [5500, 11000] },
+    direct: ["TPE", "KHH"] },
+];
+
 const EXPLORE_URL =
   "https://www.google.com/travel/explore?tfs=CBwQAxocagwIAhIIL20vMDRibnhyDAgEEggvbS8wMmo3MRocagwIBBIIL20vMDJqNzFyDAgCEggvbS8wNGJueEABSAFwAoIBCwj___________8BmAEBsgEEGAEgAQ&tfu=GgA&hl=zh-TW";
 
@@ -59,6 +101,8 @@ export default function FlightsView() {
   const router = useRouter();
   const [form, setForm] = useState({ origin: "TPE", dest: "ICN", depart: "", ret: "" });
   const [result, setResult] = useState<Result | null>(null);
+  const [quickOrigin, setQuickOrigin] = useState("TPE");
+  const [quickDays, setQuickDays] = useState<number | null>(null);
 
   const update = (k: keyof typeof form, v: string) => setForm((p) => ({ ...p, [k]: v }));
 
@@ -156,6 +200,85 @@ export default function FlightsView() {
             </div>
           </div>
         )}
+
+        {/* ── 說走就走 ── */}
+        <div className="mb-10 rounded-[2rem] border-2 border-[#A86F5A]/30 bg-[#FDF6ED] p-6 md:p-8">
+          <div className="flex items-center gap-3 mb-5">
+            <span className="text-2xl">🚀</span>
+            <div>
+              <h2 className="text-lg font-light tracking-wide">說走就走</h2>
+              <p className="text-xs font-light text-[#8A7F73]">告訴我你有幾天假，幫你找最適合的目的地</p>
+            </div>
+          </div>
+
+          <div className="flex flex-wrap gap-3 mb-5">
+            <div>
+              <p className="text-xs font-light text-[#8A7F73] mb-2">從哪裡出發？</p>
+              <div className="flex gap-2 flex-wrap">
+                {[
+                  { code: "TPE", label: "台北" }, { code: "KHH", label: "高雄" },
+                  { code: "RMQ", label: "台中" }, { code: "TNN", label: "台南" },
+                ].map(({ code, label }) => (
+                  <button key={code}
+                    onClick={() => setQuickOrigin(code)}
+                    className={`rounded-full border px-4 py-1.5 text-sm font-light transition
+                      ${quickOrigin === code
+                        ? "border-[#A86F5A] bg-[#A86F5A]/10 text-[#A86F5A]"
+                        : "border-[#D8D2C7] bg-white text-[#4B4037] hover:border-[#A86F5A]"}`}>
+                    {label}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div>
+              <p className="text-xs font-light text-[#8A7F73] mb-2">有幾天假？</p>
+              <div className="flex gap-2 flex-wrap">
+                {[2, 3, 4, 5, 7].map((d) => (
+                  <button key={d}
+                    onClick={() => setQuickDays(quickDays === d ? null : d)}
+                    className={`rounded-full border px-4 py-1.5 text-sm font-light transition
+                      ${quickDays === d
+                        ? "border-[#A86F5A] bg-[#A86F5A]/10 text-[#A86F5A]"
+                        : "border-[#D8D2C7] bg-white text-[#4B4037] hover:border-[#A86F5A]"}`}>
+                    {d} 天
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* 推薦結果 */}
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {QUICK_DESTS
+              .filter((d) => !quickDays || d.days.includes(quickDays))
+              .map((dest) => {
+                const priceRange = dest.price[quickOrigin];
+                const isDirect = dest.direct.includes(quickOrigin);
+                const skyLink = skyscanner(quickOrigin, dest.code, "", "");
+                return (
+                  <a key={dest.code} href={skyLink} target="_blank" rel="noopener noreferrer"
+                    className="rounded-2xl border border-[#D8D2C7] bg-white p-5 hover:border-[#A86F5A] transition block">
+                    <div className="flex items-start justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        <span className="text-2xl">{dest.flag}</span>
+                        <div>
+                          <p className="text-sm font-light text-[#4B4037]">{dest.name}</p>
+                          <p className="text-xs font-light text-[#8A7F73]">{dest.travelTime}</p>
+                        </div>
+                      </div>
+                      <span className={`text-[10px] font-light px-2 py-0.5 rounded-full ${isDirect ? "bg-green-50 text-green-600 border border-green-200" : "bg-gray-50 text-gray-400 border border-gray-200"}`}>
+                        {isDirect ? "直飛" : "轉機"}
+                      </span>
+                    </div>
+                    <p className="text-sm font-light text-[#A86F5A]">
+                      NT$ {priceRange[0].toLocaleString()} ~ {priceRange[1].toLocaleString()}
+                    </p>
+                    <p className="text-[10px] font-light text-[#A79C91] mt-1">含稅參考・點擊查最新票價 →</p>
+                  </a>
+                );
+              })}
+          </div>
+        </div>
 
         {/* Popular routes */}
         <div className="mb-10">
