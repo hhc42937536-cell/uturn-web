@@ -4,6 +4,47 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { saveTrack, type FlightTrack } from "../tracking/TrackingView";
 
+// ── Travelpayouts 即時票價 ──────────────────────────────────
+type TpFlight = {
+  destination: string; price: number; airline: string;
+  departure_at: string; return_at: string; transfers: number;
+  duration_to?: number;
+};
+
+const IATA_DEST: Record<string, { name: string; flag: string; days: number[] }> = {
+  ICN: { name: "首爾",    flag: "🇰🇷", days: [4, 5] },
+  GMP: { name: "首爾金浦",flag: "🇰🇷", days: [3, 4] },
+  PUS: { name: "釜山",    flag: "🇰🇷", days: [3, 4] },
+  NRT: { name: "東京成田",flag: "🇯🇵", days: [5, 7] },
+  HND: { name: "東京羽田",flag: "🇯🇵", days: [5, 7] },
+  KIX: { name: "大阪",    flag: "🇯🇵", days: [4, 5] },
+  OKA: { name: "沖繩",    flag: "🇯🇵", days: [3, 4] },
+  FUK: { name: "福岡",    flag: "🇯🇵", days: [3, 4] },
+  CTS: { name: "北海道",  flag: "🇯🇵", days: [5, 7] },
+  NGO: { name: "名古屋",  flag: "🇯🇵", days: [4, 5] },
+  BKK: { name: "曼谷",    flag: "🇹🇭", days: [4, 5] },
+  CNX: { name: "清邁",    flag: "🇹🇭", days: [4, 5] },
+  HKT: { name: "普吉島",  flag: "🇹🇭", days: [5, 7] },
+  SIN: { name: "新加坡",  flag: "🇸🇬", days: [5, 7] },
+  HKG: { name: "香港",    flag: "🇭🇰", days: [2, 3] },
+  MFM: { name: "澳門",    flag: "🇲🇴", days: [2, 3] },
+  DPS: { name: "峇里島",  flag: "🇮🇩", days: [7] },
+  SGN: { name: "胡志明市",flag: "🇻🇳", days: [5, 7] },
+  HAN: { name: "河內",    flag: "🇻🇳", days: [5, 7] },
+  DAD: { name: "峴港",    flag: "🇻🇳", days: [5, 7] },
+  KUL: { name: "吉隆坡",  flag: "🇲🇾", days: [5, 7] },
+  MNL: { name: "馬尼拉",  flag: "🇵🇭", days: [5, 7] },
+  CEB: { name: "宿霧",    flag: "🇵🇭", days: [5, 7] },
+  GUM: { name: "關島",    flag: "🇬🇺", days: [3, 4, 5] },
+};
+
+const AIRLINE_NAME: Record<string, string> = {
+  CI: "中華", BR: "長榮", MM: "樂桃", IT: "台灣虎航",
+  "7C": "濟州", TW: "德威", SQ: "新航", CX: "國泰",
+  JL: "日航", NH: "全日空", KE: "大韓", OZ: "韓亞",
+  TG: "泰航", VZ: "泰越捷", TR: "酷航", AK: "亞航",
+};
+
 const ORIGINS = [
   { code: "TPE", label: "台北（桃園 TPE）" },
   { code: "TSA", label: "台北（松山 TSA）" },
@@ -122,6 +163,9 @@ export default function FlightsView() {
   const [quickOrigin, setQuickOrigin] = useState("TPE");
   const [quickDays, setQuickDays] = useState<number | null>(null);
   const [exploreOrigin, setExploreOrigin] = useState("TPE");
+  const [tpFlights, setTpFlights] = useState<TpFlight[] | null>(null);
+  const [tpLoading, setTpLoading] = useState(false);
+  const [tpRoutePrice, setTpRoutePrice] = useState<{ price: number; airline: string } | null>(null);
 
   // 讀取全域出發城市偏好
   useEffect(() => {
@@ -134,6 +178,19 @@ export default function FlightsView() {
       setForm((f) => ({ ...f, origin: iata }));
     }
   }, []);
+
+  // 說走就走：切換出發地時抓 TP 即時最低價
+  useEffect(() => {
+    let cancelled = false;
+    setTpLoading(true);
+    setTpFlights(null);
+    fetch(`/api/tp?origin=${quickOrigin}`)
+      .then((r) => r.json())
+      .then((d) => { if (!cancelled && d.flights) setTpFlights(d.flights); })
+      .catch(() => {})
+      .finally(() => { if (!cancelled) setTpLoading(false); });
+    return () => { cancelled = true; };
+  }, [quickOrigin]);
   const [exploreMonth, setExploreMonth] = useState("202606");
   const [tracked, setTracked] = useState<Set<string>>(new Set());
   const [trackMsg, setTrackMsg] = useState<string | null>(null);
@@ -159,6 +216,7 @@ export default function FlightsView() {
   const update = (k: keyof typeof form, v: string) => setForm((p) => ({ ...p, [k]: v }));
 
   const handleSearch = () => {
+    setTpRoutePrice(null);
     setResult({
       sky: skyscanner(form.origin, form.dest, form.depart, form.ret),
       gf: googleFlights(form.origin, form.dest, form.depart, form.ret),
@@ -167,6 +225,22 @@ export default function FlightsView() {
       depart: form.depart,
       ret: form.ret,
     });
+    // 有日期才查即時票價
+    if (form.depart) {
+      const qs = new URLSearchParams({
+        origin: form.origin,
+        destination: form.dest,
+        departure_at: form.depart,
+        ...(form.ret ? { return_at: form.ret } : {}),
+      });
+      fetch(`/api/tp?${qs}`)
+        .then((r) => r.json())
+        .then((d) => {
+          const cheapest = (d.flights as TpFlight[] | undefined)?.[0];
+          if (cheapest) setTpRoutePrice({ price: cheapest.price, airline: cheapest.airline });
+        })
+        .catch(() => {});
+    }
   };
 
   const selectClass =
@@ -235,10 +309,16 @@ export default function FlightsView() {
         {result && (
           <div className="mb-10 rounded-[2rem] border border-[#8FA39A]/40 bg-[#F0F5F3] p-6 md:p-8">
             <p className="mb-1 text-xs font-light uppercase tracking-widest text-[#8FA39A]">搜尋結果</p>
-            <p className="mb-5 text-sm font-light text-[#4B4037]">
+            <p className="mb-2 text-sm font-light text-[#4B4037]">
               {result.origin.split("（")[0]} → {result.dest.split("（")[0]}
               {result.depart && <span className="ml-2 text-[#6F675F]">{result.depart}{result.ret && ` ↩ ${result.ret}`}</span>}
             </p>
+            {tpRoutePrice && (
+              <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-[#A86F5A]/40 bg-[#A86F5A]/10 px-4 py-1.5">
+                <span className="text-sm font-light text-[#A86F5A]">即時最低 NT$ {tpRoutePrice.price.toLocaleString()}</span>
+                <span className="text-xs text-[#8A7F73]">({AIRLINE_NAME[tpRoutePrice.airline] ?? tpRoutePrice.airline})</span>
+              </div>
+            )}
             <div className="flex flex-wrap gap-3">
               <a
                 href={result.sky}
@@ -327,68 +407,103 @@ export default function FlightsView() {
             </div>
           </div>
 
-          {/* 推薦結果 */}
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {QUICK_DESTS
-              .filter((d) => !quickDays || d.days.includes(quickDays))
-              .map((dest) => {
-                const priceRange = dest.price[quickOrigin];
-                const isDirect = dest.direct.includes(quickOrigin);
-                const skyLink = skyscanner(quickOrigin, dest.code, "", "");
-                const gfLink = googleFlights(quickOrigin, dest.code, "", "");
-                const trackKey = `${quickOrigin}-${dest.code}-`;
-                const isTracked = tracked.has(trackKey);
-                const priceRef = `NT$ ${priceRange[0].toLocaleString()} ~ ${priceRange[1].toLocaleString()}`;
-                const originLabel = quickOrigin === "TPE" ? "台北" : quickOrigin === "KHH" ? "高雄" : quickOrigin === "RMQ" ? "台中" : "台南";
-                return (
-                  <div key={dest.code}
-                    className="rounded-2xl border border-[#D8D2C7] bg-white p-5 hover:border-[#A86F5A] transition">
-                    <div className="flex items-start justify-between mb-2">
-                      <div className="flex items-center gap-2">
-                        <span className="text-2xl">{dest.flag}</span>
-                        <div>
-                          <p className="text-sm font-light text-[#4B4037]">{dest.name}</p>
-                          <p className="text-xs font-light text-[#8A7F73]">{dest.travelTime}</p>
+          {/* 推薦結果：TP 即時 or 靜態降級 */}
+          {tpLoading && (
+            <div className="flex items-center gap-3 py-6 text-sm font-light text-[#8A7F73]">
+              <div className="w-5 h-5 border-2 border-[#A86F5A] border-t-transparent rounded-full animate-spin" />
+              載入即時票價中…
+            </div>
+          )}
+          {!tpLoading && (
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {(tpFlights
+                ? tpFlights.filter((f) => !quickDays || (IATA_DEST[f.destination]?.days ?? []).some((d) => d === quickDays))
+                : QUICK_DESTS.filter((d) => !quickDays || d.days.includes(quickDays))
+              ).map((item) => {
+                const isTP = "price" in item && "destination" in item && !("direct" in item);
+                if (isTP) {
+                  const f = item as TpFlight;
+                  const info = IATA_DEST[f.destination];
+                  if (!info) return null;
+                  const skyLink = skyscanner(quickOrigin, f.destination, f.departure_at?.slice(0, 7) ?? "", "");
+                  const gfLink = googleFlights(quickOrigin, f.destination, f.departure_at?.slice(0, 7) ?? "", "");
+                  const trackKey = `${quickOrigin}-${f.destination}-`;
+                  const isTracked = tracked.has(trackKey);
+                  const priceRef = `NT$ ${f.price.toLocaleString()}`;
+                  const originLabel = { TPE: "台北", KHH: "高雄", RMQ: "台中", TNN: "台南" }[quickOrigin] ?? quickOrigin;
+                  return (
+                    <div key={f.destination} className="rounded-2xl border border-[#D8D2C7] bg-white p-5 hover:border-[#A86F5A] transition">
+                      <div className="flex items-start justify-between mb-2">
+                        <div className="flex items-center gap-2">
+                          <span className="text-2xl">{info.flag}</span>
+                          <div>
+                            <p className="text-sm font-light text-[#4B4037]">{info.name}</p>
+                            <p className="text-xs font-light text-[#8A7F73]">
+                              {AIRLINE_NAME[f.airline] ?? f.airline}
+                              {f.departure_at && <span className="ml-1">{f.departure_at.slice(5, 10)}</span>}
+                            </p>
+                          </div>
                         </div>
+                        <span className={`text-[10px] font-light px-2 py-0.5 rounded-full ${f.transfers === 0 ? "bg-green-50 text-green-600 border border-green-200" : "bg-gray-50 text-gray-400 border border-gray-200"}`}>
+                          {f.transfers === 0 ? "直飛" : "轉機"}
+                        </span>
                       </div>
-                      <span className={`text-[10px] font-light px-2 py-0.5 rounded-full ${isDirect ? "bg-green-50 text-green-600 border border-green-200" : "bg-gray-50 text-gray-400 border border-gray-200"}`}>
-                        {isDirect ? "直飛" : "轉機"}
-                      </span>
+                      <p className="text-sm font-light text-[#A86F5A] mb-1">{priceRef} <span className="text-xs text-[#8A7F73]">含稅</span></p>
+                      <p className="text-[10px] font-light text-[#A79C91] mb-3">⚡ 即時票價</p>
+                      <div className="flex gap-2">
+                        <a href={skyLink} target="_blank" rel="noopener noreferrer"
+                          className="flex-1 rounded-full border border-[#A86F5A]/40 bg-[#A86F5A]/5 py-1.5 text-center text-xs font-light text-[#A86F5A] transition hover:bg-[#A86F5A]/15">
+                          查票價 →
+                        </a>
+                        <button
+                          onClick={() => handleTrack({ type: "flight", originCode: quickOrigin, originLabel, destCode: f.destination, destLabel: info.name, destFlag: info.flag, depDate: f.departure_at ?? "", retDate: f.return_at ?? "", priceRef, skyscannerUrl: skyLink, googleFlightsUrl: gfLink })}
+                          className={`rounded-full border px-3 py-1.5 text-xs font-light transition ${isTracked ? "border-[#A86F5A] bg-[#A86F5A]/10 text-[#A86F5A]" : "border-[#D8D2C7] text-[#8A7F73] hover:border-[#A86F5A]"}`}
+                        >{isTracked ? "✓" : "🔔"}</button>
+                      </div>
                     </div>
-                    <p className="text-sm font-light text-[#A86F5A] mb-3">
-                      {priceRef}
-                    </p>
-                    <div className="flex gap-2">
-                      <a href={skyLink} target="_blank" rel="noopener noreferrer"
-                        className="flex-1 rounded-full border border-[#A86F5A]/40 bg-[#A86F5A]/5 py-1.5 text-center text-xs font-light text-[#A86F5A] transition hover:bg-[#A86F5A]/15">
-                        查票價 →
-                      </a>
-                      <button
-                        onClick={() => handleTrack({
-                          type: "flight",
-                          originCode: quickOrigin,
-                          originLabel,
-                          destCode: dest.code,
-                          destLabel: dest.name,
-                          destFlag: dest.flag,
-                          depDate: "",
-                          retDate: "",
-                          priceRef,
-                          skyscannerUrl: skyLink,
-                          googleFlightsUrl: gfLink,
-                        })}
-                        className={`rounded-full border px-3 py-1.5 text-xs font-light transition
-                          ${isTracked
-                            ? "border-[#A86F5A] bg-[#A86F5A]/10 text-[#A86F5A]"
-                            : "border-[#D8D2C7] text-[#8A7F73] hover:border-[#A86F5A] hover:text-[#A86F5A]"}`}
-                      >
-                        {isTracked ? "✓" : "🔔"}
-                      </button>
+                  );
+                } else {
+                  // 靜態降級
+                  const dest = item as typeof QUICK_DESTS[0];
+                  const priceRange = dest.price[quickOrigin];
+                  const isDirect = dest.direct.includes(quickOrigin);
+                  const skyLink = skyscanner(quickOrigin, dest.code, "", "");
+                  const gfLink = googleFlights(quickOrigin, dest.code, "", "");
+                  const trackKey = `${quickOrigin}-${dest.code}-`;
+                  const isTracked = tracked.has(trackKey);
+                  const priceRef = `NT$ ${priceRange[0].toLocaleString()} ~ ${priceRange[1].toLocaleString()}`;
+                  const originLabel = { TPE: "台北", KHH: "高雄", RMQ: "台中", TNN: "台南" }[quickOrigin] ?? quickOrigin;
+                  return (
+                    <div key={dest.code} className="rounded-2xl border border-[#D8D2C7] bg-white p-5 hover:border-[#A86F5A] transition">
+                      <div className="flex items-start justify-between mb-2">
+                        <div className="flex items-center gap-2">
+                          <span className="text-2xl">{dest.flag}</span>
+                          <div>
+                            <p className="text-sm font-light text-[#4B4037]">{dest.name}</p>
+                            <p className="text-xs font-light text-[#8A7F73]">{dest.travelTime}</p>
+                          </div>
+                        </div>
+                        <span className={`text-[10px] font-light px-2 py-0.5 rounded-full ${isDirect ? "bg-green-50 text-green-600 border border-green-200" : "bg-gray-50 text-gray-400 border border-gray-200"}`}>
+                          {isDirect ? "直飛" : "轉機"}
+                        </span>
+                      </div>
+                      <p className="text-sm font-light text-[#A86F5A] mb-3">{priceRef} <span className="text-xs text-[#8A7F73]">參考</span></p>
+                      <div className="flex gap-2">
+                        <a href={skyLink} target="_blank" rel="noopener noreferrer"
+                          className="flex-1 rounded-full border border-[#A86F5A]/40 bg-[#A86F5A]/5 py-1.5 text-center text-xs font-light text-[#A86F5A] transition hover:bg-[#A86F5A]/15">
+                          查票價 →
+                        </a>
+                        <button
+                          onClick={() => handleTrack({ type: "flight", originCode: quickOrigin, originLabel, destCode: dest.code, destLabel: dest.name, destFlag: dest.flag, depDate: "", retDate: "", priceRef, skyscannerUrl: skyLink, googleFlightsUrl: gfLink })}
+                          className={`rounded-full border px-3 py-1.5 text-xs font-light transition ${isTracked ? "border-[#A86F5A] bg-[#A86F5A]/10 text-[#A86F5A]" : "border-[#D8D2C7] text-[#8A7F73] hover:border-[#A86F5A]"}`}
+                        >{isTracked ? "✓" : "🔔"}</button>
+                      </div>
                     </div>
-                  </div>
-                );
+                  );
+                }
               })}
-          </div>
+            </div>
+          )}
         </div>
 
         {/* Popular routes */}

@@ -66,6 +66,7 @@ const CORE_FEATURES = [
 ];
 
 const MORE_FEATURES = [
+  { icon: "🎯", title: "依心情選目的地", desc: "海島、購物、美食、蜜月、親子、滑雪——9 種旅遊主題，秒找最適合的國家城市。", href: "/theme" },
   { icon: "📋", title: "行前必知懶人包", desc: "簽證、海關禁品、插座電壓、換匯技巧、打包清單、緊急電話——出發前一站搞定。", href: "/pretrip" },
   { icon: "🛫", title: "機場攻略", desc: "新手出國不怕了！辦理登機→安檢→入境→機場到飯店，6步驟圖文說明。", href: "/airport" },
   { icon: "🎌", title: "文化禮儀", desc: "文化禁忌、常用語句、付款方式——日韓泰星越印香美，入境隨俗不出糗。", href: "/cultural" },
