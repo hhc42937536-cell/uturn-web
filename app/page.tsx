@@ -4,46 +4,25 @@ import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import quickTripsData from "@/app/lib/quick_trips.json";
 
-const INCLUDED = [
-  "📋 旅遊封面頁",
-  "🛂 簽證 & 海關規定",
-  "📞 台灣大使館緊急電話",
-  "📅 每日行程卡片",
-  "🧳 目的地打包清單",
-  "📝 備忘事項",
-];
-
-const STEPS = [
-  { n: "01", title: "選目的地 & 日期", desc: "30 個熱門城市秒選，出發回程日自動算天數" },
-  { n: "02", title: "設定旅伴 & 風格", desc: "人數、預算等級、旅遊偏好、必去景點" },
-  { n: "03", title: "AI 生成每日行程", desc: "上午 / 下午 / 晚上 / 美食全部幫你規劃好" },
-  { n: "04", title: "看簽證 & 住宿建議", desc: "自動顯示簽證須知、推薦飯店、預算估算" },
-  { n: "05", title: "下載 Word / PDF", desc: "一鍵匯出正式計畫書，可用 Word 再修改" },
-];
-
-const CORE_FEATURES = [
-  { icon: "✨", title: "AI 行程規劃", desc: "輸入目的地 + 日期，Gemini AI 生成完整每日行程，上午 / 下午 / 晚上 / 美食 / 交通提示。", href: "/wizard", cta: "開始規劃" },
-  { icon: "🛂", title: "台灣護照簽證情報", desc: "選目的地，直接看簽證類型、海關禁品、SIM 卡推薦、大使館緊急電話。", href: "/visa", cta: "查簽證" },
-  { icon: "🏨", title: "住宿推薦 & 比價", desc: "28 個城市精選飯店，看推薦住宿區、每晚參考價，直接連到 Agoda / Booking 比價。", href: "/hotels", cta: "找住宿" },
-  { icon: "✈️", title: "機票搜尋", desc: "Skyscanner + Google Flights 快速開啟，支援南部出發（高雄 / 台中 / 台南 vs 桃園）比較。", href: "/flights", cta: "查機票" },
-  { icon: "🗺", title: "跨城市行程規劃", desc: "把首爾 + 釜山、東京 + 大阪排進同一行程，地圖即時顯示城市間分佈。", href: "/planner/korea", cta: "規劃路線" },
-  { icon: "🧰", title: "旅行工具箱", desc: "匯率換算、預算計算、行李清單、天氣預報、當地時間——出發前一站搞定。", href: "/tools", cta: "打開工具箱" },
-];
-
-const MORE_FEATURES = [
-  { icon: "🎯", title: "依心情選目的地", desc: "海島、購物、美食、蜜月、親子、滑雪——9 種旅遊主題，秒找最適合的國家城市。", href: "/theme" },
-  { icon: "📋", title: "行前必知懶人包", desc: "簽證、海關禁品、插座電壓、換匯技巧、打包清單、緊急電話——出發前一站搞定。", href: "/pretrip" },
-  { icon: "🛫", title: "機場攻略", desc: "新手出國不怕了！辦理登機→安檢→入境→機場到飯店，6步驟圖文說明。", href: "/airport" },
-  { icon: "🎌", title: "文化禮儀", desc: "文化禁忌、常用語句、付款方式——日韓泰星越印香美，入境隨俗不出糗。", href: "/cultural" },
-  { icon: "🍜", title: "在地美食攻略", desc: "東京壽司/拉麵、首爾烤肉/咖啡廳、曼谷街頭小吃、新加坡小販中心精選推薦。", href: "/restaurant" },
-  { icon: "🚇", title: "當地交通攻略", desc: "東京/首爾/曼谷等8城市：交通卡怎麼買、地鐵怎麼搭、哪個App最好用。", href: "/transport" },
-  { icon: "⭐", title: "追星行程", desc: "BTS、BLACKPINK、Snow Man 等30+藝人：聖地巡禮、演唱會搶票眉角。", href: "/idol" },
-  { icon: "🗓️", title: "旅遊旺季月曆", desc: "一眼看懂各城市最佳出遊月份，避開人潮和雨季。", href: "/seasons" },
-  { icon: "🔥", title: "現在最夯", desc: "整合 Dcard、KKday、Cosme 排行，這個月必買必玩。", href: "/trending" },
-  { icon: "🧠", title: "深度在地知識庫", desc: "票務時機、人潮規律、隱藏景點——去過的人才知道的細節。", href: "/tips" },
-  { icon: "📍", title: "附近景點", desc: "出國後開啟定位，立即找出周圍最值得去的景點與美食。", href: "/nearby" },
-  { icon: "🔔", title: "機票價格追蹤", desc: "追蹤想飛的航線，降價自動寄 Email 通知。", href: "/tracking" },
-  { icon: "🌏", title: "社群行程牆", desc: "看台灣旅客分享的行程，一鍵複製當自己的。", href: "/explore" },
+const FEATURES = [
+  { icon: "✨", title: "AI 行程規劃", href: "/wizard", cta: "開始規劃" },
+  { icon: "✈️", title: "機票搜尋", href: "/flights", cta: "查機票" },
+  { icon: "🛂", title: "簽證情報", href: "/visa", cta: "查簽證" },
+  { icon: "🏨", title: "住宿推薦", href: "/hotels", cta: "找住宿" },
+  { icon: "🔥", title: "現在最夯", href: "/trending", cta: "看熱門" },
+  { icon: "📋", title: "行前必知", href: "/pretrip", cta: "查清單" },
+  { icon: "🚇", title: "當地交通", href: "/transport", cta: "看攻略" },
+  { icon: "🧰", title: "旅行工具箱", href: "/tools", cta: "打開" },
+  { icon: "🗺", title: "跨城市規劃", href: "/planner/korea", cta: "規劃路線" },
+  { icon: "🎯", title: "依心情選目的地", href: "/theme", cta: "找靈感" },
+  { icon: "🛫", title: "機場攻略", href: "/airport", cta: "看步驟" },
+  { icon: "🍜", title: "在地美食", href: "/restaurant", cta: "找吃的" },
+  { icon: "🎌", title: "文化禮儀", href: "/cultural", cta: "避地雷" },
+  { icon: "⭐", title: "追星行程", href: "/idol", cta: "規劃" },
+  { icon: "🗓️", title: "旅遊旺季月曆", href: "/seasons", cta: "查時機" },
+  { icon: "🔔", title: "機票價格追蹤", href: "/tracking", cta: "設提醒" },
+  { icon: "📍", title: "附近景點", href: "/nearby", cta: "找景點" },
+  { icon: "🌏", title: "社群行程牆", href: "/explore", cta: "看分享" },
 ];
 
 type SearchResult = {
@@ -208,7 +187,6 @@ function QuickTripCard({ trip }: { trip: QuickTrip }) {
 
 export default function HomePage() {
   const router = useRouter();
-  const [showAll, setShowAll] = useState(false);
 
   return (
     <main className="min-h-screen bg-[#F7F3EC] text-[#4B4037]">
@@ -276,105 +254,20 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── 五步驟流程 ── */}
-      <section className="bg-[#EDE7DD] py-20">
+      {/* ── 所有工具 ── */}
+      <section className="border-t border-[#DDD6CA] py-16">
         <div className="mx-auto max-w-5xl px-6">
-          <p className="mb-3 text-center text-xs font-light uppercase tracking-[0.45em] text-[#8FA39A]">How it works</p>
-          <h2 className="mb-12 text-center text-2xl font-light tracking-wide">從目的地到計畫書，五步完成</h2>
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-            {STEPS.map((s) => (
-              <div key={s.n} className="rounded-[2rem] border border-[#D8D2C7] bg-[#FBF8F1] p-6">
-                <div className="mb-3 text-3xl font-light text-[#C4BCB4]">{s.n}</div>
-                <h3 className="mb-2 text-sm font-light tracking-wide leading-snug">{s.title}</h3>
-                <p className="text-xs font-light leading-6 text-[#6F675F]">{s.desc}</p>
-              </div>
-            ))}
-          </div>
-          <div className="mt-10 text-center">
-            <button
-              onClick={() => router.push("/wizard")}
-              className="rounded-full bg-[#A86F5A] px-12 py-5 text-base font-light tracking-[0.2em] text-white shadow-md transition hover:bg-[#96604D]"
-            >
-              立即開始規劃 →
-            </button>
-          </div>
-        </div>
-      </section>
-
-      {/* ── 計畫書包含什麼 ── */}
-      <section className="py-20">
-        <div className="mx-auto max-w-3xl px-6">
-          <p className="mb-3 text-center text-xs font-light uppercase tracking-[0.45em] text-[#8FA39A]">What&apos;s inside</p>
-          <h2 className="mb-10 text-center text-2xl font-light tracking-wide">下載的計畫書裡有什麼？</h2>
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
-            {INCLUDED.map((item) => (
-              <div key={item} className="rounded-2xl border border-[#D8D2C7] bg-[#FBF8F1] px-5 py-4 text-sm font-light text-[#5C5248]">
-                {item}
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── 差異化 ── */}
-      <section className="bg-[#3A2E26] py-20 text-white">
-        <div className="mx-auto max-w-3xl px-6 text-center">
-          <p className="mb-3 text-xs font-light uppercase tracking-[0.45em] text-white/40">Why this</p>
-          <h2 className="mb-6 text-2xl font-light tracking-wide">為什麼不用 ChatGPT 就好？</h2>
-          <p className="mx-auto max-w-xl text-base font-light leading-9 text-white/70">
-            ChatGPT 給你的行程是一大段文字，複製貼上就破格了。
-            這裡給你的是一份
-            <span className="text-[#C4A882]">可以直接印出來、傳給家人、用 Word 繼續修改</span>的正式文件——
-            格式、排版、簽證資訊、緊急電話，全部自動填好。
-          </p>
-        </div>
-      </section>
-
-      {/* ── 核心功能 ── */}
-      <section className="py-20">
-        <div className="mx-auto max-w-5xl px-6">
-          <p className="mb-3 text-center text-xs font-light uppercase tracking-[0.45em] text-[#8FA39A]">Features</p>
-          <h2 className="mb-3 text-center text-2xl font-light tracking-wide">出國前需要的，這裡都有</h2>
-          <p className="mb-10 text-center text-sm font-light text-[#8A7F73]">AI 規劃 · 簽證查詢 · 住宿比價 · 機票搜尋 · 旅行工具</p>
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {CORE_FEATURES.map(({ icon, title, desc, href, cta }) => (
+          <h2 className="mb-8 text-center text-xl font-light tracking-wide text-[#4B4037]">所有工具</h2>
+          <div className="grid gap-3 grid-cols-2 sm:grid-cols-3 lg:grid-cols-6">
+            {FEATURES.map(({ icon, title, href, cta }) => (
               <a key={href} href={href}
-                className="group rounded-[2rem] border border-[#D8D2C7] bg-[#FBF8F1] p-8 transition hover:border-[#A86F5A] hover:bg-[#FFFDF8] block">
-                <div className="mb-4 text-3xl">{icon}</div>
-                <h3 className="mb-2 text-base font-light tracking-wide">{title}</h3>
-                <p className="text-sm font-light leading-7 text-[#6F675F]">{desc}</p>
-                <p className="mt-4 text-xs font-light tracking-widest text-[#A86F5A] transition group-hover:underline">
-                  {cta} →
-                </p>
+                className="group flex flex-col items-center gap-2 rounded-2xl border border-[#D8D2C7] bg-[#FBF8F1] px-4 py-5 text-center transition hover:border-[#A86F5A] hover:bg-[#FFFDF8]">
+                <span className="text-2xl">{icon}</span>
+                <span className="text-xs font-light tracking-wide text-[#4B4037] leading-snug">{title}</span>
+                <span className="text-xs font-light text-[#A86F5A] transition group-hover:underline">{cta} →</span>
               </a>
             ))}
           </div>
-        </div>
-      </section>
-
-      {/* ── 更多功能（可展開）── */}
-      <section className="border-t border-[#DDD6CA] py-14">
-        <div className="mx-auto max-w-5xl px-6">
-          <button
-            onClick={() => setShowAll((v) => !v)}
-            className="mx-auto flex items-center gap-2 text-sm font-light text-[#8A7F73] transition hover:text-[#A86F5A]"
-          >
-            <span className="text-xs">{showAll ? "▲" : "▼"}</span>
-            <span>{showAll ? "收起其他功能" : "查看更多功能"}</span>
-          </button>
-
-          {showAll && (
-            <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-              {MORE_FEATURES.map(({ icon, title, desc, href }) => (
-                <a key={href} href={href}
-                  className="rounded-[2rem] border border-[#D8D2C7] bg-[#FBF8F1] p-7 transition hover:border-[#A86F5A] hover:bg-[#FFFDF8] block">
-                  <div className="mb-3 text-2xl">{icon}</div>
-                  <h3 className="mb-1 text-base font-light tracking-wide">{title}</h3>
-                  <p className="text-sm font-light leading-7 text-[#6F675F]">{desc}</p>
-                </a>
-              ))}
-            </div>
-          )}
         </div>
       </section>
 
