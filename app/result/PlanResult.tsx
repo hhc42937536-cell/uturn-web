@@ -96,6 +96,8 @@ export default function PlanResult() {
   const source = params.get("source");
 
   const [aiDays, setAiDays] = useState<AiDay[] | null>(null);
+  const [emailInput, setEmailInput] = useState("");
+  const [emailStatus, setEmailStatus] = useState<"idle" | "loading" | "ok" | "err">("idle");
 
   useEffect(() => {
     if (source === "ai") {
@@ -105,6 +107,29 @@ export default function PlanResult() {
       } catch { /* ignore */ }
     }
   }, [source]);
+
+  async function handleSendEmail(e: React.FormEvent) {
+    e.preventDefault();
+    if (!emailInput.trim() || !aiDays?.length) return;
+    setEmailStatus("loading");
+    try {
+      const res = await fetch("/api/send-itinerary", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: emailInput.trim(),
+          destination,
+          depDate: departureDate,
+          retDate: returnDate,
+          people,
+          itinerary: aiDays,
+        }),
+      });
+      setEmailStatus(res.ok ? "ok" : "err");
+    } catch {
+      setEmailStatus("err");
+    }
+  }
 
   const code = CITY_CODE[destination] ?? "SEL";
   const city = CITY_DATA[code];
@@ -308,6 +333,41 @@ export default function PlanResult() {
       {/* CTA */}
       <section className="border-t border-[#D8D2C7] py-14">
         <div className="mx-auto max-w-5xl px-6 text-center">
+
+          {/* 寄行程到 Email（AI 行程才顯示） */}
+          {aiDays && aiDays.length > 0 && (
+            <div className="mb-8 rounded-[2rem] border border-[#D8D2C7] bg-[#FBF8F1] px-8 py-8 max-w-lg mx-auto">
+              <p className="text-2xl mb-2">📬</p>
+              <p className="text-base font-light tracking-wide mb-1">把行程寄到 Email</p>
+              <p className="text-xs font-light text-[#8A7F73] mb-5">
+                完整 {aiDays.length} 天行程每日安排，直接寄到你的信箱，隨時查看
+              </p>
+              {emailStatus === "ok" ? (
+                <p className="text-sm font-light text-[#4A7C6F]">✅ 已寄出！請檢查信箱（含垃圾信件匣）</p>
+              ) : (
+                <form onSubmit={handleSendEmail} className="flex gap-2">
+                  <input
+                    type="email" required
+                    value={emailInput}
+                    onChange={(e) => setEmailInput(e.target.value)}
+                    placeholder="your@email.com"
+                    className="flex-1 rounded-full border border-[#D8D2C7] bg-white px-5 py-3 text-sm font-light outline-none focus:border-[#A86F5A] transition"
+                  />
+                  <button
+                    type="submit"
+                    disabled={emailStatus === "loading"}
+                    className="rounded-full bg-[#A86F5A] px-6 py-3 text-sm font-light tracking-wide text-white transition hover:bg-[#96604D] disabled:opacity-50 whitespace-nowrap"
+                  >
+                    {emailStatus === "loading" ? "寄出中…" : "寄行程"}
+                  </button>
+                </form>
+              )}
+              {emailStatus === "err" && (
+                <p className="mt-2 text-xs font-light text-red-500">寄送失敗，請稍後再試</p>
+              )}
+            </div>
+          )}
+
           {departureDate && (
             <div className="mb-10 rounded-[2rem] border border-[#D8D2C7] bg-[#FBF8F1] px-8 py-8 max-w-lg mx-auto">
               <p className="text-2xl mb-2">🔔</p>
