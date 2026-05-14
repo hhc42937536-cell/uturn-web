@@ -29,9 +29,6 @@ type TpFlight = {
 
 export async function GET(req: NextRequest) {
   const token = process.env.TRAVELPAYOUTS_TOKEN;
-  if (!token) {
-    return NextResponse.json({ error: "no_token" }, { status: 503 });
-  }
 
   const { searchParams } = req.nextUrl;
   const origin      = searchParams.get("origin") ?? "TPE";
@@ -40,13 +37,13 @@ export async function GET(req: NextRequest) {
   const returnAt    = searchParams.get("return_at") ?? "";
 
   const params: Record<string, string> = {
-    token,
     origin,
     currency: "twd",
     sorting: "price",
     limit: "50",
     one_way: "false",
   };
+  if (token)       params.token = token;
   if (destination) params.destination = destination;
   if (departure)   params.departure_at = departure;
   if (returnAt)    params.return_at = returnAt;
