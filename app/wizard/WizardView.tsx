@@ -530,8 +530,19 @@ export default function WizardView() {
         });
         const data = await res.json();
         if (data.itinerary) {
-          set({ itinerary: data.itinerary });
-          setStep(5);
+          sessionStorage.setItem(
+            "uturn_ai_itinerary",
+            JSON.stringify({
+              itinerary: data.itinerary,
+              destination: state.destination,
+              depDate: state.depDate,
+              retDate: state.retDate,
+              people: state.people,
+            })
+          );
+          router.push(
+            `/result?source=ai&destination=${encodeURIComponent(state.destination)}&departureDate=${state.depDate}&returnDate=${state.retDate}&people=${state.people}`
+          );
         } else {
           setGenError(data.error || "AI 生成失敗，請再試一次");
         }

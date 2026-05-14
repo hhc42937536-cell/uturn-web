@@ -1,11 +1,13 @@
 "use client";
 
 import { useSearchParams, useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   CITY_CODE, CITY_DATA, CITY_KEYWORDS, CITY_PHOTOS,
   type CityData, type DayPlan,
 } from "../lib/cityData";
+
+type AiDay = { morning: string; afternoon: string; evening: string; food: string; note: string; memo?: string };
 
 // ── helpers ───────────────────────────────────────────────────────────────────
 
@@ -91,6 +93,18 @@ export default function PlanResult() {
   const returnDate = params.get("returnDate") ?? "";
   const people = params.get("people") ?? "2";
   const request = params.get("request") ?? "";
+  const source = params.get("source");
+
+  const [aiDays, setAiDays] = useState<AiDay[] | null>(null);
+
+  useEffect(() => {
+    if (source === "ai") {
+      try {
+        const stored = sessionStorage.getItem("uturn_ai_itinerary");
+        if (stored) setAiDays(JSON.parse(stored).itinerary ?? null);
+      } catch { /* ignore */ }
+    }
+  }, [source]);
 
   const code = CITY_CODE[destination] ?? "SEL";
   const city = CITY_DATA[code];
@@ -108,7 +122,7 @@ export default function PlanResult() {
     rainy?: string; highlight: boolean;
   };
 
-  const cards: CardData[] = [
+  const staticCards: CardData[] = [
     {
       label: "Day 1", title: "抵達日",
       slots: [
@@ -137,6 +151,21 @@ export default function PlanResult() {
       highlight: false,
     },
   ];
+
+  const aiCards: CardData[] = (aiDays ?? []).map((day, i) => ({
+    label: `Day ${i + 1}`,
+    title: i === 0 ? "抵達日" : i === (aiDays?.length ?? 0) - 1 ? "回程日" : `第 ${i + 1} 天`,
+    slots: [
+      ...(day.morning ? [{ icon: "☀️", text: day.morning }] : []),
+      ...(day.afternoon ? [{ icon: "🌤️", text: day.afternoon }] : []),
+      ...(day.evening ? [{ icon: "🌙", text: day.evening }] : []),
+      ...(day.food ? [{ icon: "🍽️", text: day.food }] : []),
+      ...(day.note ? [{ icon: "💡", text: day.note }] : []),
+    ],
+    highlight: false,
+  }));
+
+  const cards = aiDays ? aiCards : staticCards;
 
   return (
     <main className="min-h-screen bg-[#F7F3EC] text-[#4B4037]">
@@ -279,6 +308,25 @@ export default function PlanResult() {
       {/* CTA */}
       <section className="border-t border-[#D8D2C7] py-14">
         <div className="mx-auto max-w-5xl px-6 text-center">
+          {departureDate && (
+            <div className="mb-10 rounded-[2rem] border border-[#D8D2C7] bg-[#FBF8F1] px-8 py-8 max-w-lg mx-auto">
+              <p className="text-2xl mb-2">🔔</p>
+              <p className="text-base font-light tracking-wide mb-1">出發前 7 天提醒</p>
+              <p className="text-xs font-light text-[#8A7F73] mb-5">
+                留下 Email，出發前一週自動寄「簽證 / 換匯 / 行李」行前必讀給你
+              </p>
+              <button
+                onClick={() =>
+                  router.push(
+                    `/reminder?destination=${encodeURIComponent(destination)}&dep=${departureDate}`
+                  )
+                }
+                className="rounded-full bg-[#A86F5A] px-10 py-3 text-sm font-light tracking-wider text-white transition hover:bg-[#96604D]"
+              >
+                設定行前提醒 →
+              </button>
+            </div>
+          )}
           <p className="mb-6 text-sm font-light tracking-widest text-[#8FA39A]">想換個目的地？</p>
           <button
             onClick={() => router.push("/")}
