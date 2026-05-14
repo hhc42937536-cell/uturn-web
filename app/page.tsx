@@ -4,23 +4,22 @@ import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import quickTripsData from "@/app/lib/quick_trips.json";
 
+// 順序：靈感 → 訂票訂房 → 出發前 → 當地 → 特殊需求
 const FEATURES = [
-  { icon: "✨", title: "AI 行程規劃", href: "/wizard", cta: "開始規劃" },
-  { icon: "✈️", title: "機票搜尋", href: "/flights", cta: "查機票" },
-  { icon: "🛂", title: "簽證情報", href: "/visa", cta: "查簽證" },
-  { icon: "🏨", title: "住宿推薦", href: "/hotels", cta: "找住宿" },
   { icon: "🔥", title: "現在最夯", href: "/trending", cta: "看熱門" },
-  { icon: "📋", title: "行前必知", href: "/pretrip", cta: "查清單" },
-  { icon: "🚇", title: "當地交通", href: "/transport", cta: "看攻略" },
-  { icon: "🧰", title: "旅行工具箱", href: "/tools", cta: "打開" },
-  { icon: "🗺", title: "跨城市規劃", href: "/planner/korea", cta: "規劃路線" },
   { icon: "🎯", title: "依心情選目的地", href: "/theme", cta: "找靈感" },
+  { icon: "🗓️", title: "旅遊旺季月曆", href: "/seasons", cta: "查時機" },
+  { icon: "✈️", title: "機票搜尋", href: "/flights", cta: "查機票" },
+  { icon: "🏨", title: "住宿推薦", href: "/hotels", cta: "找住宿" },
+  { icon: "🔔", title: "機票價格追蹤", href: "/tracking", cta: "設提醒" },
+  { icon: "🗺", title: "跨城市規劃", href: "/planner/korea", cta: "規劃路線" },
+  { icon: "⭐", title: "追星行程", href: "/idol", cta: "規劃" },
+  { icon: "📋", title: "行前必知", href: "/pretrip", cta: "查清單" },
   { icon: "🛫", title: "機場攻略", href: "/airport", cta: "看步驟" },
+  { icon: "🚇", title: "當地交通", href: "/transport", cta: "看攻略" },
   { icon: "🍜", title: "在地美食", href: "/restaurant", cta: "找吃的" },
   { icon: "🎌", title: "文化禮儀", href: "/cultural", cta: "避地雷" },
-  { icon: "⭐", title: "追星行程", href: "/idol", cta: "規劃" },
-  { icon: "🗓️", title: "旅遊旺季月曆", href: "/seasons", cta: "查時機" },
-  { icon: "🔔", title: "機票價格追蹤", href: "/tracking", cta: "設提醒" },
+  { icon: "🧰", title: "旅行工具箱", href: "/tools", cta: "打開" },
   { icon: "📍", title: "附近景點", href: "/nearby", cta: "找景點" },
   { icon: "🌏", title: "社群行程牆", href: "/explore", cta: "看分享" },
 ];
@@ -244,7 +243,7 @@ export default function HomePage() {
           <p className="mb-3 text-center text-xs font-light uppercase tracking-[0.45em] text-[#8FA39A]">Quick Trip</p>
           <h2 className="mb-2 text-center text-2xl font-light tracking-wide">說走就走</h2>
           <p className="mb-10 text-center text-sm font-light text-[#8A7F73]">
-            懶得規劃？精選套餐行程，一鍵看完整每日安排
+            精選套餐行程，一鍵看完整每日安排
           </p>
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {quickTrips.map((trip) => (
