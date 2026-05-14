@@ -37,8 +37,8 @@ type TipsEntry = {
 function buildEmailHtml(destination: string, depDate: string): string {
   const visaCode = DEST_TO_VISA[destination];
   const tipsCode = DEST_TO_TIPS[destination];
-  const visa = visaCode ? (visaData as Record<string, VisaEntry>)[visaCode] : null;
-  const tips = tipsCode ? (tipsData as Record<string, TipsEntry>)[tipsCode] : null;
+  const visa = visaCode ? (visaData as unknown as Record<string, VisaEntry>)[visaCode] : null;
+  const tips = tipsCode ? (tipsData as unknown as Record<string, TipsEntry>)[tipsCode] : null;
 
   const fmtDate = (s: string) => {
     const d = new Date(s);
