@@ -1,0 +1,248 @@
+[
+  {
+    "id": "seoul-3",
+    "flag": "🇰🇷",
+    "destination": "首爾",
+    "days": 3,
+    "theme": "購物美食",
+    "themeIcon": "🛍️",
+    "people": 2,
+    "style": "購物、美食",
+    "highlight": "明洞、弘大、東大門",
+    "itinerary": [
+      {
+        "morning": "仁川機場入境 → 搭機場快線到弘大 → 辦理飯店入住 → 弘大街頭逛逛",
+        "afternoon": "新村蔘雞湯午餐 → 弘大塗鴉街 → 梨大購物街",
+        "evening": "弘大夜市美食 → 炸雞配啤酒（치맥）",
+        "food": "新村蔘雞湯、弘大炸雞、便利商店零食",
+        "note": "交通卡（T-Money）在機場或便利商店購買，儲值即可搭乘地鐵、公車"
+      },
+      {
+        "morning": "景福宮 + 光化門廣場（建議早上9點前到，人少）",
+        "afternoon": "仁寺洞工藝街 → 北村韓屋村拍照 → 明洞購物",
+        "evening": "明洞街頭小吃（雞蛋糕、炒年糕、韓國煎餅）→ 樂天百貨免稅店",
+        "food": "明洞明洞麵疙瘩、街頭小吃、樂天超市伴手禮",
+        "note": "景福宮每週二休館，穿韓服入場免費，附近有韓服租借店"
+      },
+      {
+        "morning": "東大門設計廣場（DDP）→ 廣藏市場傳統美食",
+        "afternoon": "南山首爾塔 → 漢江公園野餐（便利商店買食物）",
+        "evening": "搭機場快線返回仁川機場 → 候機",
+        "food": "廣藏市場紅豆餅、鮪魚生魚片、麻藥紫菜飯卷",
+        "note": "回程建議提前3小時到機場，首爾站可先辦理城市登機"
+      }
+    ]
+  },
+  {
+    "id": "tokyo-5",
+    "flag": "🇯🇵",
+    "destination": "東京",
+    "days": 5,
+    "theme": "文化體驗",
+    "themeIcon": "⛩️",
+    "people": 2,
+    "style": "文化、美食、購物",
+    "highlight": "淺草、原宿、新宿",
+    "itinerary": [
+      {
+        "morning": "成田/羽田機場入境 → 搭N'EX或單軌電車進市區 → 飯店Check-in",
+        "afternoon": "新宿御苑散步 → 新宿購物（伊勢丹、高島屋）",
+        "evening": "新宿歌舞伎町漫步（看看就好）→ 居酒屋晚餐",
+        "food": "新宿思い出横丁烤串、拉麵激戰區（一蘭/一風堂）",
+        "note": "購買Suica或PASMO交通卡，7-11、全家、Lawson便利商店隨處可見"
+      },
+      {
+        "morning": "淺草寺（雷門・仲見世通り）→ 隅田川散步",
+        "afternoon": "上野動物園/博物館 → 秋葉原電器街",
+        "evening": "秋葉原動漫文化 → 附近拉麵晚餐",
+        "food": "淺草人形燒、上野アメ橫丁、秋葉原女僕咖啡廳",
+        "note": "淺草寺全年開放，早上人少適合拍照，雷門背面也很值得拍"
+      },
+      {
+        "morning": "原宿（竹下通り、Omotesando）→ 明治神宮",
+        "afternoon": "澀谷忠犬八公像 → 澀谷Scramble交叉口 → 澀谷Sky展望台",
+        "evening": "表參道精品街 → 惠比壽/代官山晚餐",
+        "food": "原宿可麗餅、澀谷飲食街、表參道下午茶",
+        "note": "澀谷Sky展望台需預約，日落時分景色最美，票價約2500日圓"
+      },
+      {
+        "morning": "築地市場（外場）海鮮早餐 → 月島文字燒",
+        "afternoon": "台場（鋼彈、購物中心）→ 豐洲市場（需預約參觀）",
+        "evening": "台場夜景 → 東京鐵塔夜間點燈",
+        "food": "築地海鮮丼、月島文字燒、台場拉麵博物館",
+        "note": "台場到東京市區可搭百合海鷗線（ゆりかもめ），電車本身就是觀光"
+      },
+      {
+        "morning": "東京晴空塔（天望甲板）→ 押上周邊散步",
+        "afternoon": "淺草採買伴手禮 → 返回飯店取行李",
+        "evening": "成田/羽田機場 → 候機返台",
+        "food": "東京Banana、白色戀人、東京晴空塔限定商品",
+        "note": "晴空塔建議早上開館時去，下午人潮眾多等待時間長"
+      }
+    ]
+  },
+  {
+    "id": "bangkok-4",
+    "flag": "🇹🇭",
+    "destination": "曼谷",
+    "days": 4,
+    "theme": "美食佛寺",
+    "themeIcon": "🍜",
+    "people": 2,
+    "style": "文化、美食",
+    "highlight": "大皇宮、考山路、暹羅",
+    "itinerary": [
+      {
+        "morning": "素萬那普機場入境 → 搭機場快線到市區 → 飯店Check-in",
+        "afternoon": "暹羅（Siam）購物中心逛逛 → 暹羅海洋世界",
+        "evening": "考山路夜市（背包客聖地）→ 街頭小吃",
+        "food": "考山路炒河粉、芒果糯米飯、泰式炒飯",
+        "note": "泰銖建議在台灣機場或Super Rich換匯，匯率比飯店好很多"
+      },
+      {
+        "morning": "大皇宮（Wat Phra Kaew）→ 鄭王廟（Wat Arun，需搭渡輪）",
+        "afternoon": "臥佛寺（Wat Pho）→ 泰式按摩（寺廟附設正宗按摩）",
+        "evening": "湄南河遊船晚餐 → 艾雅宮殿碼頭夜市",
+        "food": "臥佛寺按摩茶飲、Pier21美食廣場、河濱夜市",
+        "note": "大皇宮需穿著保守（蓋膝蓋、肩膀），門口有衣物出借"
+      },
+      {
+        "morning": "恰圖恰週末市集（週末限定！超大跳蚤市場）",
+        "afternoon": "Or Tor Kor有機市場 → 五彩玉佛寺（Wat Ratchanatdaram）",
+        "evening": "高空酒吧看夜景（Lebua Sky Bar或Vertigo）",
+        "food": "恰圖恰市集小吃、Or Tor Kor新鮮水果、高空酒吧雞尾酒",
+        "note": "恰圖恰週末才有，平日可去Chatuchak公園散步"
+      },
+      {
+        "morning": "暹羅百貨最後採買 → 泰式按摩再一次",
+        "afternoon": "返回機場（預留3小時）",
+        "evening": "素萬那普機場候機返台",
+        "food": "機場King Power免稅店、泰式奶茶、芒果乾伴手禮",
+        "note": "King Power免稅店在市區也有分店，機場免稅價格差不多"
+      }
+    ]
+  },
+  {
+    "id": "singapore-4",
+    "flag": "🇸🇬",
+    "destination": "新加坡",
+    "days": 4,
+    "theme": "美食城市",
+    "themeIcon": "🌆",
+    "people": 2,
+    "style": "美食、城市觀光",
+    "highlight": "濱海灣、小印度、牛車水",
+    "itinerary": [
+      {
+        "morning": "樟宜機場（Changi）入境 → 逛機場Jewel星耀樟宜（室內瀑布）",
+        "afternoon": "搭MRT到烏節路（Orchard）→ ION Orchard購物",
+        "evening": "克拉碼頭（Clarke Quay）夜生活 → 河畔酒吧晚餐",
+        "food": "Lau Pa Sat小販中心沙嗲、克拉碼頭海鮮、Tiger啤酒",
+        "note": "新加坡MRT非常便利，購買ez-link卡或用信用卡感應即可"
+      },
+      {
+        "morning": "濱海灣花園（Gardens by the Bay）→ 擎天樹（白天免費）",
+        "afternoon": "魚尾獅公園 → 濱海藝術中心外觀",
+        "evening": "濱海灣金沙（Marina Bay Sands）屋頂泳池觀景（住客限）→ 燈光秀",
+        "food": "Satay by the Bay海邊小吃、濱海灣金沙美食廣場、Jumbo海鮮辣炒螃蟹",
+        "note": "擎天樹光影秀每晚7:45和8:45，濱海灣金沙旁免費觀賞"
+      },
+      {
+        "morning": "牛車水（Chinatown）→ 佛牙寺龍華院",
+        "afternoon": "小印度（Little India）→ 阿拉伯街（Arab Street）",
+        "evening": "老巴剎（Lau Pa Sat）傳統小販中心 → 麥士威小販中心",
+        "food": "牛車水肉骨茶、小印度咖哩、麥士威海南雞飯",
+        "note": "新加坡室外很熱，建議上午10點前或下午4點後外出，中午在購物中心消磨"
+      },
+      {
+        "morning": "聖淘沙（Sentosa）環球影城 或 西羅索海灘",
+        "afternoon": "樟宜機場最後採購 → 免稅店",
+        "evening": "搭機返台",
+        "food": "環球影城美食廣場、樟宜機場Restaurant、家鄉雞",
+        "note": "環球影城建議早上開園時入場，熱門設施等待時間較短"
+      }
+    ]
+  },
+  {
+    "id": "bali-5",
+    "flag": "🇮🇩",
+    "destination": "峇里島",
+    "days": 5,
+    "theme": "海島渡假",
+    "themeIcon": "🏖️",
+    "people": 2,
+    "style": "海島、放鬆、文化",
+    "highlight": "庫塔、烏布、水明漾",
+    "itinerary": [
+      {
+        "morning": "峇里島機場入境 → 包車前往庫塔（Kuta）海邊飯店",
+        "afternoon": "庫塔海灘（Kuta Beach）日光浴 → 衝浪體驗",
+        "evening": "庫塔街頭按摩 → 海鮮燒烤晚餐",
+        "food": "庫塔海鮮BBQ、Nasi Goreng印尼炒飯、Bintang啤酒",
+        "note": "峇里島建議包車遊覽，一天約1500-2000台幣，包含司機全程等候"
+      },
+      {
+        "morning": "塔納羅特海神廟（Tanah Lot，日落最美）→ 附近稻田散步",
+        "afternoon": "水稻梯田（Jatiluwih）→ 聖泉廟（Pura Tirta Empul）",
+        "evening": "烏布傳統藝術市集 → 烏布皇宮觀賞克差舞",
+        "food": "烏布Locavore、Naughty Nuri's豬肋排、本地椰子",
+        "note": "克差舞（Kecak Fire Dance）每晚18:00在烏布皇宮演出，票約200-300台幣"
+      },
+      {
+        "morning": "阿勇河泛舟（Ayung River Rafting）→ 飯店泳池放鬆",
+        "afternoon": "烏布猴子森林（Sacred Monkey Forest）→ 飯店Spa",
+        "evening": "烏布Alue Alue餐廳稻田景觀晚餐",
+        "food": "烏布有機餐廳、椰子咖哩、紅龍果汁",
+        "note": "猴子森林的猴子會搶東西，請收好眼鏡、帽子、食物"
+      },
+      {
+        "morning": "水明漾（Seminyak）精品店 → 海灘俱樂部",
+        "afternoon": "庫塔Beachwalk購物中心 → 按摩Spa",
+        "evening": "Potato Head Beach Club看夕陽 → 高級晚餐",
+        "food": "Seminyak Ku De Ta、Merah Putih印尼料理、進口超市零食",
+        "note": "水明漾比庫塔高級，適合購買設計師品牌峇里島服飾"
+      },
+      {
+        "morning": "峇里島最後採購（超市、藝品店）",
+        "afternoon": "前往機場 → 候機",
+        "evening": "搭機返台",
+        "food": "機場Krisna伴手禮店、峇里島咖啡、腰果",
+        "note": "Kopi Luwak麝香貓咖啡很有名，機場有售，也是熱門伴手禮"
+      }
+    ]
+  },
+  {
+    "id": "hong-kong-3",
+    "flag": "🇭🇰",
+    "destination": "香港",
+    "days": 3,
+    "theme": "港式美食",
+    "themeIcon": "🥮",
+    "people": 2,
+    "style": "美食、購物",
+    "highlight": "旺角、蘭桂坊、維多利亞港",
+    "itinerary": [
+      {
+        "morning": "香港國際機場 → 搭機場快線到九龍/香港站",
+        "afternoon": "旺角（女人街、波鞋街、花園街）購物",
+        "evening": "廟街夜市 → 招牌霓虹燈拍照 → 避風塘炒蟹晚餐",
+        "food": "糖朝甜品、澳洲牛奶公司、廟街大排檔",
+        "note": "香港八達通在機場購買，可搭MTR、巴士、小巴、渡輪"
+      },
+      {
+        "morning": "太平山頂（獅子亭觀景台）→ 凌霄閣",
+        "afternoon": "中環蘭桂坊 → 石板街 → 荷李活道古董街",
+        "evening": "維多利亞港夜景 → 尖沙咀星光大道 → 幻彩詠香江燈光秀",
+        "food": "蘭芳園絲襪奶茶、鏞記燒鵝、翠華餐廳港式早餐",
+        "note": "幻彩詠香江燈光秀每晚8:00，從尖沙咀海傍觀看最美"
+      },
+      {
+        "morning": "香港迪士尼樂園（半天）或大嶼山天壇大佛",
+        "afternoon": "赤鱲角機場 → 免稅店購物",
+        "evening": "搭機返台",
+        "food": "香港機場美心MX、DFS免稅店、珍珠奶茶",
+        "note": "香港版迪士尼比東京小但便宜很多，遊樂設施等待時間也較短"
+      }
+    ]
+  }
+]

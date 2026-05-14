@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { supabase } from "@/app/lib/supabase";
 export type FlightTrack = {
   id: string;
   type: "flight";
@@ -220,8 +221,11 @@ export default function TrackingView() {
           </div>
         )}
 
+        {/* Email 降價通知訂閱 */}
+        {tracks.length > 0 && <EmailAlertForm tracks={tracks} />}
+
         {/* 底部 CTA */}
-        <div className="mt-10 flex gap-3">
+        <div className="mt-6 flex gap-3">
           <button
             onClick={() => router.push("/flights")}
             className="flex-1 rounded-full border border-[#A86F5A] bg-[#A86F5A]/10 py-4 text-sm font-light tracking-wider text-[#A86F5A] transition hover:bg-[#A86F5A]/20"
@@ -231,5 +235,88 @@ export default function TrackingView() {
         </div>
       </div>
     </main>
+  );
+}
+
+function EmailAlertForm({ tracks }: { tracks: FlightTrack[] }) {
+  const [email, setEmail] = useState("");
+  const [selectedId, setSelectedId] = useState(tracks[0]?.id ?? "");
+  const [status, setStatus] = useState<"idle" | "loading" | "ok" | "err">("idle");
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    const track = tracks.find((t) => t.id === selectedId);
+    if (!track || !email.trim()) return;
+
+    // 解析參考票價（去除 NT$ 和逗號）
+    const refPrice = parseInt(track.priceRef.replace(/[^0-9]/g, "")) || 0;
+    if (!refPrice) { setStatus("err"); return; }
+
+    setStatus("loading");
+    const { error } = await supabase.from("flight_price_alerts").insert({
+      user_email: email.trim(),
+      origin_code: track.originCode,
+      origin_label: track.originLabel,
+      dest_code: track.destCode,
+      dest_label: track.destLabel,
+      dep_date: track.depDate,
+      ref_price: refPrice,
+    });
+    setStatus(error ? "err" : "ok");
+  }
+
+  if (status === "ok") {
+    return (
+      <div className="mt-8 rounded-[2rem] border border-[#D8D2C7] bg-[#FBF8F1] px-8 py-10 text-center">
+        <p className="text-3xl mb-3">📬</p>
+        <p className="text-sm font-light text-[#4B4037] mb-1">訂閱成功！</p>
+        <p className="text-xs font-light text-[#8A7F73]">票價降超過 5% 時，我們會自動寄信通知你</p>
+      </div>
+    );
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="mt-8 rounded-[2rem] border border-[#D8D2C7] bg-[#FBF8F1] p-7 space-y-4">
+      <div>
+        <p className="text-xs font-light uppercase tracking-[0.4em] text-[#8FA39A] mb-1">Price Alert</p>
+        <h3 className="text-base font-light tracking-wide mb-1">降價自動通知</h3>
+        <p className="text-xs font-light text-[#8A7F73]">票價降超過 5% 時寄 Email 告訴你</p>
+      </div>
+
+      <div>
+        <label className="block text-xs font-light text-[#8A7F73] mb-1.5">追蹤航線</label>
+        <select
+          value={selectedId}
+          onChange={(e) => setSelectedId(e.target.value)}
+          className="w-full rounded-2xl border border-[#D8D2C7] bg-white px-4 py-3 text-sm font-light outline-none focus:border-[#A86F5A] transition"
+        >
+          {tracks.map((t) => (
+            <option key={t.id} value={t.id}>
+              {t.destFlag} {t.originLabel} → {t.destLabel}　{t.depDate}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <div>
+        <label className="block text-xs font-light text-[#8A7F73] mb-1.5">通知 Email</label>
+        <input
+          type="email" required
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="your@email.com"
+          className="w-full rounded-2xl border border-[#D8D2C7] bg-white px-4 py-3 text-sm font-light outline-none focus:border-[#A86F5A] transition"
+        />
+      </div>
+
+      {status === "err" && <p className="text-xs text-red-500 font-light">訂閱失敗，請確認票價格式或稍後再試</p>}
+
+      <button
+        type="submit" disabled={status === "loading"}
+        className="w-full rounded-full bg-[#A86F5A] py-3.5 text-sm font-light tracking-[0.15em] text-white transition hover:bg-[#96604D] disabled:opacity-50"
+      >
+        {status === "loading" ? "訂閱中…" : "🔔 訂閱降價通知"}
+      </button>
+    </form>
   );
 }

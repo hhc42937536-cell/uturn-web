@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
+import quickTripsData from "@/app/lib/quick_trips.json";
 
 const INCLUDED = [
   "📋 旅遊封面頁",
@@ -21,48 +22,12 @@ const STEPS = [
 ];
 
 const CORE_FEATURES = [
-  {
-    icon: "✨",
-    title: "AI 行程規劃",
-    desc: "輸入目的地 + 日期，Gemini AI 生成完整每日行程，上午 / 下午 / 晚上 / 美食 / 交通提示。",
-    href: "/wizard",
-    cta: "開始規劃",
-  },
-  {
-    icon: "🛂",
-    title: "台灣護照簽證情報",
-    desc: "選目的地，直接看簽證類型、海關禁品、SIM 卡推薦、大使館緊急電話。",
-    href: "/visa",
-    cta: "查簽證",
-  },
-  {
-    icon: "🏨",
-    title: "住宿推薦 & 比價",
-    desc: "28 個城市精選飯店，看推薦住宿區、每晚參考價，直接連到 Agoda / Booking 比價。",
-    href: "/hotels",
-    cta: "找住宿",
-  },
-  {
-    icon: "✈️",
-    title: "機票搜尋",
-    desc: "Skyscanner + Google Flights 快速開啟，支援南部出發（高雄 / 台中 / 台南 vs 桃園）比較。",
-    href: "/flights",
-    cta: "查機票",
-  },
-  {
-    icon: "🗺",
-    title: "跨城市行程規劃",
-    desc: "把首爾 + 釜山、東京 + 大阪排進同一行程，地圖即時顯示城市間分佈。",
-    href: "/planner/korea",
-    cta: "規劃路線",
-  },
-  {
-    icon: "🧰",
-    title: "旅行工具箱",
-    desc: "匯率換算、預算計算、行李清單、天氣預報、當地時間——出發前一站搞定。",
-    href: "/tools",
-    cta: "打開工具箱",
-  },
+  { icon: "✨", title: "AI 行程規劃", desc: "輸入目的地 + 日期，Gemini AI 生成完整每日行程，上午 / 下午 / 晚上 / 美食 / 交通提示。", href: "/wizard", cta: "開始規劃" },
+  { icon: "🛂", title: "台灣護照簽證情報", desc: "選目的地，直接看簽證類型、海關禁品、SIM 卡推薦、大使館緊急電話。", href: "/visa", cta: "查簽證" },
+  { icon: "🏨", title: "住宿推薦 & 比價", desc: "28 個城市精選飯店，看推薦住宿區、每晚參考價，直接連到 Agoda / Booking 比價。", href: "/hotels", cta: "找住宿" },
+  { icon: "✈️", title: "機票搜尋", desc: "Skyscanner + Google Flights 快速開啟，支援南部出發（高雄 / 台中 / 台南 vs 桃園）比較。", href: "/flights", cta: "查機票" },
+  { icon: "🗺", title: "跨城市行程規劃", desc: "把首爾 + 釜山、東京 + 大阪排進同一行程，地圖即時顯示城市間分佈。", href: "/planner/korea", cta: "規劃路線" },
+  { icon: "🧰", title: "旅行工具箱", desc: "匯率換算、預算計算、行李清單、天氣預報、當地時間——出發前一站搞定。", href: "/tools", cta: "打開工具箱" },
 ];
 
 const MORE_FEATURES = [
@@ -77,9 +42,169 @@ const MORE_FEATURES = [
   { icon: "🔥", title: "現在最夯", desc: "整合 Dcard、KKday、Cosme 排行，這個月必買必玩。", href: "/trending" },
   { icon: "🧠", title: "深度在地知識庫", desc: "票務時機、人潮規律、隱藏景點——去過的人才知道的細節。", href: "/tips" },
   { icon: "📍", title: "附近景點", desc: "出國後開啟定位，立即找出周圍最值得去的景點與美食。", href: "/nearby" },
-  { icon: "🔔", title: "機票價格追蹤", desc: "追蹤想飛的航線，儲存當時參考票價，隨時回來比對是否調降。", href: "/tracking" },
+  { icon: "🔔", title: "機票價格追蹤", desc: "追蹤想飛的航線，降價自動寄 Email 通知。", href: "/tracking" },
   { icon: "🌏", title: "社群行程牆", desc: "看台灣旅客分享的行程，一鍵複製當自己的。", href: "/explore" },
 ];
+
+type SearchResult = {
+  label: string;
+  destinations: { flag: string; name: string; desc: string }[];
+};
+
+type QuickTrip = {
+  id: string;
+  flag: string;
+  destination: string;
+  days: number;
+  theme: string;
+  themeIcon: string;
+  people: number;
+  style: string;
+  highlight: string;
+  itinerary: { morning: string; afternoon: string; evening: string; food: string; note: string }[];
+};
+
+const quickTrips: QuickTrip[] = quickTripsData as QuickTrip[];
+
+// ── 智慧搜尋區塊 ─────────────────────────────────────────────────
+function SmartSearch() {
+  const router = useRouter();
+  const [query, setQuery] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState<SearchResult | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const HINTS = ["想看極光", "海島放鬆", "帶小孩去樂園", "蜜月旅行", "血拼購物", "美食之旅"];
+
+  async function handleSearch(q: string) {
+    const text = q || query;
+    if (!text.trim()) return;
+    setLoading(true);
+    setResult(null);
+    try {
+      const res = await fetch("/api/smart-search", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ query: text }),
+      });
+      const data = await res.json();
+      if (data.destinations) setResult(data);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <div className="mx-auto mt-10 max-w-xl px-6">
+      <div className="relative">
+        <input
+          ref={inputRef}
+          type="text"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && handleSearch("")}
+          placeholder="說說你想要什麼旅行體驗…"
+          className="w-full rounded-full border border-[#D8D2C7] bg-white px-6 py-4 pr-14 text-sm font-light text-[#4B4037] shadow-sm outline-none focus:border-[#A86F5A] transition placeholder:text-[#B5AFA9]"
+        />
+        <button
+          onClick={() => handleSearch("")}
+          disabled={loading}
+          className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-[#A86F5A] px-4 py-2 text-xs text-white transition hover:bg-[#96604D] disabled:opacity-50"
+        >
+          {loading ? "…" : "搜尋"}
+        </button>
+      </div>
+
+      {/* 快捷 hints */}
+      <div className="mt-3 flex flex-wrap gap-2 justify-center">
+        {HINTS.map((h) => (
+          <button
+            key={h}
+            onClick={() => { setQuery(h); handleSearch(h); }}
+            className="rounded-full border border-[#D8D2C7] bg-[#FBF8F1] px-3 py-1 text-xs font-light text-[#6F675F] transition hover:border-[#A86F5A] hover:text-[#A86F5A]"
+          >
+            {h}
+          </button>
+        ))}
+      </div>
+
+      {/* 搜尋結果 */}
+      {result && (
+        <div className="mt-6 rounded-[2rem] border border-[#D8D2C7] bg-[#FBF8F1] p-6">
+          <p className="mb-4 text-xs font-light uppercase tracking-widest text-[#8FA39A]">{result.label}</p>
+          <div className="grid gap-3">
+            {result.destinations.map((d) => (
+              <button
+                key={d.name}
+                onClick={() => router.push(`/wizard?destination=${encodeURIComponent(d.name)}`)}
+                className="flex items-center gap-4 rounded-2xl border border-[#EDE7DD] bg-white px-5 py-4 text-left transition hover:border-[#A86F5A] hover:bg-[#FFFDF8]"
+              >
+                <span className="text-2xl">{d.flag}</span>
+                <div>
+                  <p className="text-sm font-light text-[#4B4037]">{d.name}</p>
+                  <p className="text-xs font-light text-[#8A7F73]">{d.desc}</p>
+                </div>
+                <span className="ml-auto text-xs text-[#A86F5A]">規劃 →</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── 說走就走卡片 ──────────────────────────────────────────────────
+function QuickTripCard({ trip }: { trip: QuickTrip }) {
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
+
+  async function handleClick() {
+    setLoading(true);
+    // 計算出發/回程日（今天起算）
+    const dep = new Date();
+    dep.setDate(dep.getDate() + 14); // 兩週後出發
+    const ret = new Date(dep);
+    ret.setDate(ret.getDate() + trip.days - 1);
+    const depDate = dep.toISOString().split("T")[0];
+    const retDate = ret.toISOString().split("T")[0];
+
+    // 直接用靜態行程，存 sessionStorage → /result
+    sessionStorage.setItem("uturn_ai_itinerary", JSON.stringify({
+      itinerary: trip.itinerary,
+      destination: trip.destination,
+      depDate,
+      retDate,
+      people: trip.people,
+    }));
+    router.push(`/result?source=ai&destination=${encodeURIComponent(trip.destination)}&departureDate=${depDate}&returnDate=${retDate}&people=${trip.people}`);
+  }
+
+  return (
+    <button
+      onClick={handleClick}
+      disabled={loading}
+      className="group rounded-[2rem] border border-[#D8D2C7] bg-[#FBF8F1] p-7 text-left transition hover:border-[#A86F5A] hover:bg-[#FFFDF8] disabled:opacity-60 w-full"
+    >
+      <div className="mb-3 flex items-center gap-3">
+        <span className="text-3xl">{trip.flag}</span>
+        <div>
+          <p className="text-base font-light tracking-wide">{trip.destination}</p>
+          <p className="text-xs font-light text-[#8A7F73]">{trip.days} 天行程</p>
+        </div>
+        <span className="ml-auto rounded-full border border-[#EDE7DD] px-3 py-1 text-xs font-light text-[#8A7F73]">
+          {trip.themeIcon} {trip.theme}
+        </span>
+      </div>
+      <p className="mb-4 text-xs font-light leading-6 text-[#6F675F]">
+        {trip.highlight}
+      </p>
+      <p className="text-xs font-light tracking-widest text-[#A86F5A] transition group-hover:underline">
+        {loading ? "生成中…" : "一鍵看行程 →"}
+      </p>
+    </button>
+  );
+}
 
 export default function HomePage() {
   const router = useRouter();
@@ -102,7 +227,7 @@ export default function HomePage() {
       </nav>
 
       {/* ── Hero ── */}
-      <section className="pb-20 pt-36">
+      <section className="pb-16 pt-36">
         <div className="mx-auto max-w-3xl px-6 text-center">
           <p className="mb-5 text-xs font-light uppercase tracking-[0.45em] text-[#8FA39A]">
             Taiwan Travel Planner · Free · No Login
@@ -129,6 +254,25 @@ export default function HomePage() {
             </button>
           </div>
           <p className="mt-4 text-sm font-light text-[#A79C91]">免費 · 不用登入 · 30 秒開始</p>
+
+          {/* ── 智慧搜尋 ── */}
+          <SmartSearch />
+        </div>
+      </section>
+
+      {/* ── 說走就走 ── */}
+      <section className="border-t border-[#DDD6CA] py-16">
+        <div className="mx-auto max-w-5xl px-6">
+          <p className="mb-3 text-center text-xs font-light uppercase tracking-[0.45em] text-[#8FA39A]">Quick Trip</p>
+          <h2 className="mb-2 text-center text-2xl font-light tracking-wide">說走就走</h2>
+          <p className="mb-10 text-center text-sm font-light text-[#8A7F73]">
+            懶得規劃？精選套餐行程，一鍵看完整每日安排
+          </p>
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {quickTrips.map((trip) => (
+              <QuickTripCard key={trip.id} trip={trip} />
+            ))}
+          </div>
         </div>
       </section>
 
@@ -164,8 +308,7 @@ export default function HomePage() {
           <h2 className="mb-10 text-center text-2xl font-light tracking-wide">下載的計畫書裡有什麼？</h2>
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
             {INCLUDED.map((item) => (
-              <div key={item}
-                className="rounded-2xl border border-[#D8D2C7] bg-[#FBF8F1] px-5 py-4 text-sm font-light text-[#5C5248]">
+              <div key={item} className="rounded-2xl border border-[#D8D2C7] bg-[#FBF8F1] px-5 py-4 text-sm font-light text-[#5C5248]">
                 {item}
               </div>
             ))}
