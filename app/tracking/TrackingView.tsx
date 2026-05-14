@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-
 export type FlightTrack = {
   id: string;
   type: "flight";
