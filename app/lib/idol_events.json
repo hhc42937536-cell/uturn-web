@@ -1,0 +1,120 @@
+{
+  "_meta": {
+    "description": "追星行程相關資料：藝人/團體/演員資訊、周邊商店",
+    "last_updated": "2026-04",
+    "note": "活動日期需即時爬蟲更新，此檔案為靜態基礎資料"
+  },
+  "groups": {
+    "JP": [
+      {"name": "乃木坂46", "search_name": "Nogizaka46", "agency": "Sony Music", "genre": "J-POP/偶像", "category": "偶像"},
+      {"name": "櫻坂46", "search_name": "Sakurazaka46", "agency": "Sony Music", "genre": "J-POP/偶像", "category": "偶像"},
+      {"name": "日向坂46", "search_name": "Hinatazaka46", "agency": "Sony Music", "genre": "J-POP/偶像", "category": "偶像"},
+      {"name": "Snow Man", "search_name": "Snow Man", "agency": "Johnny's", "genre": "J-POP/偶像", "category": "偶像"},
+      {"name": "SixTONES", "search_name": "SixTONES", "agency": "Johnny's", "genre": "J-POP/偶像", "category": "偶像"},
+      {"name": "なにわ男子", "search_name": "Naniwa Danshi", "agency": "Johnny's", "genre": "J-POP/偶像", "category": "偶像"},
+      {"name": "Travis Japan", "search_name": "Travis Japan", "agency": "Johnny's", "genre": "J-POP/偶像", "category": "偶像"},
+      {"name": "BE:FIRST", "search_name": "BE:FIRST", "agency": "BMSG", "genre": "J-POP/偶像", "category": "偶像"},
+      {"name": "YOASOBI", "search_name": "YOASOBI", "agency": "Sony Music", "genre": "J-POP", "category": "歌手"},
+      {"name": "Official髭男dism", "search_name": "Official Hige Dandism", "agency": "IRORI Records", "genre": "J-POP/樂團", "category": "歌手"},
+      {"name": "Ado", "search_name": "Ado", "agency": "Universal Music", "genre": "J-POP", "category": "歌手"},
+      {"name": "imase", "search_name": "imase", "agency": "Universal Music", "genre": "J-POP", "category": "歌手"},
+      {"name": "優里", "search_name": "Yuri", "agency": "Warner Music", "genre": "J-POP", "category": "歌手"},
+      {"name": "米津玄師", "search_name": "Kenshi Yonezu", "agency": "Sony Music", "genre": "J-POP", "category": "歌手"},
+      {"name": "King Gnu", "search_name": "King Gnu", "agency": "Ariola Japan", "genre": "J-POP/樂團", "category": "歌手"},
+      {"name": "藤井風", "search_name": "Fujii Kaze", "agency": "hehn records", "genre": "J-POP", "category": "歌手"}
+    ],
+    "KR": [
+      {"name": "BTS", "search_name": "BTS", "agency": "HYBE", "genre": "K-POP"},
+      {"name": "BLACKPINK", "search_name": "BLACKPINK", "agency": "YG", "genre": "K-POP"},
+      {"name": "TWICE", "search_name": "TWICE", "agency": "JYP", "genre": "K-POP"},
+      {"name": "Stray Kids", "search_name": "Stray Kids", "agency": "JYP", "genre": "K-POP"},
+      {"name": "aespa", "search_name": "aespa", "agency": "SM", "genre": "K-POP"},
+      {"name": "NewJeans", "search_name": "NewJeans", "agency": "ADOR/HYBE", "genre": "K-POP"},
+      {"name": "SEVENTEEN", "search_name": "SEVENTEEN", "agency": "PLEDIS/HYBE", "genre": "K-POP"},
+      {"name": "IVE", "search_name": "IVE", "agency": "Starship", "genre": "K-POP"},
+      {"name": "LE SSERAFIM", "search_name": "LE SSERAFIM", "agency": "Source Music/HYBE", "genre": "K-POP"},
+      {"name": "NCT 127", "search_name": "NCT 127", "agency": "SM", "genre": "K-POP"},
+      {"name": "NCT DREAM", "search_name": "NCT DREAM", "agency": "SM", "genre": "K-POP"},
+      {"name": "EXO", "search_name": "EXO", "agency": "SM", "genre": "K-POP"},
+      {"name": "TXT", "search_name": "Tomorrow X Together", "agency": "HYBE", "genre": "K-POP"},
+      {"name": "ENHYPEN", "search_name": "ENHYPEN", "agency": "HYBE", "genre": "K-POP"},
+      {"name": "NMIXX", "search_name": "NMIXX", "agency": "JYP", "genre": "K-POP"},
+      {"name": "ITZY", "search_name": "ITZY", "agency": "JYP", "genre": "K-POP"},
+      {"name": "Red Velvet", "search_name": "Red Velvet", "agency": "SM", "genre": "K-POP"},
+      {"name": "MAMAMOO", "search_name": "MAMAMOO", "agency": "RBW", "genre": "K-POP"},
+      {"name": "(G)I-DLE", "search_name": "G-IDLE", "agency": "Cube", "genre": "K-POP"},
+      {"name": "BIGBANG", "search_name": "BIGBANG", "agency": "YG", "genre": "K-POP"},
+      {"name": "Super Junior", "search_name": "Super Junior", "agency": "SM", "genre": "K-POP"},
+      {"name": "MONSTA X", "search_name": "MONSTA X", "agency": "Starship", "genre": "K-POP"},
+      {"name": "ATEEZ", "search_name": "ATEEZ", "agency": "KQ", "genre": "K-POP"},
+      {"name": "DAY6", "search_name": "DAY6", "agency": "JYP", "genre": "K-POP"},
+      {"name": "2PM", "search_name": "2PM", "agency": "JYP", "genre": "K-POP"}
+    ]
+  },
+  "actors": {
+    "KR": [
+      {"name": "邊佑錫", "search_name": "Byeon Woo-seok", "known_for": "선재 업고 튀어（我的幸福結局）", "agency": "Awesome ENT", "type": "演員"},
+      {"name": "朴寶劍", "search_name": "Park Bo-gum", "known_for": "請回答1988・雲畫的月光", "agency": "Blossom Entertainment", "type": "演員"},
+      {"name": "李鐘碩", "search_name": "Lee Jong-suk", "known_for": "W兩個世界・醫生", "agency": "A-MAN Project", "type": "演員"},
+      {"name": "金秀賢", "search_name": "Kim Soo-hyun", "known_for": "來自星星的你・皇后的傘兵", "agency": "GOLDMEDALIST", "type": "演員"},
+      {"name": "玄彬", "search_name": "Hyun Bin", "known_for": "愛的迫降・秘密花園", "agency": "VAST Entertainment", "type": "演員"},
+      {"name": "孔劉", "search_name": "Gong Yoo", "known_for": "鬼怪・釜山行", "agency": "Management SOOP", "type": "演員"},
+      {"name": "李敏鎬", "search_name": "Lee Min-ho", "known_for": "繼承者們・花樣男子", "agency": "MYM Entertainment", "type": "演員"},
+      {"name": "宋仲基", "search_name": "Song Joong-ki", "known_for": "太陽的後裔・成為宇宙英雄", "agency": "History D&C", "type": "演員"},
+      {"name": "池昌旭", "search_name": "Ji Chang-wook", "known_for": "Melting Me Softly・惡魔法官", "agency": "Glorious Entertainment", "type": "演員"},
+      {"name": "朴敘俊", "search_name": "Park Seo-joon", "known_for": "梨泰院Class・她的私生活", "agency": "Awesome ENT", "type": "演員"},
+      {"name": "丁海寅", "search_name": "Jung Hae-in", "known_for": "雪降花・DP逃兵追緝令", "agency": "FNC Entertainment", "type": "演員"},
+      {"name": "車銀優", "search_name": "Cha Eun-woo", "known_for": "真的不想努力・花遊記", "agency": "Fantagio", "type": "演員/偶像"},
+      {"name": "李準基", "search_name": "Lee Joon-gi", "known_for": "月之戀人・軍主的假面", "agency": "SidusHQ", "type": "演員"},
+      {"name": "崔宇植", "search_name": "Choi Woo-shik", "known_for": "寄生上流・我的出走日記", "agency": "Management SOOP", "type": "演員"},
+      {"name": "劉亞仁", "search_name": "Yoo Ah-in", "known_for": "六龍飛天・燃燒", "agency": "UAA", "type": "演員"},
+      {"name": "孫藝真", "search_name": "Son Ye-jin", "known_for": "愛的迫降・我的野蠻女友", "agency": "MSteam Entertainment", "type": "女演員"},
+      {"name": "全智賢", "search_name": "Jun Ji-hyun", "known_for": "來自星星的你・我的野蠻女友", "agency": "HB Entertainment", "type": "女演員"},
+      {"name": "金高銀", "search_name": "Kim Go-eun", "known_for": "鬼怪・甜蜜家園", "agency": "BH Entertainment", "type": "女演員"},
+      {"name": "韓素希", "search_name": "Han So-hee", "known_for": "夫婦的世界・我的名字", "agency": "9ATO Entertainment", "type": "女演員"},
+      {"name": "金泰梨", "search_name": "Kim Tae-ri", "known_for": "二十五 二十一・外星人", "agency": "Management SOOP", "type": "女演員"},
+      {"name": "裴秀智", "search_name": "Bae Suzy", "known_for": "雲畫的月光・Start-Up", "agency": "Management SOOP", "type": "女演員/偶像"},
+      {"name": "IU", "search_name": "IU Lee Ji-eun", "known_for": "我的大叔・德魯納酒店", "agency": "EDAM Entertainment", "type": "女演員/歌手"},
+      {"name": "宋慧喬", "search_name": "Song Hye-kyo", "known_for": "太陽的後裔・那年我們", "agency": "UAA", "type": "女演員"},
+      {"name": "申惠善", "search_name": "Shin Hye-sun", "known_for": "三十九・明天", "agency": "Artist Company", "type": "女演員"}
+    ],
+    "JP": [
+      {"name": "山崎賢人", "search_name": "Kento Yamazaki", "known_for": "Alice in Borderland・醫龍", "agency": "Stardust Promotion", "type": "演員"},
+      {"name": "菅田將暉", "search_name": "Masaki Suda", "known_for": "大豆田永久子・花束般的戀愛", "agency": "ワイルドバンチ", "type": "演員"},
+      {"name": "吉澤亮", "search_name": "Ryo Yoshizawa", "known_for": "初戀・進擊的巨人", "agency": "Stardust Promotion", "type": "演員"},
+      {"name": "坂口健太郎", "search_name": "Kentaro Ito", "known_for": "東京女子圖鑑・MIU404", "agency": "Stardust Promotion", "type": "演員"},
+      {"name": "横浜流星", "search_name": "Ryusei Yokohama", "known_for": "日本沉沒・天堂與地獄", "agency": "Stardust Promotion", "type": "演員"},
+      {"name": "浜辺美波", "search_name": "Minami Hamabe", "known_for": "哥吉拉-1.0・排球少年劇場版", "agency": "Grick", "type": "女演員"},
+      {"name": "永野芽郁", "search_name": "Mei Nagano", "known_for": "半澤直樹・君は放課後インソムニア", "agency": "Horipro", "type": "女演員"},
+      {"name": "新垣結衣", "search_name": "Yui Aragaki", "known_for": "逃避雖可恥・戀愛可以繼續到宇宙盡頭", "agency": "Amuse", "type": "女演員"},
+      {"name": "石原里美", "search_name": "Satomi Ishihara", "known_for": "非自然死亡・MIU404", "agency": "Grick", "type": "女演員"},
+      {"name": "長澤まさみ", "search_name": "Masami Nagasawa", "known_for": "戀愛・HERO・俗女養成記日版", "agency": "Horipro", "type": "女演員"},
+      {"name": "綾瀨遙", "search_name": "Haruka Ayase", "known_for": "海街日記・仁醫", "agency": "Horipro", "type": "女演員"}
+    ]
+  },
+  "fan_shops": {
+    "JP": [
+      {"name": "Johnny's Shop 原宿", "type": "傑尼斯周邊", "location": "東京原宿"},
+      {"name": "AKB48 劇場", "type": "AKB系周邊", "location": "東京秋葉原"},
+      {"name": "Animate", "type": "動漫/偶像周邊", "location": "池袋總店/全國"},
+      {"name": "Tower Records", "type": "CD/特典", "location": "澀谷/全國"}
+    ],
+    "KR": [
+      {"name": "HYBE INSIGHT", "type": "BTS/HYBE系展覽", "location": "首爾龍山"},
+      {"name": "SM Town", "type": "SM藝人周邊", "location": "首爾江南COEX"},
+      {"name": "YG Entertainment", "type": "YG藝人周邊", "location": "首爾合井"},
+      {"name": "JYP Entertainment", "type": "JYP藝人周邊", "location": "首爾清潭洞"},
+      {"name": "Myeongdong K-POP Store", "type": "綜合K-POP", "location": "首爾明洞"},
+      {"name": "LINE FRIENDS BT21", "type": "BT21周邊", "location": "首爾明洞/弘大"}
+    ]
+  },
+  "tips": [
+    "演唱會/見面會門票通常需要加入官方粉絲俱樂部才能搶購，建議提早3-6個月準備",
+    "韓國演員粉絲見面會（팬미팅）票券可在 Interpark、Melon Ticket 購買",
+    "日本傑尼斯系演唱會禁止拍照錄影，違規會被請出場",
+    "韓國演唱會通常允許手機拍照（但不能錄影），依主辦規定",
+    "場館周邊通常有交換小卡的粉絲聚集，可以帶自己的小卡去交換",
+    "建議提早到場，場外通常有期間限定快閃店和應援物販售",
+    "住宿建議訂在場館附近或交通直達處，散場人潮很多"
+  ]
+}

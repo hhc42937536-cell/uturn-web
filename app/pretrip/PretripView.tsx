@@ -2,7 +2,43 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { VISA_NOTE, EMERGENCY, CUSTOMS } from "../lib/buildDocx";
+import { VISA_NOTE, EMERGENCY } from "../lib/buildDocx";
+import rawCustoms from "../lib/customs_info.json";
+
+type CustomsEntry = {
+  prohibited_in: string[];
+  restricted_in: string[];
+  duty_free: Record<string, string>;
+  important: string | string[];
+};
+type TaiwanReturn = {
+  description: string;
+  prohibited: string[];
+  duty_free: Record<string, string>;
+  important: string;
+};
+const CUSTOMS_DATA = rawCustoms as unknown as Record<string, CustomsEntry> & {
+  _taiwan_return: TaiwanReturn;
+};
+
+const CITY_TO_COUNTRY: Record<string, string> = {
+  東京: "JP", 大阪: "JP", 沖繩: "JP", 福岡: "JP", 札幌: "JP", 名古屋: "JP",
+  首爾: "KR", 釜山: "KR", 濟州: "KR",
+  曼谷: "TH", 清邁: "TH", 普吉島: "TH",
+  新加坡: "SG",
+  香港: "HK", 澳門: "MO",
+  胡志明市: "VN", 河內: "VN", 峴港: "VN",
+  吉隆坡: "MY", 檳城: "MY", 亞庇: "MY", 蘭卡威: "MY",
+  馬尼拉: "PH", 宿霧: "PH",
+  峇里島: "ID", 雅加達: "ID",
+  金邊: "KH", 暹粒: "KH",
+  杜拜: "AE",
+  倫敦: "GB", 巴黎: "FR", 羅馬: "IT", 巴塞隆納: "ES",
+  雪梨: "AU",
+  紐約: "US", 洛杉磯: "US", 溫哥華: "CA", 多倫多: "CA",
+  關島: "US", 帛琉: "PW",
+  上海: "CN", 北京: "CN", 廣州: "CN",
+};
 
 // ── 插座 / 電壓資料 ─────────────────────────────────────────
 const PLUG_INFO: Record<string, { type: string; voltage: string; note: string }> = {
@@ -193,7 +229,9 @@ export default function PretripView() {
   const [showGroups, setShowGroups] = useState(false);
 
   const visa      = VISA_NOTE[dest] ?? "請出發前確認最新簽證規定（外交部領事事務局 www.boca.gov.tw）";
-  const customs   = CUSTOMS[dest] ?? ["請至目的地海關官網確認最新規定"];
+  const countryCode = CITY_TO_COUNTRY[dest];
+  const customsInfo: CustomsEntry | null = countryCode ? (CUSTOMS_DATA[countryCode] ?? null) : null;
+  const taiwanReturn = CUSTOMS_DATA._taiwan_return;
   const plug      = PLUG_INFO[dest] ?? { type: "未知", voltage: "未知", note: "請查詢目的地電力規格" };
   const currency  = CURRENCY[dest] ?? { code: "—", name: "未知貨幣", tip: "請出發前確認當地貨幣" };
   const emergency = EMERGENCY[dest] ?? ["請查詢外交部領事事務局：www.boca.gov.tw"];
@@ -290,16 +328,95 @@ export default function PretripView() {
           )}
 
           {tab === "customs" && (
-            <div>
-              <p className="text-xs font-light uppercase tracking-widest text-[#8A7F73] mb-4">🚫 海關禁品 / 注意事項</p>
-              <ul className="space-y-3">
-                {customs.map((item, i) => (
-                  <li key={i} className="flex gap-3 text-sm font-light text-[#4B4037] leading-7">
-                    <span className="text-[#A86F5A] shrink-0">·</span>
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ul>
+            <div className="space-y-6">
+              {/* 目的地海關 */}
+              <div>
+                <p className="text-xs font-light uppercase tracking-widest text-[#8A7F73] mb-4">🚫 {dest} 入境海關規定</p>
+                {customsInfo ? (
+                  <div className="space-y-4">
+                    {customsInfo.prohibited_in.length > 0 && (
+                      <div>
+                        <p className="text-xs font-light text-[#A86F5A] mb-2">❌ 嚴禁攜入</p>
+                        <ul className="space-y-1">
+                          {customsInfo.prohibited_in.map((item, i) => (
+                            <li key={i} className="flex gap-2 text-sm font-light text-[#4B4037] leading-7">
+                              <span className="text-[#A86F5A] shrink-0">·</span><span>{item}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                    {customsInfo.restricted_in.length > 0 && (
+                      <div>
+                        <p className="text-xs font-light text-[#8A7F73] mb-2">⚠️ 限制攜帶 / 需申報</p>
+                        <ul className="space-y-1">
+                          {customsInfo.restricted_in.map((item, i) => (
+                            <li key={i} className="flex gap-2 text-sm font-light text-[#4B4037] leading-7">
+                              <span className="text-[#8A7F73] shrink-0">·</span><span>{item}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                    <div>
+                      <p className="text-xs font-light text-[#8FA39A] mb-2">✅ 免稅額度</p>
+                      <div className="rounded-2xl border border-[#E0D9D2] bg-white px-5 py-4 grid gap-1">
+                        {Object.entries(customsInfo.duty_free).map(([k, v]) => (
+                          <div key={k} className="flex gap-3 text-sm font-light">
+                            <span className="text-[#8A7F73] w-20 shrink-0 capitalize">{k}</span>
+                            <span className="text-[#4B4037]">{v}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                    {customsInfo.important && (
+                      <div className="rounded-2xl border border-[#EDE7DD] bg-[#FFFDF8] px-5 py-4">
+                        <p className="text-xs font-light text-[#A86F5A] mb-1">💡 特別注意</p>
+                        {Array.isArray(customsInfo.important)
+                          ? customsInfo.important.map((s, i) => (
+                              <p key={i} className="text-sm font-light text-[#4B4037] leading-7">{s}</p>
+                            ))
+                          : <p className="text-sm font-light text-[#4B4037] leading-7">{customsInfo.important}</p>
+                        }
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <p className="text-sm font-light text-[#A79C91]">請至目的地海關官網確認最新規定</p>
+                )}
+              </div>
+
+              {/* 回台灣規定 */}
+              <div className="border-t border-[#E0D9D2] pt-6">
+                <p className="text-xs font-light uppercase tracking-widest text-[#8A7F73] mb-4">🇹🇼 回台灣入境規定（所有旅客適用）</p>
+                <div className="space-y-4">
+                  <div>
+                    <p className="text-xs font-light text-[#A86F5A] mb-2">❌ 嚴禁攜入台灣</p>
+                    <ul className="space-y-1">
+                      {taiwanReturn.prohibited.map((item, i) => (
+                        <li key={i} className="flex gap-2 text-sm font-light text-[#4B4037] leading-7">
+                          <span className="text-[#A86F5A] shrink-0">·</span><span>{item}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div>
+                    <p className="text-xs font-light text-[#8FA39A] mb-2">✅ 免稅額度</p>
+                    <div className="rounded-2xl border border-[#E0D9D2] bg-white px-5 py-4 grid gap-1">
+                      {Object.entries(taiwanReturn.duty_free).map(([k, v]) => (
+                        <div key={k} className="flex gap-3 text-sm font-light">
+                          <span className="text-[#8A7F73] w-28 shrink-0 capitalize">{k}</span>
+                          <span className="text-[#4B4037]">{v}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="rounded-2xl border border-[#EDE7DD] bg-[#FFFDF8] px-5 py-4">
+                    <p className="text-xs font-light text-[#A86F5A] mb-1">💡 特別注意</p>
+                    <p className="text-sm font-light text-[#4B4037] leading-7">{taiwanReturn.important}</p>
+                  </div>
+                </div>
+              </div>
             </div>
           )}
 
