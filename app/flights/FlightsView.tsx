@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { saveTrack, type FlightTrack } from "../tracking/TrackingView";
 
@@ -122,6 +122,18 @@ export default function FlightsView() {
   const [quickOrigin, setQuickOrigin] = useState("TPE");
   const [quickDays, setQuickDays] = useState<number | null>(null);
   const [exploreOrigin, setExploreOrigin] = useState("TPE");
+
+  // 讀取全域出發城市偏好
+  useEffect(() => {
+    const saved = localStorage.getItem("uturn_origin");
+    const iataMap: Record<string, string> = { 台北: "TPE", 高雄: "KHH", 台中: "RMQ", 台南: "TNN" };
+    const iata = saved ? iataMap[saved] : null;
+    if (iata) {
+      setQuickOrigin(iata);
+      setExploreOrigin(iata);
+      setForm((f) => ({ ...f, origin: iata }));
+    }
+  }, []);
   const [exploreMonth, setExploreMonth] = useState("202606");
   const [tracked, setTracked] = useState<Set<string>>(new Set());
   const [trackMsg, setTrackMsg] = useState<string | null>(null);
@@ -288,7 +300,7 @@ export default function FlightsView() {
                   { code: "RMQ", label: "台中" }, { code: "TNN", label: "台南" },
                 ].map(({ code, label }) => (
                   <button key={code}
-                    onClick={() => setQuickOrigin(code)}
+                    onClick={() => { setQuickOrigin(code); const cityMap: Record<string,string>={TPE:"台北",KHH:"高雄",RMQ:"台中",TNN:"台南"}; localStorage.setItem("uturn_origin", cityMap[code] ?? code); }}
                     className={`rounded-full border px-4 py-1.5 text-sm font-light transition
                       ${quickOrigin === code
                         ? "border-[#A86F5A] bg-[#A86F5A]/10 text-[#A86F5A]"

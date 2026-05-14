@@ -1,9 +1,29 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { VISA_NOTE, estimateBudget } from "@/app/lib/buildDocx";
 import { HOTEL_ESTIMATES, HOTEL_PICKS, agodaUrl, bookingUrl } from "@/app/lib/hotelData";
+import rawTemplates from "@/app/lib/itinerary_templates.json";
+
+type TemplateDay = { theme: string; am: string; pm: string; eve: string };
+type Template = {
+  city_name: string;
+  arrival: { pm: string; eve: string };
+  full_days: TemplateDay[];
+  must_eat: string[];
+};
+const TEMPLATES = rawTemplates as unknown as Record<string, Template>;
+
+const CITY_TO_TMPL: Record<string, string> = {
+  東京: "TYO", 大阪: "OSA", 首爾: "SEL", 釜山: "PUS",
+  曼谷: "BKK", 新加坡: "SIN", 香港: "HKG", 沖繩: "OKA", 胡志明市: "SGN",
+};
+
+const ORIGIN_TO_IATA: Record<string, string> = {
+  台北: "TPE", 高雄: "KHH", 台中: "RMQ", 台南: "TNN",
+};
+const ORIGIN_KEY = "uturn_origin";
 
 // ── 目的地資料 ─────────────────────────────────────────────
 const DESTINATIONS = [
@@ -152,6 +172,30 @@ export default function WizardView() {
 
   const dayCount = getDays(state.depDate, state.retDate);
 
+  // 讀取上次出發城市
+  useEffect(() => {
+    const saved = localStorage.getItem(ORIGIN_KEY);
+    if (saved) set({ depCity: saved });
+  }, []);
+
+  // 套用範本函式
+  function applyTemplate() {
+    const key = CITY_TO_TMPL[state.destination] ?? "_default";
+    const tmpl = TEMPLATES[key] ?? TEMPLATES["_default"];
+    if (!tmpl) return;
+    const days: DayNote[] = tmpl.full_days.slice(0, dayCount).map((d, i) => ({
+      morning: d.am,
+      afternoon: d.pm,
+      evening: d.eve,
+      food: tmpl.must_eat[i % tmpl.must_eat.length] ?? "",
+      note: d.theme,
+    }));
+    // 補足天數
+    while (days.length < dayCount) days.push(emptyDay());
+    set({ itinerary: days });
+    setStep(5);
+  }
+
   // ── Step 1 ─────────────────────────────────────────────
   const Step1 = () => {
     const [custom, setCustom] = useState(
@@ -222,7 +266,7 @@ export default function WizardView() {
             {DEP_CITIES.map((c) => (
               <button
                 key={c}
-                onClick={() => set({ depCity: c })}
+                onClick={() => { set({ depCity: c }); localStorage.setItem(ORIGIN_KEY, c); }}
                 className={`rounded-full border px-5 py-2 text-sm font-light transition-all
                   ${state.depCity === c
                     ? "border-[#A86F5A] bg-[#A86F5A]/10 text-[#A86F5A]"
@@ -554,16 +598,27 @@ export default function WizardView() {
         )}
 
         {!generating && (
-          <div className="flex gap-3">
-            <button onClick={() => setStep(3)}
-              className="flex-1 rounded-full border border-[#D8D2C7] py-3 text-sm font-light text-[#6F675F] transition hover:border-[#A86F5A]">
-              ← 上一步
-            </button>
-            <button
-              onClick={() => { set({ itinerary: Array.from({ length: dayCount }, () => emptyDay()) }); setStep(5); }}
-              className="flex-1 rounded-full border border-[#D8D2C7] py-3 text-sm font-light text-[#6F675F] transition hover:border-[#A86F5A]">
-              跳過，自己填
-            </button>
+          <div className="space-y-3">
+            {/* 範本快速套用 */}
+            {(CITY_TO_TMPL[state.destination] || TEMPLATES["_default"]) && (
+              <button
+                onClick={applyTemplate}
+                className="w-full rounded-full border border-[#A86F5A] py-4 text-sm font-light tracking-[0.15em] text-[#A86F5A] transition hover:bg-[#A86F5A]/10"
+              >
+                📋 用在地範本規劃（秒出，不需等待）
+              </button>
+            )}
+            <div className="flex gap-3">
+              <button onClick={() => setStep(3)}
+                className="flex-1 rounded-full border border-[#D8D2C7] py-3 text-sm font-light text-[#6F675F] transition hover:border-[#A86F5A]">
+                ← 上一步
+              </button>
+              <button
+                onClick={() => { set({ itinerary: Array.from({ length: dayCount }, () => emptyDay()) }); setStep(5); }}
+                className="flex-1 rounded-full border border-[#D8D2C7] py-3 text-sm font-light text-[#6F675F] transition hover:border-[#A86F5A]">
+                跳過，自己填
+              </button>
+            </div>
           </div>
         )}
       </div>
