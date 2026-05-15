@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import rawData from "../lib/idol_events.json";
+import fallback from "../lib/idol_events.json";
 
 type Group  = { name: string; search_name: string; agency: string; genre: string; category?: string };
 type Actor  = { name: string; search_name: string; known_for: string; agency: string; type: string };
@@ -14,8 +14,6 @@ type IdolData = {
   fan_shops: { JP: FanShop[]; KR: FanShop[] };
   tips: string[];
 };
-
-const DATA = rawData as unknown as IdolData;
 
 // ── 搜尋連結生成 ──────────────────────────────────────────
 function googleSearch(name: string) {
@@ -41,12 +39,6 @@ const TABS: { id: TabId; label: string; icon: string }[] = [
   { id: "tips",        label: "搶票攻略",   icon: "🎟️" },
 ];
 
-// 分類資料
-const KR_GROUPS = DATA.groups.KR;                              // 25 組
-const KR_ACTORS = DATA.actors.KR;                             // 24 人
-const JP_IDOLS  = DATA.groups.JP.filter((g) => g.category === "偶像");  // Johnny's / 坂道等
-const JP_SINGERS = DATA.groups.JP.filter((g) => g.category === "歌手"); // YOASOBI / 髭男 等
-const JP_ACTORS  = DATA.actors.JP;                            // 11 人
 
 // ── 卡片元件 ─────────────────────────────────────────────
 function GroupCard({ g, country }: { g: Group; country: "KR" | "JP" }) {
@@ -106,8 +98,22 @@ function ActorCard({ a, country }: { a: Actor; country: "KR" | "JP" }) {
 
 export default function IdolView() {
   const router = useRouter();
+  const [DATA, setDATA] = useState<IdolData>(fallback as unknown as IdolData);
   const [tab, setTab] = useState<TabId>("kpop");
   const [search, setSearch] = useState("");
+
+  useEffect(() => {
+    fetch("/api/idol")
+      .then((r) => r.json())
+      .then(({ data }) => { if (data) setDATA(data as IdolData); })
+      .catch(() => {});
+  }, []);
+
+  const KR_GROUPS  = DATA.groups?.KR ?? [];
+  const KR_ACTORS  = DATA.actors?.KR ?? [];
+  const JP_IDOLS   = (DATA.groups?.JP ?? []).filter((g) => g.category === "偶像");
+  const JP_SINGERS = (DATA.groups?.JP ?? []).filter((g) => g.category === "歌手");
+  const JP_ACTORS  = DATA.actors?.JP ?? [];
 
   const q = search.toLowerCase();
 

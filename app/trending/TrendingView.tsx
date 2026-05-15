@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import rawData from "../lib/souvenirs.json";
+import fallback from "../lib/souvenirs.json";
 
 type MustBuyItem    = { name: string; category: string; price_range: string; where: string };
 type Experience     = { name: string; tip: string };
@@ -18,24 +18,35 @@ type CountryData    = {
   medical_beauty?: MedBeauty;
 };
 
-const DATA = rawData as unknown as Record<string, CountryData>;
-
-const COUNTRIES = [
+const ALL_COUNTRIES = [
   { code: "KR", flag: "🇰🇷" },
   { code: "JP", flag: "🇯🇵" },
   { code: "TH", flag: "🇹🇭" },
   { code: "SG", flag: "🇸🇬" },
   { code: "VN", flag: "🇻🇳" },
   { code: "KUL", flag: "🇲🇾" },
-].filter(({ code }) => !!DATA[code]);
+];
 
 type Tab = "experience" | "mustbuy" | "shopping" | "medical";
 
 export default function TrendingView() {
   const router = useRouter();
+  const [DATA, setDATA] = useState<Record<string, CountryData>>(fallback as unknown as Record<string, CountryData>);
+  const [updatedAt, setUpdatedAt] = useState<string | null>(null);
   const [activeCountry, setActiveCountry] = useState("KR");
   const [activeTab, setActiveTab] = useState<Tab>("experience");
 
+  useEffect(() => {
+    fetch("/api/trending")
+      .then((r) => r.json())
+      .then(({ data, updatedAt: ua }) => {
+        if (data) setDATA(data as Record<string, CountryData>);
+        if (ua) setUpdatedAt(ua);
+      })
+      .catch(() => {});
+  }, []);
+
+  const COUNTRIES = ALL_COUNTRIES.filter(({ code }) => !!DATA[code]);
   const info = DATA[activeCountry];
   if (!info) return null;
 
@@ -64,6 +75,9 @@ export default function TrendingView() {
           <h1 className="text-3xl font-light tracking-wide">這個月出國<br className="sm:hidden" />必買必玩清單</h1>
           <p className="mt-3 text-sm font-light leading-7 text-[#6F675F]">
             整合熱門排行榜資料，涵蓋日韓泰新馬越六個目的地。
+            {updatedAt && (
+              <span className="ml-2 text-xs text-[#A79C91]">AI 更新：{updatedAt.slice(0, 10)}</span>
+            )}
           </p>
         </div>
 
