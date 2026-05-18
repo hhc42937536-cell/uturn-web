@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { isRateLimited } from "@/app/lib/rateLimit";
 
 export const maxDuration = 60;
 
@@ -20,6 +21,11 @@ async function callGemini(key: string, model: string, prompt: string): Promise<s
 
 export async function POST(req: NextRequest) {
   const { destination, arrAirport, depDate, retDate, people, style, mustVisit } = await req.json();
+
+  const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
+  if (await isRateLimited(ip, "generate-itinerary")) {
+    return NextResponse.json({ error: "請求過於頻繁，請稍後再試" }, { status: 429 });
+  }
 
   const key = process.env.GEMINI_API_KEY;
   if (!key) return NextResponse.json({ error: "GEMINI_API_KEY not set" }, { status: 500 });

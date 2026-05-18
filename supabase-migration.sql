@@ -34,7 +34,28 @@ create table if not exists idol_cache (
   updated_at timestamptz default now()
 );
 
+-- 4. API Rate Limiting 記錄表
+create table if not exists api_rate_log (
+  id         bigserial primary key,
+  ip         text not null,
+  endpoint   text not null,
+  called_at  timestamptz default now()
+);
+create index if not exists api_rate_log_ip_ep_idx on api_rate_log(ip, endpoint, called_at);
+
+-- 自動清理 2 小時以上的舊紀錄（避免資料表膨脹）
+create or replace function cleanup_rate_log() returns trigger language plpgsql as $$
+begin
+  delete from api_rate_log where called_at < now() - interval '2 hours';
+  return new;
+end;
+$$;
+create or replace trigger trg_cleanup_rate_log
+  after insert on api_rate_log
+  for each statement execute function cleanup_rate_log();
+
 -- RLS：全部暫時開放（之後可依需求收緊）
 alter table flight_tracks  disable row level security;
 alter table trending_cache disable row level security;
 alter table idol_cache     disable row level security;
+alter table api_rate_log   disable row level security;

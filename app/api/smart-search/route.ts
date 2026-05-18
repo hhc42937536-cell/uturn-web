@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { isRateLimited } from "@/app/lib/rateLimit";
 
 const EXPERIENCE_MAP = [
   {
@@ -110,14 +111,19 @@ export async function POST(req: NextRequest) {
   const { query } = await req.json();
   if (!query?.trim()) return NextResponse.json({ error: "empty query" }, { status: 400 });
 
-  // 先做關鍵字快速比對
+  // 先做關鍵字快速比對（不耗費 Gemini quota）
   for (const entry of EXPERIENCE_MAP) {
     if (entry.keywords.some((kw) => query.includes(kw))) {
       return NextResponse.json({ label: entry.label, destinations: entry.destinations, source: "keyword" });
     }
   }
 
-  // fallback: Gemini
+  // fallback: Gemini — 需要 rate limit
+  const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
+  if (await isRateLimited(ip, "smart-search")) {
+    return NextResponse.json({ error: "請求過於頻繁，請稍後再試" }, { status: 429 });
+  }
+
   const key = process.env.GEMINI_API_KEY;
   if (!key) return NextResponse.json({ error: "no key" }, { status: 500 });
   try {
