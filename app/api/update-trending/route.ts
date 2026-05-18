@@ -3,7 +3,7 @@ import { supabase } from "@/app/lib/supabase";
 
 export const maxDuration = 120;
 
-const MODELS = ["gemini-2.5-flash", "gemini-2.0-flash-lite", "gemini-1.5-flash"];
+const MODELS = ["gemini-2.0-flash-lite", "gemini-1.5-flash"];
 
 async function callGemini(key: string, prompt: string): Promise<string> {
   for (const model of MODELS) {
